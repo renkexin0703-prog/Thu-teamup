@@ -1,0 +1,187 @@
+/* 个人信息卡片 */
+.user-card {
+  display: flex;
+  padding: 20px 15px;
+  margin-bottom: 10px;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.user-main-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.credit-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background-color: #ffe880;
+  color: #856404;
+}
+
+.user-base-info {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.user-skills {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.user-wechat {
+  font-size: 13px;
+  color: #6777ef;
+}
+
+.credit-points {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.credit-score {
+  font-size: 24px;
+  font-weight: bold;
+  color: #6777ef;
+}
+
+.credit-desc {
+  font-size: 12px;
+  color: #999;
+}
+
+.points-score {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff9500;
+}
+
+.points-desc {
+  font-size: 12px;
+  color: #999;
+}
+
+/* 卡片标题 */
+.card-header {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 信誉分详情 */
+.credit-desc-text {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* 功能卡片 */
+.func-card {
+  margin-top: 10px;
+}
+
+.func-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+}
+
+.func-item:last-child {
+  border-bottom: none;
+}
+
+.func-tip {
+  font-size: 12px;
+  color: #999;
+  margin-right: 10px;
+}
+
+/* 积分规则 */
+.rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rule-item {
+  font-size: 14px;
+  color: #666;
+  padding: 4px 0;
+}
+
+/* 模拟审核面板样式 */
+.review-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 999;
+  padding: 30px 20px;
+}
+
+.panel-header {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.review-item {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.review-title {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.review-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.approve-btn {
+  background-color: #5cb85c !important;
+  flex: 1;
+  margin: 0;
+}
+
+.reject-btn {
+  background-color: #d9534f !important;
+  flex: 1;
+  margin: 0;
+}
+
+.close-btn {
+  background-color: #666 !important;
+  margin-top: 20px;
+}

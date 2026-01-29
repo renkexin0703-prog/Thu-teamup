@@ -1,0 +1,92 @@
+<!-- 个人信息区域 -->
+<view class="card user-card">
+  <image src="{{userInfo.avatar}}" class="user-avatar" bindtap="onAvatarTap" />
+  <view class="user-main-info">
+    <view class="user-name">{{userInfo.name}} 
+      <block wx:for="{{userInfo.creditTags}}" wx:key="*this" wx:if="{{index < 1}}">
+        <text class="credit-tag">{{item}}</text>
+      </block>
+    </view>
+    <view class="user-base-info">
+      {{userInfo.gender}} | {{userInfo.grade}} | {{userInfo.department}}
+    </view>
+    <view class="user-skills">
+      技能：{{userInfo.skills.join('、')}}
+    </view>
+    <view class="user-wechat">
+      微信号：{{userInfo.wechat}}
+    </view>
+  </view>
+  <view class="credit-points">
+    <view class="credit-score">{{userInfo.creditScore}}分</view>
+    <view class="credit-desc">信誉分</view>
+    <view class="points-score">{{userInfo.points}}积分</view>
+    <view class="points-desc">可兑换礼品</view>
+  </view>
+</view>
+
+<!-- 信誉分详情 -->
+<view class="card">
+  <view class="card-header">信誉分详情</view>
+  <view class="credit-desc-text">{{userInfo.creditDesc}}</view>
+</view>
+
+<!-- 核心功能区 -->
+<view class="card func-card">
+  <view class="func-item" bindtap="gotoPublishActivity">
+    <text>📝 我要提供活动！</text>
+    <text class="func-tip">审核通过+50积分</text>
+    <icon type="arrowright" size="16" color="#999" />
+  </view>
+  <view class="func-item" bindtap="gotoPointsRecord">
+    <text>📊 积分记录</text>
+    <text class="func-tip">{{userInfo.points}}积分</text>
+    <icon type="arrowright" size="16" color="#999" />
+  </view>
+  <view class="func-item" bindtap="gotoGiftExchange">
+    <text>🎁 礼品兑换</text>
+    <text class="func-tip">文创/面试券</text>
+    <icon type="arrowright" size="16" color="#999" />
+  </view>
+  <view class="func-item" bindtap="gotoMyPartners">
+    <text>👥 我的合作者</text>
+    <text class="func-tip">{{userInfo.partners.length}}位队友</text>
+    <icon type="arrowright" size="16" color="#999" />
+  </view>
+  <view class="func-item" bindtap="gotoMyActivities">
+    <text>📋 我的活动投稿</text>
+    <text class="func-tip">{{myActivities.length}}条记录</text>
+    <icon type="arrowright" size="16" color="#999" />
+  </view>
+  <view class="func-item" bindtap="gotoContactRequests">
+    <text>📩 联系我的人</text>
+    <text class="func-tip">{{contactRequests.length}}条申请</text>
+    <icon type="arrowright" size="16" color="#999" />
+  </view>
+</view>
+
+<!-- 积分获取规则 -->
+<view class="card">
+  <view class="card-header">积分获取规则</view>
+  <view class="rule-list">
+    <view class="rule-item">✍️ 投稿活动：+50积分/次</view>
+    <view class="rule-item">🤝 组队成功：+20积分/次</view>
+    <view class="rule-item">📱 每日登录：+5积分/天</view>
+    <view class="rule-item">📤 发圈宣传：+50积分/次</view>
+  </view>
+</view>
+
+<!-- 模拟审核面板（开发版可见） -->
+<view class="review-panel" wx:if="{{showReviewPanel}}">
+  <view class="panel-header">模拟审核面板</view>
+  <block wx:for="{{myActivities}}" wx:key="id" wx:if="{{item.status === 'pending'}}">
+    <view class="review-item">
+      <view class="review-title">{{item.title}}</view>
+      <view class="review-btns">
+        <view class="btn approve-btn" bindtap="onReviewAction" data-activity-id="{{item.id}}" data-action="approve">审核通过</view>
+        <view class="btn reject-btn" bindtap="onReviewAction" data-activity-id="{{item.id}}" data-action="reject">审核驳回</view>
+      </view>
+    </view>
+  </block>
+  <view class="btn close-btn" bindtap="closeReviewPanel">关闭</view>
+</view>

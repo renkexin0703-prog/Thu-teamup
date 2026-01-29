@@ -1,0 +1,17 @@
+<view class="card">
+  <view class="card-header">当前积分：{{userInfo.points}}</view>
+  <view class="record-list">
+    <block wx:for="{{userInfo.pointsRecord}}" wx:key="time">
+      <view class="record-item">
+        <view class="record-left">
+          <view class="record-type">{{item.type}}</view>
+          <view class="record-desc">{{item.desc}}</view>
+          <view class="record-time">{{item.time}}</view>
+        </view>
+        <view class="record-points {{item.points > 0 ? 'gain' : 'cost'}}">
+          {{item.points > 0 ? '+' : ''}}{{item.points}}
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

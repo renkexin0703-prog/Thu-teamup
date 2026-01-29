@@ -1,0 +1,45 @@
+.record-list {
+  margin-top: 10px;
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-type {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.record-desc {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.record-time {
+  font-size: 11px;
+  color: #999;
+}
+
+.record-points {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.record-points.gain {
+  color: #5cb85c;
+}
+
+.record-points.cost {
+  color: #d9534f;
+}

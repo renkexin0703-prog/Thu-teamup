@@ -1,0 +1,40 @@
+<view class="form-container">
+  <view class="form-item">
+    <view class="form-label">活动标题</view>
+    <input class="form-input" placeholder="请输入活动标题" bindinput="onTitleInput" />
+  </view>
+  <view class="form-item">
+    <view class="form-label">主办方</view>
+    <input class="form-input" placeholder="请输入主办方名称" bindinput="onOrganizerInput" />
+  </view>
+  <view class="form-item">
+    <view class="form-label">所属院系</view>
+    <picker mode="selector" range="{{filterOptions.departments}}" bindchange="onDeptSelect">
+      <view class="form-input placeholder">{{selectedDept || '请选择院系'}}</view>
+    </picker>
+  </view>
+  <view class="form-item">
+    <view class="form-label">面向年级</view>
+    <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeSelect">
+      <view class="form-input placeholder">{{selectedGrade || '请选择年级'}}</view>
+    </picker>
+  </view>
+  <view class="form-item">
+    <view class="form-label">截止时间</view>
+    <picker mode="date" bindchange="onDateSelect">
+      <view class="form-input placeholder">{{selectedDate || '请选择截止时间'}}</view>
+    </picker>
+  </view>
+  <view class="form-item">
+    <view class="form-label">所需技能</view>
+    <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillSelect">
+      <view class="form-input placeholder">{{selectedSkills.length > 0 ? selectedSkills.join(',') : '请选择所需技能'}}</view>
+    </picker>
+  </view>
+  <view class="form-item">
+    <view class="form-label">活动描述</view>
+    <textarea class="form-textarea" placeholder="请输入活动详细描述" bindinput="onDescInput"></textarea>
+  </view>
+  
+  <view class="btn" bindtap="submitActivity">提交活动</view>
+</view>

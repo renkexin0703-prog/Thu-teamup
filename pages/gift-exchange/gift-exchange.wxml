@@ -1,0 +1,17 @@
+<view class="card">
+  <view class="card-header">我的积分：{{userInfo.points}}</view>
+  <view class="gift-list">
+    <block wx:for="{{userInfo.gifts}}" wx:key="id">
+      <view class="gift-item">
+        <view class="gift-info">
+          <view class="gift-name">{{item.name}}</view>
+          <view class="gift-points">需要：{{item.needPoints}}积分</view>
+          <view class="gift-stock" wx:if="{{item.stock > 0}}">库存：{{item.stock}}件</view>
+          <view class="gift-stock out-of-stock" wx:else>已售罄</view>
+        </view>
+        <view class="btn" bindtap="exchangeGift" data-gift-id="{{item.id}}" data-need-points="{{item.needPoints}}" wx:if="{{userInfo.points >= item.needPoints && item.stock > 0}}">立即兑换</view>
+        <view class="btn disabled" wx:else>积分不足/无库存</view>
+      </view>
+    </block>
+  </view>
+</view>

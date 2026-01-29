@@ -1,0 +1,22 @@
+<view class="card">
+  <view class="card-header">已组队成功的队友 ({{userInfo.partners.length}})</view>
+  <view class="partner-list">
+    <block wx:for="{{userInfo.partners}}" wx:key="id">
+      <view class="partner-item">
+        <image src="{{item.avatar}}" class="partner-avatar" />
+        <view class="partner-info">
+          <view class="partner-name">{{item.name}}</view>
+          <view class="partner-base">{{item.department}} {{item.grade}}</view>
+          <view class="partner-skills">技能：{{item.skills.join('、')}}</view>
+          <view class="partner-tags">
+            我的评价：<block wx:for="{{item.tags}}" wx:key="*this"><text class="tag">{{item}}</text></block>
+          </view>
+          <view class="partner-post" wx:if="{{item.activePost}}">
+            当前招募：{{item.activePost}}
+          </view>
+        </view>
+        <view class="btn small-btn" bindtap="evaluatePartner" data-partner-id="{{item.id}}">评价队友</view>
+      </view>
+    </block>
+  </view>
+</view>

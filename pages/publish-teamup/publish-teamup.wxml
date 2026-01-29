@@ -1,0 +1,40 @@
+<view class="form-container">
+  <view class="form-item">
+    <view class="form-label">组队标题</view>
+    <input class="form-input" placeholder="请输入组队标题" bindinput="onTitleInput" />
+  </view>
+  <view class="form-item">
+    <view class="form-label">性别要求</view>
+    <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderSelect">
+      <view class="form-input placeholder">{{selectedGender || '请选择性别要求'}}</view>
+    </picker>
+  </view>
+  <view class="form-item">
+    <view class="form-label">所属院系</view>
+    <picker mode="selector" range="{{filterOptions.departments}}" bindchange="onDeptSelect">
+      <view class="form-input placeholder">{{selectedDept || '请选择你的院系'}}</view>
+    </picker>
+  </view>
+  <view class="form-item">
+    <view class="form-label">年级</view>
+    <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeSelect">
+      <view class="form-input placeholder">{{selectedGrade || '请选择你的年级'}}</view>
+    </picker>
+  </view>
+  <view class="form-item">
+    <view class="form-label">所需技能</view>
+    <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillSelect">
+      <view class="form-input placeholder">{{selectedSkills.length > 0 ? selectedSkills.join(',') : '请选择所需技能'}}</view>
+    </picker>
+  </view>
+  <view class="form-item">
+    <view class="form-label">组队描述</view>
+    <textarea class="form-textarea" placeholder="请输入组队详细描述" bindinput="onDescInput"></textarea>
+  </view>
+  <view class="form-item">
+    <view class="form-label">你的微信号</view>
+    <input class="form-input" placeholder="方便队友联系你" bindinput="onWechatInput" />
+  </view>
+  
+  <view class="btn" bindtap="submitTeamUp">发布组队</view>
+</view>

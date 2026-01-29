@@ -1,0 +1,36 @@
+<view class="filter-bar">
+  <view class="filter-title">筛选：</view>
+  <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderChange">
+    <view class="filter-tag {{currentFilter.gender === item ? 'active' : ''}}">
+      性别：{{currentFilter.gender}}
+    </view>
+  </picker>
+  <picker mode="multiSelector" range="{{[filterOptions.departments]}}" bindchange="onDeptChange">
+    <view class="filter-tag">
+      院系：{{currentFilter.departments.length > 0 ? currentFilter.departments.join(',') : '不限'}}
+    </view>
+  </picker>
+  <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeChange">
+    <view class="filter-tag">
+      年级：{{currentFilter.grade || '不限'}}
+    </view>
+  </picker>
+  <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillChange">
+    <view class="filter-tag">
+      技能：{{currentFilter.skills.length > 0 ? currentFilter.skills.join(',') : '不限'}}
+    </view>
+  </picker>
+</view>
+
+<view class="activity-list">
+  <block wx:for="{{filteredActivities}}" wx:key="id">
+    <view class="card">
+      <view class="activity-title">{{item.title}}</view>
+      <view class="activity-info">主办方：{{item.organizer}}</view>
+      <view class="activity-info">院系：{{item.department}}</view>
+      <view class="activity-info">截止时间：{{item.deadline}}</view>
+      <view class="activity-info">已组队：{{item.teamUpCount}}人</view>
+      <view class="btn" bindtap="gotoTeamUp">一键组队</view>
+    </view>
+  </block>
+</view>
