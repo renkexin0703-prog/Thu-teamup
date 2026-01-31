@@ -1,0 +1,25 @@
+.container {
+  padding: 20px;
+}
+
+.header {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.applicant-item {
+  display: block;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.btn {
+  margin-top: 20px;
+  background: #5cb85c;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+}

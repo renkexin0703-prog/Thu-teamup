@@ -1,0 +1,9 @@
+<view class="card user-card">
+  <view class="user-name">{{userProfile.name}}</view>
+  <view class="user-base-info">
+    性别：{{userProfile.gender}} | 年级：{{userProfile.grade}} | 院系：{{userProfile.department}}
+  </view>
+  <view class="user-skills">
+    技能：{{userProfile.skills}}
+  </view>
+</view>

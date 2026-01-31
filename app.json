@@ -2,14 +2,17 @@
   "pages": [
     "pages/index/index",
     "pages/community/community",
+    "pages/select-teammates/select-teammates",
+    "pages/contact-ta/contact-ta",
+    "pages/know-ta/know-ta",
     "pages/profile/profile",
-    "pages/publish-activity/publish-activity",
-    "pages/publish-teamup/publish-teamup",
+    "pages/my-partners/my-partners",
     "pages/points-record/points-record",
     "pages/gift-exchange/gift-exchange",
-    "pages/my-partners/my-partners",
     "pages/my-activities/my-activities",
-    "pages/contact-requests/contact-requests"
+    "pages/contact-requests/contact-requests",
+    "pages/publish-activity/publish-activity",
+    "pages/publish-teamup/publish-teamup"
   ],
   "tabBar": {
     "color": "#666666",
@@ -39,10 +42,9 @@
   },
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#6777ef",
-    "navigationBarTitleText": "清华跨院系活动平台",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f5f5"
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

@@ -1,0 +1,7 @@
+<view class="container">
+  <view class="header">联系TA</view>
+  <view class="wechat-info">
+    微信号：{{wechat}}
+    <view class="copy-btn" bindtap="copyWechat">复制</view>
+  </view>
+</view>

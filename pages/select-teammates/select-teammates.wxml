@@ -1,0 +1,11 @@
+<view class="container">
+  <view class="header">选择队友</view>
+  <checkbox-group bindchange="onApplicantSelect">
+    <block wx:for="{{applicants}}" wx:key="userId">
+      <label class="applicant-item">
+        <checkbox value="{{index}}" /> {{item.userName}} ({{item.userDepartment}})
+      </label>
+    </block>
+  </checkbox-group>
+  <view class="btn" bindtap="onTeamUpSuccess">组队成功</view>
+</view>
