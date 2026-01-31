@@ -1,0 +1,28 @@
+<view class="select-teammate-modal {{ show ? 'show' : '' }}">
+  <view class="modal-mask" bindtap="onMaskClick"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="title">选择队友</text>
+      <button class="close-btn" bindtap="onClose">×</button>
+    </view>
+    <view class="modal-body">
+      <scroll-view scroll-y class="teammate-list" style="max-height: 400rpx;">
+        <view 
+          class="teammate-item {{ item.id === selectedId ? 'selected' : '' }}"
+          wx:for="{{ teammateList }}"
+          wx:key="id"
+          bindtap="onSelectTeammate"
+          data-id="{{ item.id }}"
+        >
+          <image class="avatar" src="{{ item.avatar }}" mode="circle"></image>
+          <text class="name">{{ item.name }}</text>
+          <icon class="selected-icon" type="success" size="16" wx:if="{{ item.id === selectedId }}"></icon>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="modal-footer">
+      <button class="cancel-btn" bindtap="onClose">取消</button>
+      <button class="confirm-btn" bindtap="onConfirm">确认选择</button>
+    </view>
+  </view>
+</view>

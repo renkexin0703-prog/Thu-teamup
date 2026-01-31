@@ -9,7 +9,8 @@ Page({
       grade: "",
       skills: []
     },
-    filteredTeamUpPosts: []
+    filteredTeamUpPosts: [],
+    selectedApplicants: [] // 记录选中的申请人
   },
 
   onLoad() {
@@ -106,21 +107,60 @@ Page({
     });
   },
 
-  // 选择最终队友 - 下架帖子
+  // 选择最终队友 - 弹出申请人列表
   onSelectMember(e) {
     const postId = e.currentTarget.dataset.postId;
-    // 更新帖子状态为非活跃（下架）
-    const updatedPosts = this.data.filteredTeamUpPosts.map(post => {
-      if (post.id === postId) {
+    const applicants = fakeData.contactRequests.filter(req => req.teamUpPostId === postId);
+    this.setData({ selectedApplicants: [], applicants, showApplicantPanel: true });
+  },
+
+  // 多选申请人
+  onApplicantSelect(e) {
+    const selectedIndex = e.detail.value;
+    const selectedApplicants = selectedIndex.map(index => this.data.applicants[index]);
+    this.setData({ selectedApplicants });
+  },
+
+  // 组队成功
+  onTeamUpSuccess() {
+    const { selectedApplicants, filteredTeamUpPosts } = this.data;
+
+    if (selectedApplicants.length === 0) {
+      wx.showToast({ title: "请至少选择一位队友", icon: "none" });
+      return;
+    }
+
+    // 更新我的合作者
+    const userInfo = fakeData.userInfo;
+    userInfo.partners = [
+      ...userInfo.partners,
+      ...selectedApplicants.map(applicant => ({
+        id: applicant.userId,
+        name: applicant.userName,
+        avatar: applicant.userAvatar,
+        department: applicant.userDepartment,
+        grade: applicant.userGrade,
+        skills: applicant.skills,
+        tags: ["新队友"],
+        activePost: ""
+      }))
+    ];
+
+    // 删除帖子
+    const updatedPosts = filteredTeamUpPosts.map(post => {
+      if (post.id === this.data.applicants[0].teamUpPostId) {
         return { ...post, isActive: false };
       }
       return post;
     });
-    this.setData({ filteredTeamUpPosts: updatedPosts });
-    wx.showToast({
-      title: "已选择队友，帖子已下架",
-      icon: "success"
-    });
+
+    this.setData({ filteredTeamUpPosts: updatedPosts, showApplicantPanel: false });
+    wx.showToast({ title: "组队成功！", icon: "success" });
+  },
+
+  // 关闭申请人面板
+  closeApplicantPanel() {
+    this.setData({ showApplicantPanel: false });
   },
 
   // 跳转到发布组队页

@@ -1,0 +1,127 @@
+<view class="container">
+  <!-- 搜索框 -->
+  <van-search 
+    value="{{searchValue}}" 
+    placeholder="搜索活动/院系/大类" 
+    bind:change="onSearchChange"
+    bind:search="onSearch"
+    bind:clear="onSearchClear"
+    background="#fff"
+    class="mb-20"
+  />
+
+  <!-- 搜索历史 -->
+  <view wx:if="{{searchHistory.length > 0}}" class="mb-20">
+    <view class="flex-row justify-between mb-10">
+      <text class="text-light">搜索历史</text>
+      <van-button size="mini" type="text" bind:click="clearHistory">清空</van-button>
+    </view>
+    <view class="flex-row flex-wrap">
+      <van-tag 
+        wx:for="{{searchHistory}}" 
+        wx:key="index"
+        class="mb-10 mr-10 purple-tag"
+        closeable
+        bind:close="deleteHistoryItem"
+        data-index="{{index}}"
+      >
+        {{item}}
+      </van-tag>
+    </view>
+  </view>
+
+  <!-- 分类筛选 -->
+  <view class="flex-row flex-wrap mb-20 bg-white p-20 rounded-lg">
+    <view class="mb-10 w-100">
+      <text class="mb-10 block">院系筛选</text>
+      <van-radio-group value="{{deptFilter}}" bind:change="onDeptChange">
+        <view class="flex-row flex-wrap">
+          <van-radio name="all" class="mr-20 mb-10">全部</van-radio>
+          <van-radio name="计算机学院" class="mr-20 mb-10">计算机学院</van-radio>
+          <van-radio name="文学院" class="mr-20 mb-10">文学院</van-radio>
+          <van-radio name="理学院" class="mr-20 mb-10">理学院</van-radio>
+          <van-radio name="美术学院" class="mr-20 mb-10">美术学院</van-radio>
+        </view>
+      </van-radio-group>
+    </view>
+    <view class="mb-10 w-100">
+      <text class="mb-10 block">大类筛选</text>
+      <van-radio-group value="{{categoryFilter}}" bind:change="onCategoryChange">
+        <view class="flex-row flex-wrap">
+          <van-radio name="all" class="mr-20 mb-10">全部</van-radio>
+          <van-radio name="工科" class="mr-20 mb-10">工科</van-radio>
+          <van-radio name="理科" class="mr-20 mb-10">理科</van-radio>
+          <van-radio name="文科" class="mr-20 mb-10">文科</van-radio>
+          <van-radio name="美术" class="mr-20 mb-10">美术</van-radio>
+        </view>
+      </van-radio-group>
+    </view>
+  </view>
+
+  <!-- 排序选择 -->
+  <view class="mb-20">
+    <van-radio-group value="{{sortType}}" bind:change="onSortChange">
+      <view class="flex-row">
+        <van-radio name="deadline" class="mr-20">截止日期</van-radio>
+        <van-radio name="viewCount" class="mr-20">浏览量</van-radio>
+        <van-radio name="teamCount" class="mr-20">组队数</van-radio>
+      </view>
+    </van-radio-group>
+  </view>
+
+  <!-- 活动列表 -->
+  <van-list
+    v-model:loading="{{loading}}"
+    finished="{{finished}}"
+    finished-text="没有更多了"
+    bind:load="onLoadMore"
+  >
+    <van-cell 
+      wx:for="{{activityList}}" 
+      wx:key="id"
+      clickable
+      bind:click="openActivityCard"
+      data-activity="{{item}}"
+      class="mb-10 bg-white rounded-lg"
+    >
+      <view slot="title" class="text-primary font-bold">{{item.title}}</view>
+      <view slot="label" class="flex-row flex-wrap">
+        <van-tag class="mr-10 mb-5 purple-tag">{{item.dept}}</van-tag>
+        <van-tag class="mr-10 mb-5 purple-tag">{{item.category}}</van-tag>
+        <van-tag class="mr-10 mb-5 purple-tag">{{item.difficulty}}</van-tag>
+      </view>
+      <view slot="value" class="text-light">
+        截止：{{item.deadline}} | 组队：{{item.teamJoined}}/{{item.teamTotal}}
+      </view>
+    </van-cell>
+  </van-list>
+
+  <!-- 活动卡片弹窗 -->
+  <van-popup
+    show="{{activityCardShow}}"
+    position="center"
+    closeable
+    bind:close="closeActivityCard"
+    class="popup-container"
+  >
+    <view class="popup-card">
+      <view class="border-bottom mb-20">
+        <text class="font-bold text-36rpx">{{currentActivity.title}}</text>
+      </view>
+      <van-cell-group border="{{false}}">
+        <van-cell label="主办方" value="{{currentActivity.organizer}}" />
+        <van-cell label="院系标签" value="{{currentActivity.dept}}" />
+        <van-cell label="大类标签" value="{{currentActivity.category}}" />
+        <van-cell label="截止日期" value="{{currentActivity.deadline}}" />
+        <van-cell label="难度/类型" value="{{currentActivity.difficulty}}" />
+        <van-cell label="组队人数" value="{{currentActivity.teamJoined}}/{{currentActivity.teamTotal}}" />
+      </van-cell-group>
+      <van-button 
+        class="purple-btn mt-20 w-100"
+        bind:click="gotoCreateTeam"
+      >
+        一键发起组队
+      </van-button>
+    </view>
+  </van-popup>
+</view>

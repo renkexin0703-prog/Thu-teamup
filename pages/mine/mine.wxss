@@ -1,0 +1,5 @@
+/* 页面特有样式 */
+.van-rate {
+  --van-rate-icon-size: 40rpx;
+  --van-rate-selected-color: var(--primary-color);
+}

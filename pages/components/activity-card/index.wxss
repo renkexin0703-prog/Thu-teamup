@@ -1,0 +1,89 @@
+.activity-card-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: none;
+}
+.activity-card-modal.show {
+  display: block;
+}
+.modal-mask {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  max-width: 600rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid #eee;
+}
+.title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+.close-btn {
+  font-size: 36rpx;
+  background: transparent;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+.modal-body {
+  margin-bottom: 20rpx;
+}
+.activity-img {
+  width: 100%;
+  height: 200rpx;
+  border-radius: 8rpx;
+  margin-bottom: 15rpx;
+}
+.activity-info {
+  font-size: 28rpx;
+  color: #666;
+}
+.activity-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+.activity-desc {
+  display: flex;
+  margin-bottom: 8rpx;
+  line-height: 1.5;
+}
+.label {
+  color: #999;
+  min-width: 80rpx;
+}
+.modal-footer {
+  text-align: center;
+}
+.confirm-btn {
+  width: 100%;
+  background: #1989fa;
+  color: #fff;
+  border-radius: 8rpx;
+  padding: 15rpx 0;
+  font-size: 28rpx;
+}

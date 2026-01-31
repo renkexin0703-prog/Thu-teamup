@@ -1,0 +1,32 @@
+<view class="activity-card-modal {{ show ? 'show' : '' }}">
+  <!-- 遮罩层 -->
+  <view class="modal-mask" bindtap="onMaskClick"></view>
+  <!-- 弹窗内容 -->
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="title">活动详情</text>
+      <button class="close-btn" bindtap="onClose">×</button>
+    </view>
+    <view class="modal-body">
+      <image class="activity-img" src="{{ activityInfo.image }}" mode="aspectFill"></image>
+      <view class="activity-info">
+        <text class="activity-title">{{ activityInfo.title }}</text>
+        <view class="activity-desc">
+          <text class="label">时间：</text>
+          <text class="value">{{ activityInfo.time }}</text>
+        </view>
+        <view class="activity-desc">
+          <text class="label">地点：</text>
+          <text class="value">{{ activityInfo.address }}</text>
+        </view>
+        <view class="activity-desc">
+          <text class="label">介绍：</text>
+          <text class="value">{{ activityInfo.desc }}</text>
+        </view>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <button class="confirm-btn" bindtap="onConfirm">我知道了</button>
+    </view>
+  </view>
+</view>

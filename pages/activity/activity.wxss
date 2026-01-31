@@ -1,0 +1,8 @@
+/* 仅补充页面特有样式，通用样式已在app.wxss */
+.popup-container {
+  padding-top: 100rpx;
+}
+
+.van-cell {
+  --van-cell-border-color: transparent;
+}

@@ -39,11 +39,23 @@
       </view>
       <view class="post-footer">
         <view class="view-count">浏览：{{item.viewCount}}</view>
-        <view class="btn" bindtap="onContactTap" data-wechat="{{item.contactWechat}}">联系TA</view>
-        
         <!-- 只有自己发起的帖子才显示选择队友按钮 -->
         <view wx:if="{{item.userId === 'user_001'}}" class="btn" style="background: #5cb85c;" bindtap="onSelectMember" data-post-id="{{item.id}}">选择队友</view>
       </view>
     </view>
   </block>
+</view>
+
+<!-- 申请人面板 -->
+<view class="applicant-panel" wx:if="{{showApplicantPanel}}">
+  <view class="panel-header">选择队友</view>
+  <checkbox-group bindchange="onApplicantSelect">
+    <block wx:for="{{applicants}}" wx:key="userId">
+      <label class="applicant-item">
+        <checkbox value="{{index}}" /> {{item.userName}} ({{item.userDepartment}})
+      </label>
+    </block>
+  </checkbox-group>
+  <view class="btn" bindtap="onTeamUpSuccess">组队成功</view>
+  <view class="btn" bindtap="closeApplicantPanel">取消</view>
 </view>

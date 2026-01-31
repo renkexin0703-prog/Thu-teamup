@@ -1,0 +1,30 @@
+<view class="user-info-modal {{ show ? 'show' : '' }}">
+  <view class="modal-mask" bindtap="onMaskClick"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="title">用户信息</text>
+      <button class="close-btn" bindtap="onClose">×</button>
+    </view>
+    <view class="modal-body">
+      <image class="user-avatar" src="{{ userInfo.avatar }}" mode="circle"></image>
+      <view class="user-name">{{ userInfo.nickname }}</view>
+      <view class="user-detail">
+        <view class="detail-item">
+          <text class="label">手机号：</text>
+          <text class="value">{{ userInfo.phone || '未填写' }}</text>
+        </view>
+        <view class="detail-item">
+          <text class="label">性别：</text>
+          <text class="value">{{ userInfo.gender === 1 ? '男' : userInfo.gender === 2 ? '女' : '未知' }}</text>
+        </view>
+        <view class="detail-item">
+          <text class="label">注册时间：</text>
+          <text class="value">{{ userInfo.regTime || '未知' }}</text>
+        </view>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <button class="confirm-btn" bindtap="onConfirm">关闭</button>
+    </view>
+  </view>
+</view>
