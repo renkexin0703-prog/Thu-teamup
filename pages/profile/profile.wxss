@@ -185,3 +185,153 @@
   background-color: #666 !important;
   margin-top: 20px;
 }
+
+.edit-btn {
+  width: 90%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background-color: #007aff;
+  color: white;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  margin: 30rpx auto;
+  display: block;
+}
+
+.container {
+  padding: 20rpx;
+}
+
+.user-info-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 10rpx;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.info {
+  flex: 1;
+}
+
+.name {
+  font-size: 36rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.detail, .skills, .wechat {
+  font-size: 28rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+.edit-btn {
+  width: 90%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background-color: #007aff;
+  color: white;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  margin: 30rpx auto;
+  display: block;
+}
+
+.section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.points-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.points-label {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.points-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #007aff;
+}
+
+.nav-item {
+  display: block;
+  padding: 20rpx;
+  background-color: #fff;
+  border: 1rpx solid #eee;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  color: #007aff;
+  text-align: right;
+}
+
+.review-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.panel-title {
+  font-size: 36rpx;
+  color: white;
+  margin-bottom: 30rpx;
+}
+
+.activity-item {
+  width: 80%;
+  padding: 20rpx;
+  background-color: white;
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actions button {
+  margin-left: 10rpx;
+}
+
+.close-btn {
+  width: 80%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  margin-top: 30rpx;
+}

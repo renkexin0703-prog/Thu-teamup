@@ -1,4 +1,9 @@
 <!-- 个人信息区域 -->
+
+
+<!-- 修改个人信息按钮 -->
+<button class="edit-btn" bindtap="gotoEditProfile">修改个人信息</button>
+
 <view class="card user-card">
   <image src="{{userInfo.avatar}}" class="user-avatar" bindtap="onAvatarTap" />
   <view class="user-main-info">

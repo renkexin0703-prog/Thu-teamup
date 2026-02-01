@@ -1,5 +1,7 @@
 const fakeData = require("../../utils/fake-data.js");
 
+
+
 Page({
   data: {
     userInfo: {},
@@ -11,6 +13,15 @@ Page({
 
   onLoad() {
     // 初始化数据
+    this.setData({
+      userInfo: fakeData.userInfo,
+      myActivities: fakeData.myActivities,
+      contactRequests: fakeData.contactRequests
+    });
+  },
+
+  onShow() {
+    // 每次进入页面都重新获取最新数据
     this.setData({
       userInfo: fakeData.userInfo,
       myActivities: fakeData.myActivities,
@@ -88,6 +99,12 @@ Page({
       url: "/pages/publish-activity/publish-activity"
     });
   },
+  // 跳转到编辑个人信息页
+gotoEditProfile() {
+  wx.navigateTo({
+    url: "/pages/edit-profile/edit-profile"
+  });
+},
 
   // 跳转到积分记录页
   gotoPointsRecord() {

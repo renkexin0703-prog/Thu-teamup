@@ -1,0 +1,41 @@
+<view class="container">
+  <view class="form-item">
+    <text class="label">姓名</text>
+    <input class="input" placeholder="请输入姓名" value="{{name}}" bindinput="onNameInput" />
+  </view>
+
+  <view class="form-item">
+    <text class="label">性别</text>
+    <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderSelect">
+      <view class="picker">{{gender || "请选择性别"}}</view>
+    </picker>
+  </view>
+
+  <view class="form-item">
+    <text class="label">年级</text>
+    <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeSelect">
+      <view class="picker">{{grade || "请选择年级"}}</view>
+    </picker>
+  </view>
+
+  <view class="form-item">
+    <text class="label">院系</text>
+    <picker mode="selector" range="{{filterOptions.departments}}" bindchange="onDeptSelect">
+      <view class="picker">{{department || "请选择院系"}}</view>
+    </picker>
+  </view>
+
+  <view class="form-item">
+    <text class="label">技能</text>
+    <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillSelect">
+      <view class="picker">{{skills.length > 0 ? skills.join("、") : "请选择技能"}}</view>
+    </picker>
+  </view>
+
+  <view class="form-item">
+    <text class="label">微信号</text>
+    <input class="input" placeholder="请输入微信号" value="{{wechat}}" bindinput="onWechatInput" />
+  </view>
+
+  <button class="submit-btn" bindtap="onSubmit">确定</button>
+</view>
