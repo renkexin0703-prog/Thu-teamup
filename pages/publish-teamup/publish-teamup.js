@@ -5,10 +5,7 @@ Page({
     filterOptions: fakeData.filterOptions,
     title: "",
     selectedGender: "",
-    selectedDept: "",
-    selectedGrade: "",
-    selectedSkills: [],
-    desc: "",
+    desc: "", // 只保留标题、性别、描述
     wechat: ""
   },
 
@@ -23,25 +20,6 @@ Page({
     this.setData({ selectedGender: gender });
   },
 
-  // 选择院系
-  onDeptSelect(e) {
-    const dept = fakeData.filterOptions.departments[e.detail.value];
-    this.setData({ selectedDept: dept });
-  },
-
-  // 选择年级
-  onGradeSelect(e) {
-    const grade = fakeData.filterOptions.grades[e.detail.value];
-    this.setData({ selectedGrade: grade });
-  },
-
-  // 选择技能
-  onSkillSelect(e) {
-    const skillIndexes = e.detail.value;
-    const skills = skillIndexes.map(idx => fakeData.filterOptions.skills[idx]);
-    this.setData({ selectedSkills: skills });
-  },
-
   // 输入描述
   onDescInput(e) {
     this.setData({ desc: e.detail.value });
@@ -54,7 +32,7 @@ Page({
 
   // 发布组队【假数据存储】
   submitTeamUp() {
-    const { title, selectedGender, selectedDept, selectedGrade, selectedSkills, desc, wechat } = this.data;
+    const { title, selectedGender, desc, wechat } = this.data;
     
     // 简单校验
     if (!title || !selectedGender || !wechat) {
@@ -64,13 +42,36 @@ Page({
       });
       return;
     }
-
-    // 模拟发布
+  
+    // 获取当前用户最新信息（来自【我的】页面）
+    const userInfo = fakeData.userInfo;
+  
+    // 构造新帖子
+    const newPost = {
+      id: `team_${Date.now()}`, // 生成唯一ID
+      userId: userInfo.id,
+      userName: userInfo.name,
+      userAvatar: userInfo.avatar,
+      userDepartment: userInfo.department,
+      userGrade: userInfo.grade,
+      gender: selectedGender,
+      title: title,
+      content: desc,
+      skills: userInfo.skills, // 使用【我的】页面中的技能标签
+      contactWechat: wechat,
+      viewCount: 0,
+      isActive: true // 活跃状态
+    };
+  
+    // 添加到全局数据
+    fakeData.teamUpPosts.push(newPost);
+  
+    // 提示成功
     wx.showToast({
       title: "发布成功！",
       icon: "success"
     });
-
+  
     // 返回社区页
     setTimeout(() => {
       wx.navigateBack({
@@ -78,4 +79,4 @@ Page({
       });
     }, 1500);
   }
-});
+}); // 补充Page对象的闭合括号和分号

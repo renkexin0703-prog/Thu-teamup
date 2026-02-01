@@ -9,24 +9,7 @@
       <view class="form-input placeholder">{{selectedGender || '请选择性别要求'}}</view>
     </picker>
   </view>
-  <view class="form-item">
-    <view class="form-label">所属院系</view>
-    <picker mode="selector" range="{{filterOptions.departments}}" bindchange="onDeptSelect">
-      <view class="form-input placeholder">{{selectedDept || '请选择你的院系'}}</view>
-    </picker>
-  </view>
-  <view class="form-item">
-    <view class="form-label">年级</view>
-    <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeSelect">
-      <view class="form-input placeholder">{{selectedGrade || '请选择你的年级'}}</view>
-    </picker>
-  </view>
-  <view class="form-item">
-    <view class="form-label">所需技能</view>
-    <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillSelect">
-      <view class="form-input placeholder">{{selectedSkills.length > 0 ? selectedSkills.join(',') : '请选择所需技能'}}</view>
-    </picker>
-  </view>
+
   <view class="form-item">
     <view class="form-label">组队描述</view>
     <textarea class="form-textarea" placeholder="请输入组队详细描述" bindinput="onDescInput"></textarea>

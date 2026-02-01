@@ -67,9 +67,17 @@ Page({
     this.initActivityList();
   },
 
+  // 新增：每次进入页面时刷新数据
+  onShow() {
+    this.initActivityList(); // 刷新活动列表
+  },
+
   // 初始化活动列表
   initActivityList() {
     let list = [...this.data.mockActivities];
+    const teamPosts = [...fakeData.teamUpPosts];
+    list = list.concat(teamPosts); // 合并活动和组队帖
+  
     // 排序处理
     this.sortActivityList(list);
     this.setData({ activityList: list });
@@ -97,6 +105,7 @@ Page({
   onSearch() {
     const { searchValue, mockActivities } = this.data;
     if (!searchValue) return;
+  
     // 保存搜索历史
     let history = [...this.data.searchHistory];
     if (!history.includes(searchValue)) {
@@ -105,12 +114,22 @@ Page({
       wx.setStorageSync('searchHistory', history);
       this.setData({ searchHistory: history });
     }
-    // 筛选搜索结果
+  
+    // 筛选搜索结果（包括活动和组队帖）
     let list = mockActivities.filter(item => 
       item.title.includes(searchValue) || 
       item.dept.includes(searchValue) || 
       item.category.includes(searchValue)
     );
+  
+    const teamPosts = fakeData.teamUpPosts.filter(post =>
+      post.title.includes(searchValue) ||
+      post.userName.includes(searchValue) ||
+      post.userDepartment.includes(searchValue)
+    );
+  
+    list = list.concat(teamPosts);
+  
     this.sortActivityList(list);
     this.setData({ activityList: list });
   },
@@ -157,11 +176,16 @@ Page({
   filterActivityList() {
     const { deptFilter, categoryFilter, mockActivities } = this.data;
     let list = [...mockActivities];
-    // 院系筛选
+    const teamPosts = [...fakeData.teamUpPosts];
+  
+    // 合并数据
+    list = list.concat(teamPosts);
+  
+    // 院系筛选（适用于活动和组队帖）
     if (deptFilter !== 'all') {
-      list = list.filter(item => item.dept === deptFilter);
+      list = list.filter(item => item.dept === deptFilter || item.userDepartment === deptFilter);
     }
-    // 大类筛选
+    // 大类筛选（适用于活动）
     if (categoryFilter !== 'all') {
       list = list.filter(item => item.category === categoryFilter);
     }
