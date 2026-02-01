@@ -1,3 +1,5 @@
+// pages/publish-teamup/publish-teamup.js
+const app = getApp(); // 获取全局实例
 const fakeData = require("../../utils/fake-data.js");
 
 Page({
@@ -5,7 +7,7 @@ Page({
     filterOptions: fakeData.filterOptions,
     title: "",
     selectedGender: "",
-    desc: "", // 只保留标题、性别、描述
+    desc: "",
     wechat: ""
   },
 
@@ -33,7 +35,7 @@ Page({
   // 发布组队【假数据存储】
   submitTeamUp() {
     const { title, selectedGender, desc, wechat } = this.data;
-    
+
     // 简单校验
     if (!title || !selectedGender || !wechat) {
       wx.showToast({
@@ -42,10 +44,10 @@ Page({
       });
       return;
     }
-  
+
     // 获取当前用户最新信息（来自【我的】页面）
     const userInfo = fakeData.userInfo;
-  
+
     // 构造新帖子
     const newPost = {
       id: `team_${Date.now()}`, // 生成唯一ID
@@ -62,16 +64,26 @@ Page({
       viewCount: 0,
       isActive: true // 活跃状态
     };
-  
-    // 添加到全局数据
-    fakeData.teamUpPosts.push(newPost);
-  
+
+    // 写入全局变量（关键步骤）
+    if (app.globalData && app.globalData.teamUpPosts) {
+      app.globalData.teamUpPosts.push(newPost);
+      console.log("已成功添加新帖子:", newPost);
+    } else {
+      console.error("全局变量未定义！无法写入数据。");
+      wx.showToast({
+        title: "发布失败，请重试",
+        icon: "none"
+      });
+      return;
+    }
+
     // 提示成功
     wx.showToast({
       title: "发布成功！",
       icon: "success"
     });
-  
+
     // 返回社区页
     setTimeout(() => {
       wx.navigateBack({
@@ -79,4 +91,4 @@ Page({
       });
     }, 1500);
   }
-}); // 补充Page对象的闭合括号和分号
+});

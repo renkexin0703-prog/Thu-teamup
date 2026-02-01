@@ -1,4 +1,5 @@
 // pages/community/community.js
+const app = getApp(); // 获取全局实例
 const fakeData = require("../../utils/fake-data.js");
 
 Page({
@@ -10,13 +11,29 @@ Page({
       grade: "",
       skills: []
     },
-    filteredTeamUpPosts: []
+    filteredTeamUpPosts: [] // 显示的帖子列表
   },
 
   onLoad() {
-    this.setData({
-      filteredTeamUpPosts: fakeData.teamUpPosts.filter(post => post.isActive)
-    });
+    this.loadTeamUpPosts(); // 加载初始数据
+  },
+
+  onShow() {
+    this.loadTeamUpPosts(); // 每次进入页面都重新加载数据
+  },
+
+  // 加载帖子数据（合并全局变量和本地假数据）
+  loadTeamUpPosts() {
+    const globalPosts = app.globalData?.teamUpPosts || []; // 全局变量中的新帖子
+    const localPosts = fakeData.teamUpPosts; // 本地假数据（原始帖子）
+
+    // 合并全局和本地数据（去重）
+    const allPosts = [...globalPosts, ...localPosts];
+    const uniquePosts = Array.from(
+      new Map(allPosts.map(post => [post.id, post])).values()
+    ).filter(post => post.isActive); // 只显示活跃帖子
+
+    this.setData({ filteredTeamUpPosts: uniquePosts });
   },
 
   // 性别筛选
@@ -56,7 +73,7 @@ Page({
   // 应用筛选条件
   applyFilters() {
     const { currentFilter } = this.data;
-    let filtered = [...fakeData.teamUpPosts].filter(post => post.isActive);
+    let filtered = [...this.data.filteredTeamUpPosts]; // 基于当前显示的数据进行筛选
 
     if (currentFilter.gender !== "不限") {
       filtered = filtered.filter(post => post.gender === currentFilter.gender);

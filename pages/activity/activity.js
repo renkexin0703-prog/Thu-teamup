@@ -1,3 +1,5 @@
+const app = getApp(); // 获取全局实例
+
 Page({
   data: {
     searchValue: '',
@@ -75,14 +77,13 @@ Page({
   // 初始化活动列表
   initActivityList() {
     let list = [...this.data.mockActivities];
-    const teamPosts = [...fakeData.teamUpPosts];
-    list = list.concat(teamPosts); // 合并活动和组队帖
-  
-    // 排序处理
+    const teamPosts = [...app.globalData.teamUpPosts]; // 从全局变量读取
+    list = list.concat(teamPosts);
+
     this.sortActivityList(list);
     this.setData({ activityList: list });
   },
-
+  
   // 排序活动列表
   sortActivityList(list) {
     const { sortType } = this.data;

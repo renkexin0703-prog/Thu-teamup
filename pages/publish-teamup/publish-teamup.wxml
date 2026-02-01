@@ -6,8 +6,8 @@
   <view class="form-item">
     <view class="form-label">性别要求</view>
     <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderSelect">
-      <view class="form-input placeholder">{{selectedGender || '请选择性别要求'}}</view>
-    </picker>
+  <view class="form-input placeholder">{{selectedGender || '请选择性别要求'}}</view>
+</picker>
   </view>
 
   <view class="form-item">
@@ -21,3 +21,4 @@
   
   <view class="btn" bindtap="submitTeamUp">发布组队</view>
 </view>
+
