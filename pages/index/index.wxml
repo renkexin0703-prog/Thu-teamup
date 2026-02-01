@@ -1,21 +1,28 @@
 <view class="filter-bar">
   <view class="filter-title">筛选：</view>
+  <!-- 性别筛选 -->
   <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderChange">
-    <view class="filter-tag {{currentFilter.gender === item ? 'active' : ''}}">
+    <view class="filter-tag {{currentFilter.gender === filterOptions.gender[e.detail.value] ? 'active' : ''}}">
       性别：{{currentFilter.gender}}
     </view>
   </picker>
-  <picker mode="multiSelector" range="{{[filterOptions.departments]}}" bindchange="onDeptChange">
+
+  <!-- 院系筛选 -->
+  <picker mode="multiSelector" range="{{filterOptions.departments}}" bindchange="onDeptChange">
     <view class="filter-tag">
       院系：{{currentFilter.departments.length > 0 ? currentFilter.departments.join(',') : '不限'}}
     </view>
   </picker>
+
+  <!-- 年级筛选 -->
   <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeChange">
     <view class="filter-tag">
       年级：{{currentFilter.grade || '不限'}}
     </view>
   </picker>
-  <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillChange">
+
+  <!-- 技能筛选 -->
+  <picker mode="multiSelector" range="{{filterOptions.skills}}" bindchange="onSkillChange">
     <view class="filter-tag">
       技能：{{currentFilter.skills.length > 0 ? currentFilter.skills.join(',') : '不限'}}
     </view>

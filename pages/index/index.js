@@ -81,10 +81,49 @@ Page({
     this.setData({ filteredActivities: filtered });
   },
 
-  // 一键组队跳转
   gotoTeamUp() {
+    console.log("点击了一键组队按钮");
     wx.navigateTo({
-      url: "/pages/community/community"
+      url: '/pages/publish-teamup/publish-teamup',
+      success: () => {
+        console.log("成功跳转到发起组队页面");
+      },
+      fail: (err) => {
+        console.error("跳转失败:", err);
+        wx.showToast({
+          title: "跳转失败，请重试",
+          icon: "none"
+        });
+      }
+    });
+  },
+
+  // 【一键组队】按钮点击事件
+  onQuickTeamUp() {
+    console.log("点击了一键组队按钮");
+
+    // 打印跳转路径
+    console.log("尝试跳转到:", '/pages/publish-teamup/publish-teamup');
+
+    // 检查页面栈长度
+    const pageStackLength = getCurrentPages().length;
+    console.log("当前页面栈长度:", pageStackLength);
+
+    // 如果页面栈过深，使用 redirectTo
+    const navigateMethod = pageStackLength >= 9 ? wx.redirectTo : wx.navigateTo;
+
+    navigateMethod({
+      url: '/pages/publish-teamup/publish-teamup',
+      success: () => {
+        console.log("成功跳转到发起组队页面");
+      },
+      fail: (err) => {
+        console.error("跳转失败:", err);
+        wx.showToast({
+          title: "跳转失败，请重试",
+          icon: "none"
+        });
+      }
     });
   }
 });

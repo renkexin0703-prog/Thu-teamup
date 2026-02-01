@@ -1,4 +1,5 @@
 const app = getApp(); // 获取全局实例
+const fakeData = require("../../utils/fake-data.js"); // 引入假数据
 
 Page({
   data: {
@@ -24,7 +25,8 @@ Page({
         difficulty: '中等',
         teamJoined: 12,
         teamTotal: 20,
-        viewCount: 230
+        viewCount: 230,
+        skills: ['Python', '算法']
       },
       {
         id: 2,
@@ -36,7 +38,8 @@ Page({
         difficulty: '简单',
         teamJoined: 8,
         teamTotal: 15,
-        viewCount: 180
+        viewCount: 180,
+        skills: ['文案', '策划']
       },
       {
         id: 3,
@@ -48,7 +51,8 @@ Page({
         difficulty: '困难',
         teamJoined: 15,
         teamTotal: 30,
-        viewCount: 300
+        viewCount: 300,
+        skills: ['数学建模', '数据分析']
       },
       {
         id: 4,
@@ -60,7 +64,8 @@ Page({
         difficulty: '中等',
         teamJoined: 9,
         teamTotal: 25,
-        viewCount: 200
+        viewCount: 200,
+        skills: ['PS', '设计']
       }
     ]
   },
@@ -77,13 +82,13 @@ Page({
   // 初始化活动列表
   initActivityList() {
     let list = [...this.data.mockActivities];
-    const teamPosts = [...app.globalData.teamUpPosts]; // 从全局变量读取
+    const teamPosts = [...(app.globalData?.teamUpPosts || []), ...fakeData.teamUpPosts]; // 合并全局变量和假数据
     list = list.concat(teamPosts);
 
     this.sortActivityList(list);
     this.setData({ activityList: list });
   },
-  
+
   // 排序活动列表
   sortActivityList(list) {
     const { sortType } = this.data;
@@ -106,7 +111,7 @@ Page({
   onSearch() {
     const { searchValue, mockActivities } = this.data;
     if (!searchValue) return;
-  
+
     // 保存搜索历史
     let history = [...this.data.searchHistory];
     if (!history.includes(searchValue)) {
@@ -115,22 +120,22 @@ Page({
       wx.setStorageSync('searchHistory', history);
       this.setData({ searchHistory: history });
     }
-  
+
     // 筛选搜索结果（包括活动和组队帖）
-    let list = mockActivities.filter(item => 
-      item.title.includes(searchValue) || 
-      item.dept.includes(searchValue) || 
+    let list = mockActivities.filter(item =>
+      item.title.includes(searchValue) ||
+      item.dept.includes(searchValue) ||
       item.category.includes(searchValue)
     );
-  
-    const teamPosts = fakeData.teamUpPosts.filter(post =>
+
+    const teamPosts = [...(app.globalData?.teamUpPosts || []), ...fakeData.teamUpPosts].filter(post =>
       post.title.includes(searchValue) ||
       post.userName.includes(searchValue) ||
       post.userDepartment.includes(searchValue)
     );
-  
+
     list = list.concat(teamPosts);
-  
+
     this.sortActivityList(list);
     this.setData({ activityList: list });
   },
@@ -177,11 +182,11 @@ Page({
   filterActivityList() {
     const { deptFilter, categoryFilter, mockActivities } = this.data;
     let list = [...mockActivities];
-    const teamPosts = [...fakeData.teamUpPosts];
-  
+    const teamPosts = [...(app.globalData?.teamUpPosts || []), ...fakeData.teamUpPosts];
+
     // 合并数据
     list = list.concat(teamPosts);
-  
+
     // 院系筛选（适用于活动和组队帖）
     if (deptFilter !== 'all') {
       list = list.filter(item => item.dept === deptFilter || item.userDepartment === deptFilter);
@@ -219,12 +224,11 @@ Page({
     this.setData({ activityCardShow: false });
   },
 
-  // 跳转到发起组队
-  gotoCreateTeam() {
-    const { currentActivity } = this.data;
+  // 【一键组队】按钮点击事件
+  onQuickTeamUp() {
     wx.navigateTo({
-      url: `/pages/community/community?activityTitle=${currentActivity.title}`
+      url: '/pages/publish-teamup/publish-teamup'
     });
-    this.closeActivityCard();
-  }
+  },
+
 });

@@ -8,8 +8,22 @@ Page({
     title: "",
     selectedGender: "",
     desc: "",
-    wechat: ""
+    wechat: "",
+    selectedSkills: []
   },
+
+  onLoad(options) {
+    // 接收传入的参数
+    if (options.title) {
+      this.setData({ title: decodeURIComponent(options.title) });
+    }
+
+    if (options.skills) {
+      const skills = decodeURIComponent(options.skills).split(",");
+      this.setData({ selectedSkills: skills });
+    }
+  },
+
 
   // 输入标题
   onTitleInput(e) {
