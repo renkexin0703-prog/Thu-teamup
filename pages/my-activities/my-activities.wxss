@@ -1,1 +1,121 @@
 /* pages/my-activities/my-activities.wxss */
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header {
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.activity-count {
+  font-size: 28rpx;
+  color: #999;
+  margin-top: 10rpx;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.activity-item {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.activity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.activity-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+  word-break: break-all;
+}
+
+.activity-status {
+  font-size: 24rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 20rpx;
+  margin-left: 20rpx;
+}
+
+.status-pending {
+  background-color: #ffe58f;
+  color: #faad14;
+}
+
+.status-approved {
+  background-color: #b7eb8f;
+  color: #52c41a;
+}
+
+.status-rejected {
+  background-color: #ffccc7;
+  color: #ff4d4f;
+}
+
+.activity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #666;
+  min-width: 120rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+  word-break: break-all;
+}
+
+.reject-reason {
+  color: #ff4d4f;
+}
+
+.empty-tips {
+  text-align: center;
+  padding: 100rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.back-btn {
+  background-color: #6777ef;
+  color: white;
+  text-align: center;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  margin-top: 40rpx;
+  font-size: 32rpx;
+}

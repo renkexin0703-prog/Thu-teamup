@@ -1,2 +1,55 @@
 <!--pages/my-activities/my-activities.wxml-->
-<text>pages/my-activities/my-activities.wxml</text>
+<view class="container">
+  <view class="header">
+    <text class="header-title">我的活动投稿</text>
+    <view class="activity-count">共 {{myActivities.length}} 条记录</view>
+  </view>
+
+  <view class="activity-list" wx:if="{{myActivities.length > 0}}">
+    <view class="activity-item" wx:for="{{myActivities}}" wx:key="id">
+      <view class="activity-header">
+        <text class="activity-title">{{item.title}}</text>
+        <view class="activity-status {{item.status === 'pending' ? 'status-pending' : item.status === 'approved' ? 'status-approved' : 'status-rejected'}}">
+          <text wx:if="{{item.status === 'pending'}}">审核中</text>
+          <text wx:if="{{item.status === 'approved'}}">已通过</text>
+          <text wx:if="{{item.status === 'rejected'}}">已驳回</text>
+        </view>
+      </view>
+      
+      <view class="activity-info">
+        <view class="info-row">
+          <text class="info-label">主办方：</text>
+          <text class="info-value">{{item.organizer}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">院系：</text>
+          <text class="info-value">{{item.department}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">年级要求：</text>
+          <text class="info-value">{{item.grade}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">截止日期：</text>
+          <text class="info-value">{{item.deadline}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">所需技能：</text>
+          <text class="info-value">{{item.skills.join('、')}}</text>
+        </view>
+        <view class="info-row" wx:if="{{item.status === 'rejected' && item.rejectReason}}">
+          <text class="info-label">驳回原因：</text>
+          <text class="info-value reject-reason">{{item.rejectReason}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-tips" wx:else>
+    <text>暂无活动投稿记录</text>
+  </view>
+
+  <view class="back-btn" bindtap="goBack">
+    <text>返回</text>
+  </view>
+</view>

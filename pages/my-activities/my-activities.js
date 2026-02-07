@@ -1,66 +1,39 @@
 // pages/my-activities/my-activities.js
+const fakeData = require("../../utils/fake-data.js");
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
+    myActivities: []
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
+    // 获取用户的活动投稿数据
+    this.setData({
+      myActivities: fakeData.myActivities
+    });
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    // 每次进入页面都重新获取最新数据
+    this.setData({
+      myActivities: fakeData.myActivities
+    });
   },
 
   /**
-   * 生命周期函数--监听页面隐藏
+   * 返回上一页
    */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
+  goBack() {
+    wx.navigateBack();
   }
 })
