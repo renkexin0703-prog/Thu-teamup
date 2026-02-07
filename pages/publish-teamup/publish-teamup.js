@@ -9,20 +9,29 @@ Page({
     selectedGender: "",
     desc: "",
     wechat: "",
-    selectedSkills: []
+    selectedSkills: [] // 保留原有技能字段，不新增其他选择器
   },
 
   onLoad(options) {
+    // 1. 校验用户是否登录（未登录跳转登录页）
+    const globalUser = app.globalData.userInfo;
+    if (!globalUser || !globalUser.id) {
+      wx.showToast({ title: "请先完成微信登录", icon: "none" });
+      wx.redirectTo({ url: "/pages/login/login" });
+      return;
+    }
+
+    // 2. 处理页面跳转传参（保留原有逻辑）
     if (options.title) {
       this.setData({ title: decodeURIComponent(options.title) });
     }
-
     if (options.skills) {
       const skills = decodeURIComponent(options.skills).split(",");
       this.setData({ selectedSkills: skills });
     }
   },
 
+  // 保留原有输入/选择方法
   onTitleInput(e) {
     this.setData({ title: e.detail.value });
   },
@@ -42,44 +51,57 @@ Page({
 
   // 发布组队【上传到云数据库】
   async submitTeamUp() {
-    const { title, selectedGender, desc, wechat } = this.data;
+    const { title, selectedGender, desc, wechat, selectedSkills } = this.data;
+    const db = wx.cloud.database(); // 数据库引用
 
-    // 简单校验
-    if (!title || !selectedGender || !wechat) {
-      wx.showToast({ title: "请填写必填项", icon: "none" });
+    // 1. 精简版必填项校验（只校验原有核心字段）
+    const requiredFields = [
+      { name: "标题", value: title },
+      { name: "性别", value: selectedGender },
+      { name: "微信号", value: wechat }
+    ];
+    const emptyField = requiredFields.find(item => !item.value);
+    if (emptyField) {
+      wx.showToast({ title: `请填写${emptyField.name}`, icon: "none" });
       return;
     }
 
-    // 获取当前用户最新信息
-    const userInfo = fakeData.userInfo;
+    // 2. 获取登录后的真实用户信息（替换fakeData）
+    const globalUser = app.globalData.userInfo;
+    if (!globalUser.id) {
+      wx.showToast({ title: "登录状态失效，请重新登录", icon: "none" });
+      wx.redirectTo({ url: "/pages/login/login" });
+      return;
+    }
 
-    // 构造新帖子
+    // 3. 构造新帖子（仅保留原有字段，用真实用户ID）
     const newPost = {
-      _id: `team_${Date.now()}`, // 生成唯一ID
-      userId: userInfo.id,
-      userName: userInfo.name,
-      userAvatar: userInfo.avatar,
-      userDepartment: userInfo.department,
-      userGrade: userInfo.grade,
+      _id: `team_${Date.now()}`, // 恢复你原有ID生成方式
+      userId: globalUser.id, // 关键：登录用户的openid，联动community的isOwnPost
+      userName: globalUser.name || "未知用户", // 真实昵称
+      userAvatar: globalUser.avatar || "", // 真实头像
+      // 保留fakeData里的院系/年级（你原有逻辑），不新增选择器
+      userDepartment: fakeData.userInfo.department,
+      userGrade: fakeData.userInfo.grade,
       gender: selectedGender,
       title: title,
-      content: desc,
-      skills: userInfo.skills,
+      content: desc || "无描述",
+      skills: selectedSkills.length > 0 ? selectedSkills : fakeData.userInfo.skills,
       contactWechat: wechat,
       viewCount: 0,
       isActive: true,
-      createTime: new Date().toISOString() // 添加创建时间
+      createTime: db.serverDate() // 云服务器时间，更准确
     };
 
     try {
-      // 上传到云数据库
-      await wx.cloud.database().collection('teamUpPosts').add({
+      // 4. 上传到云数据库teamUpPosts集合
+      await db.collection('teamUpPosts').add({
         data: newPost
       });
 
       wx.showToast({ title: "发布成功！", icon: "success" });
 
-      // 返回社区页
+      // 5. 返回社区页
       setTimeout(() => {
         wx.navigateBack({ delta: 1 });
       }, 1500);

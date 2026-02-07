@@ -13,7 +13,7 @@ App({
     this.login();
   },
   globalData: {
-    userInfo: null,
+    userInfo: {},
     teamUpPosts: [],
     publicTeamUpPosts: []
   },

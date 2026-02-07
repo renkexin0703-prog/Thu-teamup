@@ -11,10 +11,26 @@ Page({
       grade: "",
       skills: []
     },
-    filteredTeamUpPosts: [] // 显示的帖子列表
+    filteredTeamUpPosts: [], // 显示的帖子列表
+    currentUserId: '' // 当前登录用户 ID
   },
 
   onLoad() {
+    // 【修改这里】从全局变量获取登录用户ID，而非本地缓存
+    const globalUser = app.globalData.userInfo;
+    let currentUserId = '';
+    
+    if (globalUser && globalUser.id) {
+      currentUserId = globalUser.id;
+      // 可选：同步到本地缓存，避免下次进入页面丢失
+      wx.setStorageSync('userInfo', globalUser);
+    } else {
+      // 未登录则跳转登录页
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      wx.redirectTo({ url: '/pages/login/login' });
+    }
+  
+    this.setData({ currentUserId }); // 赋值给页面的currentUserId
     this.loadTeamUpPosts(); // 加载初始数据
   },
 
@@ -32,19 +48,24 @@ Page({
       const cloudPosts = res.data || [];
       const localPosts = fakeData.teamUpPosts; // 保留本地假数据作为补充
 
+      // 合并云端和本地数据（去重）
+      const allPosts = [...cloudPosts, ...localPosts];
+      const uniquePosts = Array.from(
+        new Map(allPosts.map(post => [post._id || post.id, post])).values()
+      );
 
-     // 合并云端和本地数据（去重）
-     const allPosts = [...cloudPosts, ...localPosts];
-     const uniquePosts = Array.from(
-       new Map(allPosts.map(post => [post._id || post.id, post])).values()
-     );
+      // 为每个帖子添加 isOwnPost 字段，用于判断是否为本人发布
+      const updatedPosts = uniquePosts.map(post => ({
+        ...post,
+        isOwnPost: post.userId === this.data.currentUserId
+      }));
 
-     this.setData({ filteredTeamUpPosts: uniquePosts });
-   } catch (err) {
-     console.error("加载帖子失败：", err);
-     wx.showToast({ title: "加载失败，请重试", icon: "none" });
-   }
- },
+      this.setData({ filteredTeamUpPosts: updatedPosts });
+    } catch (err) {
+      console.error("加载帖子失败：", err);
+      wx.showToast({ title: "加载失败，请重试", icon: "none" });
+    }
+  },
 
   // 性别筛选
   onGenderChange(e) {
@@ -104,15 +125,48 @@ Page({
     this.setData({ filteredTeamUpPosts: filtered });
   },
 
-  // 联系TA - 跳转到联系TA页面
+  // 点击【联系TA】
   onContactTA(e) {
-    const wechat = e.currentTarget.dataset.wechat;
+    const postId = e.currentTarget.dataset.postId;
+    const post = this.data.filteredTeamUpPosts.find(p => p.id === postId);
+
+    // 跳转到联系 TA 页面
     wx.navigateTo({
-      url: `/pages/contact-ta/contact-ta?wechat=${wechat}`
+      url: `/pages/contact-ta/contact-ta?postId=${postId}&wechat=${post.contactWechat}`
     });
+
+    // 记录联系行为到云数据库
+    this.recordContact(postId);
   },
 
-  // 了解TA - 跳转到了解TA页面
+  // 记录联系行为
+async recordContact(postId) {
+  const currentUserId = this.data.currentUserId;
+
+  try {
+    // 查询是否已记录过
+    const res = await wx.cloud.database().collection('contactRecords').where({
+      postId,
+      contactedBy: currentUserId
+    }).get();
+
+    if (res.data.length === 0) {
+      // 未记录则新增
+      await wx.cloud.database().collection('contactRecords').add({
+        data: {
+          postId,
+          contactedBy: currentUserId,
+          // 【修改这里】用云服务器时间替代本地时间
+          contactTime: wx.cloud.database().serverDate()
+        }
+      });
+    }
+  } catch (err) {
+    console.error("记录联系行为失败：", err);
+  }
+},
+
+  // 点击【了解TA】
   onKnowTA(e) {
     const userId = e.currentTarget.dataset.userId;
     wx.navigateTo({
@@ -120,7 +174,7 @@ Page({
     });
   },
 
-  // 选择队友 - 跳转到选择队友页面
+  // 点击【选择队友】
   onSelectMember(e) {
     const postId = e.currentTarget.dataset.postId;
     wx.navigateTo({

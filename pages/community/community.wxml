@@ -4,13 +4,13 @@
   <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderChange">
     <view class="filter-tag">性别：{{currentFilter.gender}}</view>
   </picker>
-  <picker mode="multiSelector" range="{{[filterOptions.departments]}}" bindchange="onDeptChange">
+  <picker mode="multiSelector" range="{{filterOptions.departments}}" bindchange="onDeptChange">
     <view class="filter-tag">院系：{{currentFilter.departments.length > 0 ? currentFilter.departments.join(',') : '不限'}}</view>
   </picker>
   <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeChange">
     <view class="filter-tag">年级：{{currentFilter.grade || '不限'}}</view>
   </picker>
-  <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillChange">
+  <picker mode="multiSelector" range="{{filterOptions.skills}}" bindchange="onSkillChange">
     <view class="filter-tag">技能：{{currentFilter.skills.length > 0 ? currentFilter.skills.join(',') : '不限'}}</view>
   </picker>
 </view>
@@ -40,10 +40,32 @@
       <view class="post-footer">
         <view class="view-count">浏览：{{item.viewCount}}</view>
         <!-- 别人发布的帖子显示联系TA和了解TA按钮 -->
-        <view wx:if="{{item.userId !== 'user_001'}}" class="btn purple-btn" bindtap="onContactTA" data-wechat="{{item.contactWechat}}">联系TA</view>
-        <view wx:if="{{item.userId !== 'user_001'}}" class="btn purple-btn" style="margin-left: 10px;" bindtap="onKnowTA" data-user-id="{{item.userId}}">了解TA</view>
+        <button 
+          wx:if="{{!item.isOwnPost}}" 
+          class="btn purple-btn"
+          bindtap="onContactTA"
+          data-wechat="{{item.contactWechat}}"
+        >
+          联系TA
+        </button>
+        <button 
+          wx:if="{{!item.isOwnPost}}" 
+          class="btn purple-btn"
+          style="margin-left: 10px;"
+          bindtap="onKnowTA"
+          data-user-id="{{item.userId}}"
+        >
+          了解TA
+        </button>
         <!-- 自己发布的帖子显示选择队友按钮 -->
-        <view wx:if="{{item.userId === 'user_001'}}" class="btn green-btn" bindtap="onSelectMember" data-post-id="{{item.id}}">选择队友</view>
+        <button 
+          wx:if="{{item.isOwnPost}}" 
+          class="btn green-btn"
+          bindtap="onSelectMember"
+          data-post-id="{{item.id}}"
+        >
+          选择队友
+        </button>
       </view>
     </view>
   </block>
