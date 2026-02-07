@@ -22,19 +22,29 @@ Page({
     this.loadTeamUpPosts(); // 每次进入页面都重新加载数据
   },
 
-  // 加载帖子数据（合并全局变量和本地假数据）
-  loadTeamUpPosts() {
-    const globalPosts = app.globalData?.teamUpPosts || []; // 全局变量中的新帖子
-    const localPosts = fakeData.teamUpPosts; // 本地假数据（原始帖子）
+  // 从云数据库加载帖子数据
+  async loadTeamUpPosts() {
+    try {
+      const res = await wx.cloud.database().collection('teamUpPosts')
+        .where({ isActive: true }) // 只查询活跃帖子
+        .get();
 
-    // 合并全局和本地数据（去重）
-    const allPosts = [...globalPosts, ...localPosts];
-    const uniquePosts = Array.from(
-      new Map(allPosts.map(post => [post.id, post])).values()
-    ).filter(post => post.isActive); // 只显示活跃帖子
+      const cloudPosts = res.data || [];
+      const localPosts = fakeData.teamUpPosts; // 保留本地假数据作为补充
 
-    this.setData({ filteredTeamUpPosts: uniquePosts });
-  },
+
+     // 合并云端和本地数据（去重）
+     const allPosts = [...cloudPosts, ...localPosts];
+     const uniquePosts = Array.from(
+       new Map(allPosts.map(post => [post._id || post.id, post])).values()
+     );
+
+     this.setData({ filteredTeamUpPosts: uniquePosts });
+   } catch (err) {
+     console.error("加载帖子失败：", err);
+     wx.showToast({ title: "加载失败，请重试", icon: "none" });
+   }
+ },
 
   // 性别筛选
   onGenderChange(e) {

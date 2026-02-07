@@ -13,7 +13,6 @@ Page({
   },
 
   onLoad(options) {
-    // 接收传入的参数
     if (options.title) {
       this.setData({ title: decodeURIComponent(options.title) });
     }
@@ -24,47 +23,39 @@ Page({
     }
   },
 
-
-  // 输入标题
   onTitleInput(e) {
     this.setData({ title: e.detail.value });
   },
 
-  // 选择性别要求
   onGenderSelect(e) {
     const gender = fakeData.filterOptions.gender[e.detail.value];
     this.setData({ selectedGender: gender });
   },
 
-  // 输入描述
   onDescInput(e) {
     this.setData({ desc: e.detail.value });
   },
 
-  // 输入微信号
   onWechatInput(e) {
     this.setData({ wechat: e.detail.value });
   },
 
-  // 发布组队【假数据存储】
-  submitTeamUp() {
+  // 发布组队【上传到云数据库】
+  async submitTeamUp() {
     const { title, selectedGender, desc, wechat } = this.data;
 
     // 简单校验
     if (!title || !selectedGender || !wechat) {
-      wx.showToast({
-        title: "请填写必填项",
-        icon: "none"
-      });
+      wx.showToast({ title: "请填写必填项", icon: "none" });
       return;
     }
 
-    // 获取当前用户最新信息（来自【我的】页面）
+    // 获取当前用户最新信息
     const userInfo = fakeData.userInfo;
 
     // 构造新帖子
     const newPost = {
-      id: `team_${Date.now()}`, // 生成唯一ID
+      _id: `team_${Date.now()}`, // 生成唯一ID
       userId: userInfo.id,
       userName: userInfo.name,
       userAvatar: userInfo.avatar,
@@ -73,36 +64,28 @@ Page({
       gender: selectedGender,
       title: title,
       content: desc,
-      skills: userInfo.skills, // 使用【我的】页面中的技能标签
+      skills: userInfo.skills,
       contactWechat: wechat,
       viewCount: 0,
-      isActive: true // 活跃状态
+      isActive: true,
+      createTime: new Date().toISOString() // 添加创建时间
     };
 
-    // 写入全局变量（关键步骤）
-    if (app.globalData && app.globalData.teamUpPosts) {
-      app.globalData.teamUpPosts.push(newPost);
-      console.log("已成功添加新帖子:", newPost);
-    } else {
-      console.error("全局变量未定义！无法写入数据。");
-      wx.showToast({
-        title: "发布失败，请重试",
-        icon: "none"
+    try {
+      // 上传到云数据库
+      await wx.cloud.database().collection('teamUpPosts').add({
+        data: newPost
       });
-      return;
+
+      wx.showToast({ title: "发布成功！", icon: "success" });
+
+      // 返回社区页
+      setTimeout(() => {
+        wx.navigateBack({ delta: 1 });
+      }, 1500);
+    } catch (err) {
+      console.error("发布失败：", err);
+      wx.showToast({ title: "发布失败，请重试", icon: "none" });
     }
-
-    // 提示成功
-    wx.showToast({
-      title: "发布成功！",
-      icon: "success"
-    });
-
-    // 返回社区页
-    setTimeout(() => {
-      wx.navigateBack({
-        delta: 1
-      });
-    }, 1500);
   }
 });
