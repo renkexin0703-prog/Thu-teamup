@@ -3,7 +3,7 @@
 <image class="bg-img" src="../../images/bj.png"></image>
 
 <view class="container">
- 、
+ 
   <text class="title">欢迎使用 Thu 清组队</text>
   <button 
     class="login-btn" 

@@ -1,5 +1,5 @@
 // pages/publish-teamup/publish-teamup.js
-const app = getApp(); // 获取全局实例
+const app = getApp(); 
 const fakeData = require("../../utils/fake-data.js");
 
 Page({
@@ -9,19 +9,17 @@ Page({
     selectedGender: "",
     desc: "",
     wechat: "",
-    selectedSkills: [] // 保留原有技能字段，不新增其他选择器
+    selectedSkills: []
   },
 
   onLoad(options) {
-    // 1. 校验用户是否登录（未登录跳转登录页）
-    const globalUser = app.globalData.userInfo;
-    if (!globalUser || !globalUser.id) {
+    const globalUser = app.globalData.userInfo || {};
+    if (!globalUser.id) {
       wx.showToast({ title: "请先完成微信登录", icon: "none" });
       wx.redirectTo({ url: "/pages/login/login" });
       return;
     }
 
-    // 2. 处理页面跳转传参（保留原有逻辑）
     if (options.title) {
       this.setData({ title: decodeURIComponent(options.title) });
     }
@@ -29,9 +27,14 @@ Page({
       const skills = decodeURIComponent(options.skills).split(",");
       this.setData({ selectedSkills: skills });
     }
+
+    // 预填技能
+    const userSkills = globalUser.skills || [];
+    if (userSkills.length > 0) {
+      this.setData({ selectedSkills: userSkills });
+    }
   },
 
-  // 保留原有输入/选择方法
   onTitleInput(e) {
     this.setData({ title: e.detail.value });
   },
@@ -49,12 +52,13 @@ Page({
     this.setData({ wechat: e.detail.value });
   },
 
-  // 发布组队【上传到云数据库】
   async submitTeamUp() {
     const { title, selectedGender, desc, wechat, selectedSkills } = this.data;
-    const db = wx.cloud.database(); // 数据库引用
+    const db = wx.cloud.database();
+    const globalUser = app.globalData.userInfo || {};
+    const editForm = wx.getStorageSync('userInfo') || {}; // 读取【我的】页本地信息
 
-    // 1. 精简版必填项校验（只校验原有核心字段）
+    // 1. 必填项校验
     const requiredFields = [
       { name: "标题", value: title },
       { name: "性别", value: selectedGender },
@@ -66,42 +70,38 @@ Page({
       return;
     }
 
-    // 2. 获取登录后的真实用户信息（替换fakeData）
-    const globalUser = app.globalData.userInfo;
-    if (!globalUser.id) {
-      wx.showToast({ title: "登录状态失效，请重新登录", icon: "none" });
-      wx.redirectTo({ url: "/pages/login/login" });
-      return;
+    // 2. 从云数据库读取最新信息
+    let userDbInfo = {};
+    try {
+      const res = await db.collection('users').doc(globalUser.id).get();
+      userDbInfo = res.data;
+    } catch (err) {
+      console.error("读取用户信息失败:", err);
     }
 
-    // 3. 构造新帖子（仅保留原有字段，用真实用户ID）
+    // 3. 构造帖子（优先用自定义信息，兜底“微信用户”）
     const newPost = {
-      _id: `team_${Date.now()}`, // 恢复你原有ID生成方式
-      userId: globalUser.id, // 关键：登录用户的openid，联动community的isOwnPost
-      userName: globalUser.name || "未知用户", // 真实昵称
-      userAvatar: globalUser.avatar || "", // 真实头像
-      // 保留fakeData里的院系/年级（你原有逻辑），不新增选择器
-      userDepartment: fakeData.userInfo.department,
-      userGrade: fakeData.userInfo.grade,
+      _id: `team_${Date.now()}`,
+      id: `team_${Date.now()}`,
+      userId: globalUser.id,
+      userName: editForm.name || userDbInfo.name || globalUser.name || "未知用户",
+      userAvatar: globalUser.avatar || "",
+      userDepartment: userDbInfo.dept || editForm.dept || "未填写",
+      userGrade: userDbInfo.grade || editForm.grade || "未填写",
       gender: selectedGender,
       title: title,
       content: desc || "无描述",
-      skills: selectedSkills.length > 0 ? selectedSkills : fakeData.userInfo.skills,
+      skills: selectedSkills.length > 0 ? selectedSkills : (editForm.skill ? editForm.skill.split(',') : []),
       contactWechat: wechat,
       viewCount: 0,
       isActive: true,
-      createTime: db.serverDate() // 云服务器时间，更准确
+      createTime: db.serverDate(),
+      applicants: []
     };
 
     try {
-      // 4. 上传到云数据库teamUpPosts集合
-      await db.collection('teamUpPosts').add({
-        data: newPost
-      });
-
+      await db.collection('teamUpPosts').add({ data: newPost });
       wx.showToast({ title: "发布成功！", icon: "success" });
-
-      // 5. 返回社区页
       setTimeout(() => {
         wx.navigateBack({ delta: 1 });
       }, 1500);
