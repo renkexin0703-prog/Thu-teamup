@@ -21,6 +21,14 @@
   },
   "appid": "wx8a3348885c364300",
   "editorSetting": {},
-  "cloudfunctionRoot": "cloudfunctions/", 
-  "cloudEnv": "cloud1-6g67sh8587f55b79" 
+  "cloudfunctionRoot": "cloudfunctions/",
+  "cloudEnv": "cloud1-6g67sh8587f55b79",
+
+  "miniprogramRoot": "./",
+ 
+  "fileAssociation": {
+    "*.png": "image",
+    "*.jpg": "image",
+    "*.jpeg": "image"
+  }
 }

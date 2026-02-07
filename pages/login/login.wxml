@@ -1,0 +1,16 @@
+<!-- pages/login/login.wxml -->
+<!-- 背景图标签：放在最外层，用cloud链接 -->
+<image class="bg-img" src="../../images/bj.png"></image>
+
+<view class="container">
+  <image class="logo" src="/images/logo.png" mode="aspectFit"></image>
+  <text class="title">欢迎使用 Thu 清组队</text>
+  <button 
+    class="login-btn" 
+    type="primary" 
+    bindtap="onLogin" 
+    loading="{{isLoggingIn}}"
+  >
+    {{isLoggingIn ? '登录中...' : '微信授权一键登录'}}
+  </button>
+</view>

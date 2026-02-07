@@ -1,4 +1,6 @@
+// pages/index/index.js
 const fakeData = require("../../utils/fake-data.js");
+const app = getApp();
 
 Page({
   data: {
@@ -9,13 +11,62 @@ Page({
       grade: "",
       skills: []
     },
-    filteredActivities: []
+    filteredActivities: [],
+    hasUserInfo: false, // 是否已授权用户信息
+    userInfo: {} // 用户信息
   },
 
   onLoad() {
+    // 检查是否已登录并获取用户信息
+    if (app.globalData.userInfo && app.globalData.userInfo.name) {
+      this.setData({
+        hasUserInfo: true,
+        userInfo: app.globalData.userInfo
+      });
+    }
+
     // 初始化显示所有已审核活动
     this.setData({
       filteredActivities: fakeData.approvedActivities
+    });
+  },
+
+  // 用户主动授权登录
+  getUserProfile() {
+    wx.getUserProfile({
+      desc: '用于完善会员资料', // 声明获取用户个人信息后的用途
+      success: res => {
+        const userInfo = res.userInfo;
+        console.log('用户信息:', userInfo);
+
+        // 更新全局用户信息
+        app.globalData.userInfo.name = userInfo.nickName;
+        app.globalData.userInfo.avatar = userInfo.avatarUrl;
+
+        // 更新页面数据
+        this.setData({
+          hasUserInfo: true,
+          userInfo: app.globalData.userInfo
+        });
+
+        // 可选：将用户信息上传到云数据库
+        wx.cloud.database().collection('users').add({
+          data: {
+            _id: app.globalData.userInfo.id,
+            name: userInfo.nickName,
+            avatar: userInfo.avatarUrl,
+            createTime: new Date().toISOString()
+          }
+        }).then(() => {
+          console.log('用户信息上传成功');
+        }).catch(err => {
+          console.error('用户信息上传失败:', err);
+        });
+      },
+      fail: err => {
+        console.error('获取用户信息失败:', err);
+        wx.showToast({ title: '授权失败，请重试', icon: 'none' });
+      }
     });
   },
 

@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/login/login",
     "pages/index/index",
     "pages/community/community",
     "pages/select-teammates/select-teammates",
@@ -15,6 +16,12 @@
     "pages/publish-activity/publish-activity",
     "pages/publish-teamup/publish-teamup"
   ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
   "tabBar": {
     "color": "#666666",
     "selectedColor": "#6777ef",
