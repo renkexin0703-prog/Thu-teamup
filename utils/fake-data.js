@@ -124,7 +124,8 @@ const teamUpPosts = [
     skills: ["Python", "深度学习"],
     contactWechat: "lisi_2026",
     viewCount: 45,
-    isActive: true // true-活跃 false-已组队下架
+    isActive: true, // true-活跃 false-已组队下架
+    applicants: [] // ✅ 确保每个帖子都有 applicants 数组
   },
   {
     id: "team_002",

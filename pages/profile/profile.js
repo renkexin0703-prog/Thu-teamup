@@ -1,6 +1,5 @@
+// pages/profile/profile.js
 const fakeData = require("../../utils/fake-data.js");
-
-
 
 Page({
   data: {
@@ -12,18 +11,30 @@ Page({
   },
 
   onLoad() {
-    // 初始化数据
+    // 初始化数据（优先级：本地缓存 > 假数据）
+    const localUserInfo = wx.getStorageSync('userInfo') || {};
+    const defaultUserInfo = fakeData.userInfo;
+
     this.setData({
-      userInfo: fakeData.userInfo,
+      userInfo: {
+        ...defaultUserInfo,
+        ...localUserInfo
+      },
       myActivities: fakeData.myActivities,
       contactRequests: fakeData.contactRequests
     });
   },
 
   onShow() {
-    // 每次进入页面都重新获取最新数据
+    // 每次进入页面都重新获取最新数据（优先级：本地缓存 > 假数据）
+    const localUserInfo = wx.getStorageSync('userInfo') || {};
+    const defaultUserInfo = fakeData.userInfo;
+
     this.setData({
-      userInfo: fakeData.userInfo,
+      userInfo: {
+        ...defaultUserInfo,
+        ...localUserInfo
+      },
       myActivities: fakeData.myActivities,
       contactRequests: fakeData.contactRequests
     });

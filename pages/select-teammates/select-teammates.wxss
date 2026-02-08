@@ -1,25 +1,89 @@
+/* pages/select-teammates/select-teammates.wxss */
+
 .container {
-  padding: 20px;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  min-height: 100vh;
 }
 
 .header {
-  font-size: 18px;
+  font-size: 36rpx;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 30rpx;
   text-align: center;
+  color: #333;
+}
+
+.applicant-list {
+  background-color: #fff;
+  border-radius: 10rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
 .applicant-item {
-  display: block;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.applicant-item:last-child {
+  border-bottom: none;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.info {
+  flex: 1;
+}
+
+.name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.department {
+  font-size: 28rpx;
+  color: #666;
+  margin-top: 10rpx;
+}
+
+.skills {
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 5rpx;
+}
+
+.checkbox {
+  margin-left: auto;
+}
+
+.empty-tip {
+  text-align: center;
+  color: #999;
+  margin-top: 100rpx;
+  font-size: 28rpx;
 }
 
 .btn {
-  margin-top: 20px;
+  margin-top: 50rpx;
   background: #5cb85c;
   color: white;
   text-align: center;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  box-shadow: 0 4rpx 10rpx rgba(92, 184, 92, 0.3);
+}
+
+.btn:active {
+  background: #4cae4c;
 }

@@ -1,11 +1,22 @@
+<!-- pages/select-teammates/select-teammates.wxml -->
 <view class="container">
   <view class="header">选择队友</view>
+
+  <!-- 申请人列表 -->
   <checkbox-group bindchange="onApplicantSelect">
     <block wx:for="{{applicants}}" wx:key="userId">
       <label class="applicant-item">
-        <checkbox value="{{index}}" /> {{item.userName}} ({{item.userDepartment}})
+        <checkbox value="{{index}}" />
+        {{item.userName}} ({{item.userDepartment}})
       </label>
     </block>
   </checkbox-group>
+
+  <!-- 空状态提示 -->
+  <view wx:if="{{applicants.length === 0}}" class="empty-tip">
+    暂无申请人
+  </view>
+
+  <!-- 组队成功按钮 -->
   <view class="btn" bindtap="onTeamUpSuccess">组队成功</view>
 </view>

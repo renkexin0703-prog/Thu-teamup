@@ -1,3 +1,4 @@
+// pages/edit-profile/edit-profile.js
 const fakeData = require("../../utils/fake-data.js");
 
 Page({
@@ -13,16 +14,18 @@ Page({
   },
 
   onLoad() {
-    // 获取当前用户信息
-    const userInfo = fakeData.userInfo;
+    // 获取当前用户信息（从本地缓存优先）
+    const localUserInfo = wx.getStorageSync('userInfo') || {};
+    const defaultUserInfo = fakeData.userInfo;
+
     this.setData({
-      userInfo,
-      name: userInfo.name,
-      gender: userInfo.gender,
-      grade: userInfo.grade,
-      department: userInfo.department,
-      skills: userInfo.skills,
-      wechat: userInfo.wechat
+      userInfo: localUserInfo,
+      name: localUserInfo.name || defaultUserInfo.name,
+      gender: localUserInfo.gender || defaultUserInfo.gender,
+      grade: localUserInfo.grade || defaultUserInfo.grade,
+      department: localUserInfo.dept || defaultUserInfo.department,
+      skills: localUserInfo.skill ? localUserInfo.skill.split(',') : defaultUserInfo.skills,
+      wechat: localUserInfo.wechat || defaultUserInfo.wechat
     });
   },
 
@@ -74,26 +77,59 @@ Page({
       return;
     }
 
-    // 更新用户信息（模拟接口调用）
-    const userInfo = fakeData.userInfo;
-    userInfo.name = name;
-    userInfo.gender = gender;
-    userInfo.grade = grade;
-    userInfo.department = department;
-    userInfo.skills = skills;
-    userInfo.wechat = wechat;
+    // 1. 保存到本地缓存
+    const editForm = {
+      name,
+      gender,
+      grade,
+      dept: department,
+      skill: skills.join(','),
+      contact: {
+        wechat
+      }
+    };
+    wx.setStorageSync('userInfo', editForm);
 
+    // 2. 同步到全局变量（可选）
+    const app = getApp();
+    app.globalData.userInfo = {
+      ...app.globalData.userInfo,
+      ...editForm
+    };
+
+    // 3. 强制覆盖云数据库（替换“微信用户”）
+    const db = wx.cloud.database();
+    const currentUser = app.globalData.userInfo;
+    db.collection('users').doc(currentUser.id).set({
+      data: {
+        name: editForm.name || currentUser.name,
+        gender: editForm.gender,
+        grade: editForm.grade,
+        dept: editForm.dept,
+        skill: editForm.skill,
+        contact: editForm.contact,
+        avatar: currentUser.avatar,
+        createTime: db.serverDate(),
+        updateTime: db.serverDate()
+      },
+      success: () => {
+        console.log('云数据库信息覆盖成功');
+      },
+      fail: (err) => {
+        console.error('云数据库同步失败:', err);
+      }
+    });
+
+    // 4. 提示并返回
     wx.showToast({
       title: "保存成功！",
       icon: "success"
     });
 
-     // 返回上一页，并强制刷新 profile 页面
-  setTimeout(() => {
-    wx.navigateBack({
-      delta: 1
-    });
-  }, 1500);
-
+    setTimeout(() => {
+      wx.navigateBack({
+        delta: 1
+      });
+    }, 1500);
   }
 });
