@@ -72,44 +72,39 @@ Page({
     this.setData({ editForm });
   },
 
-  // 核心修复：强制覆盖云数据库的“微信用户”名称
   saveUserInfo() {
     const { editForm } = this.data;
     const app = getApp();
-    const currentUser = app.globalData.userInfo; // 登录后的openid
+    const currentUser = app.globalData.userInfo;
 
     // 1. 保存到本地缓存
     wx.setStorageSync('userInfo', editForm);
+
     // 2. 同步到全局变量
     app.globalData.userInfo = {
-      ...app.globalData.userInfo,
+      ...currentUser,
       ...editForm,
-      department: editForm.dept,
-      skills: editForm.skill ? editForm.skill.split(',') : []
+      name: editForm.name || currentUser.name,
+      avatar: editForm.avatar || currentUser.avatar
     };
-    // 3. 强制覆盖云数据库（替换“微信用户”）
+
+    // 3. 更新云数据库（只更新 name 和 avatar）
     const db = wx.cloud.database();
-    db.collection('users').doc(currentUser.id).set({
+    db.collection('users').doc(currentUser.id).update({
       data: {
-        _id: currentUser.id,
-        name: editForm.name || currentUser.name, // 优先自定义名称
-        gender: editForm.gender,
-        grade: editForm.grade,
-        dept: editForm.dept,
-        skill: editForm.skill,
-        contact: editForm.contact,
-        avatar: currentUser.avatar, // 保留微信头像
-        createTime: db.serverDate(),
+        name: editForm.name || currentUser.name,
+        avatar: editForm.avatar || currentUser.avatar,
         updateTime: db.serverDate()
       },
       success: () => {
-        console.log('云数据库信息覆盖成功（已替换“微信用户”）');
+        console.log('云数据库信息更新成功');
       },
       fail: (err) => {
-        console.error('云数据库同步失败:', err);
+        console.error('云数据库更新失败:', err);
       }
     });
-    // 4. 更新页面
+
+    // 4. 更新页面数据
     this.setData({
       userInfo: editForm,
       editUserInfoShow: false

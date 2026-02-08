@@ -5,25 +5,83 @@ App({
       console.error('请使用 2.2.3 或以上的基础库以使用云能力');
     } else {
       wx.cloud.init({
-        env: 'cloud1-6g67sh8587f55b79', 
+        env: 'cloud1-6g67sh8587f55b79',
         traceUser: true
       });
     }
-    // 新增：初始化时读取本地缓存的【我的】页信息（避免全局变量为空）
+
+    // 1. 先尝试从本地缓存获取用户信息（避免重复请求）
     const localUserInfo = wx.getStorageSync('userInfo') || {};
+
+    // 2. 尝试从云数据库获取用户信息（基于 openid）
     const loginUserInfo = {
       id: '',
       name: '',
       avatar: ''
     };
-    // 合并：本地缓存的信息优先级最高
-    this.globalData.userInfo = { ...loginUserInfo, ...localUserInfo };
+
+    // 3. 执行登录流程（如果尚未登录）
+    this.login();
   },
+
   globalData: {
-    // 核心修改：只保留基础字段，去掉默认空的department/grade/skills（避免覆盖）
-    userInfo: {},
-    teamUpPosts: [],
-    publicTeamUpPosts: []
+    userInfo: {}
   },
-  login() {}
+
+  async login() {
+    try {
+      // 第一步：调用微信登录获取 code
+      const loginRes = await wx.login();
+      if (!loginRes.code) {
+        console.error("获取 code 失败");
+        return;
+      }
+
+      // 第二步：调用云函数 getOpenid 获取 openid
+      const cloudRes = await wx.cloud.callFunction({
+        name: 'getOpenid',
+        data: { code: loginRes.code }
+      });
+
+      const openid = cloudRes.result.openid;
+      if (!openid) {
+        console.error("获取 openid 失败");
+        return;
+      }
+
+      // 第三步：从云数据库 users 集合中查询该用户
+      const db = wx.cloud.database();
+      const userDoc = await db.collection('users').doc(openid).get();
+
+      let userInfo = {};
+      if (userDoc.data) {
+        // 用户存在 → 使用数据库中的 name 和 avatar
+        userInfo = {
+          id: openid,
+          name: userDoc.data.name || '微信用户',
+          avatar: userDoc.data.avatar || ''
+        };
+      } else {
+        // 用户不存在 → 使用微信授权信息（但先不写入数据库）
+        const profileRes = await wx.getUserProfile({
+          desc: '用于完善会员资料'
+        });
+        userInfo = {
+          id: openid,
+          name: profileRes.userInfo.nickName,
+          avatar: profileRes.userInfo.avatarUrl
+        };
+      }
+
+      // 4. 更新全局变量和本地缓存
+      this.globalData.userInfo = userInfo;
+      wx.setStorageSync('userInfo', userInfo);
+
+      // 5. 跳转首页
+      wx.switchTab({ url: '/pages/index/index' });
+    } catch (err) {
+      console.error("登录失败:", err);
+      wx.showToast({ title: "登录失败，请重试", icon: "none" });
+    }
+  }
 });
