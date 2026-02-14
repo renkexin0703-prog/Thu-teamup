@@ -105,9 +105,8 @@ async submitTeamUp() {
     // 跳转到详情页，并传 _id
     wx.showToast({ title: "发布成功！", icon: "success" });
     setTimeout(() => {
-      wx.navigateTo({
-        url: `/pages/teamup-detail/teamup-detail?postId=${newPost._id}`
-      });
+      // 返回上一页（社区页面）
+      wx.navigateBack();
     }, 1500);
   } catch (err) {
     console.error("发布失败：", err);
