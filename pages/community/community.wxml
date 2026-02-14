@@ -48,7 +48,6 @@
           </block>
         </view>
         <view class="post-footer">
-          <view class="view-count">浏览：{{item.viewCount}}</view>
           
           <button 
             wx:if="{{!item.isOwnPost}}" 

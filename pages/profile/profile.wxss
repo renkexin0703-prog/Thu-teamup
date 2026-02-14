@@ -4,6 +4,20 @@
   padding: 20px 15px;
   margin-bottom: 10px;
 }
+.user-card {
+  display: flex;
+  padding: 20px 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.user-card:active {
+  transform: scale(0.98);
+}
 
 .user-avatar {
   width: 80px;
@@ -238,7 +252,7 @@
 
 .edit-btn {
   width: 90%;
-  height: 80rpx;
+  height: 100rpx;
   line-height: 80rpx;
   background-color: #007aff;
   color: white;

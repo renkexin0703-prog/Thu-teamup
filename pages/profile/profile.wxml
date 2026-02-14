@@ -2,9 +2,7 @@
 
 
 <!-- 修改个人信息按钮 -->
-<button class="edit-btn" bindtap="gotoEditProfile">修改个人信息</button>
-
-<view class="card user-card">
+<view class="card user-card" bindtap="gotoEditProfile">
   <image src="{{userInfo.avatar}}" class="user-avatar" bindtap="onAvatarTap" />
   <view class="user-main-info">
     <view class="user-name">{{userInfo.name}} 
@@ -28,7 +26,8 @@
     <view class="points-score">{{userInfo.points}}积分</view>
     <view class="points-desc">可兑换礼品</view>
   </view>
-</view>
+  </view>
+
 
 <!-- 信誉分详情 -->
 <view class="card">
