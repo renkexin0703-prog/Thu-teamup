@@ -27,9 +27,21 @@
 
   <view class="form-item">
     <text class="label">技能</text>
-    <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillSelect">
-      <view class="picker">{{skills.length > 0 ? skills.join("、") : "请选择技能"}}</view>
-    </picker>
+    <button class="picker" bindtap="gotoSelectSkills">
+      {{skills.length > 0 ? skills.join("、") : "请选择技能"}}
+    </button>
+  </view>
+
+   <view class="form-item">
+    <text class="label">个人简介</text>
+    <textarea
+      class="input textarea"
+      placeholder="请输入你的个人简介（可多行）"
+      value="{{bio}}"
+      bindinput="onBioChange"
+      maxlength="200"
+      auto-height
+    />
   </view>
 
   <view class="form-item">

@@ -10,7 +10,8 @@ Page({
     grade: "",
     department: "",
     skills: [],
-    wechat: ""
+    wechat: "",
+    bio: "", // 新增：个人简介
   },
 
   onLoad() {
@@ -24,7 +25,10 @@ Page({
       gender: localUserInfo.gender || defaultUserInfo.gender,
       grade: localUserInfo.grade || defaultUserInfo.grade,
       department: localUserInfo.dept || defaultUserInfo.department,
-      skills: localUserInfo.skill ? localUserInfo.skill.split(',') : defaultUserInfo.skills,
+      skills: Array.isArray(localUserInfo.skill) 
+      ? localUserInfo.skill 
+      : (localUserInfo.skill ? localUserInfo.skill.split(',') : []),
+      bio: localUserInfo.bio || "", // 读取 bio
       wechat: localUserInfo.wechat || defaultUserInfo.wechat
     });
   },
@@ -53,10 +57,15 @@ Page({
   },
 
   // 选择技能
-  onSkillSelect(e) {
-    const skillIndexes = e.detail.value;
-    const skills = skillIndexes.map(idx => this.data.filterOptions.skills[idx]);
-    this.setData({ skills });
+  gotoSelectSkills() {
+    wx.navigateTo({
+      url: `/pages/select-skills/select-skills?skills=${JSON.stringify(this.data.skills)}`
+    });
+  },
+  
+
+  onBioChange(e) {
+    this.setData({ bio: e.detail.value });
   },
 
   // 输入微信号
@@ -66,7 +75,7 @@ Page({
 
   // 提交修改
   onSubmit() {
-    const { name, gender, grade, department, skills, wechat } = this.data;
+    const { name, gender, grade, department, skills, wechat, bio } = this.data;
 
     // 简单校验
     if (!name || !gender || !grade || !department || !wechat) {
@@ -83,10 +92,10 @@ Page({
       gender,
       grade,
       dept: department,
-      skill: skills.join(','),
-      contact: {
-        wechat
-      }
+      skill: skills,
+      bio: bio.trim(), // 去除首尾空格
+      wechat: wechat.trim(),
+      avatar: this.data.userInfo.avatar || ""
     };
     wx.setStorageSync('userInfo', editForm);
 
@@ -107,6 +116,7 @@ Page({
         grade: editForm.grade,
         dept: editForm.dept,
         skill: editForm.skill,
+        bio: editForm.bio,
         contact: editForm.contact,
         avatar: currentUser.avatar,
         createTime: db.serverDate(),

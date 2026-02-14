@@ -14,7 +14,9 @@
     "pages/my-activities/my-activities",
     "pages/contact-requests/contact-requests",
     "pages/publish-activity/publish-activity",
-    "pages/publish-teamup/publish-teamup"
+    "pages/publish-teamup/publish-teamup",
+    "pages/chat/chat",
+    "pages/select-skills/select-skills"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -39,6 +41,12 @@
         "text": "社区",
         "iconPath": "/images/tab-community.png",
         "selectedIconPath": "/images/tab-community-active.png"
+      },
+      {
+        "pagePath": "pages/chat/chat", 
+        "text": "AI问",
+        "iconPath": "/images/tab-chat.png",
+        "selectedIconPath": "/images/tab-chat-active.png"
       },
       {
         "pagePath": "pages/profile/profile",

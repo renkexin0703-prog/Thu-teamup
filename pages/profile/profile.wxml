@@ -1,5 +1,3 @@
-<!-- 个人信息区域 -->
-
 
 <!-- 修改个人信息按钮 -->
 <view class="card user-card" bindtap="gotoEditProfile">
@@ -14,11 +12,15 @@
       {{userInfo.gender}} | {{userInfo.grade}} | {{userInfo.department}}
     </view>
     <view class="user-skills">
-      技能：{{userInfo.skills.join('、')}}
-    </view>
+  技能：{{userInfo.skill ? userInfo.skill.join('、') : '未设置'}}
+</view>
     <view class="user-wechat">
       微信号：{{userInfo.wechat}}
     </view>
+    <!-- 新增：个人简介 -->
+  <view class="user-bio" wx:if="{{userInfo.bio}}">
+    简介：{{userInfo.bio}}
+  </view>
   </view>
   <view class="credit-points">
     <view class="credit-score">{{userInfo.creditScore}}分</view>

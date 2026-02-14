@@ -39,6 +39,15 @@
   gap: 8px;
 }
 
+.user-bio {
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+
 .credit-tag {
   font-size: 12px;
   padding: 2px 8px;

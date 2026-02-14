@@ -28,11 +28,25 @@
   color: #666;
 }
 
+.textarea {
+  width: 100%;
+  min-height: 120rpx;
+  max-height: 200rpx;
+  line-height: 40rpx;
+  border: 1rpx solid #ccc;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+  color: #666;
+  resize: none;
+}
+
 .submit-btn {
   width: 100%;
   height: 80rpx;
-  line-height: 80rpx;
-  background-color: #007aff;
+  line-height: 50rpx;
+  background-color: #6777ef;
   color: white;
   border-radius: 10rpx;
   font-size: 32rpx;
