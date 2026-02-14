@@ -22,53 +22,63 @@
 
 <view class="teamup-list">
   <block wx:for="{{filteredTeamUpPosts}}" wx:key="_id">
-    <view class="card" wx:if="{{item.isActive}}">
-      <view class="post-header">
-        <image src="{{item.userAvatar}}" class="avatar" />
-        <view class="user-info">
-          <view class="username">{{item.userName}}</view>
-          <view class="user-dept">{{item.userDepartment}} {{item.userGrade}}</view>
+    <!-- 背景图容器 -->
+    <view class="card-container" wx:if="{{item.isActive}}">
+      <!-- 背景图 -->
+      <image 
+        class="post-bg" 
+        src="{{item.isOwnPost ? '../../images/my-post-bg.png' : '../../images/other-post-bg.png'}}"
+      ></image>
+
+      <!-- 内容层 -->
+      <view class="card-content">
+        <view class="post-header">
+          <image src="{{item.userAvatar}}" class="avatar" />
+          <view class="user-info">
+            <view class="username">{{item.userName}}</view>
+            <view class="user-dept">{{item.userDepartment}} {{item.userGrade}}</view>
+          </view>
+          <view class="gender-tag">{{item.gender}}</view>
         </view>
-        <view class="gender-tag">{{item.gender}}</view>
-      </view>
-      <view class="post-title">{{item.title}}</view>
-      <view class="post-content">{{item.content}}</view>
-      <view class="post-skills">
-        <block wx:for="{{item.skills}}" wx:key="*this">
-          <view class="skill-tag">{{item}}</view>
-        </block>
-      </view>
-      <view class="post-footer">
-        <view class="view-count">浏览：{{item.viewCount}}</view>
- 
-        <button 
-          wx:if="{{!item.isOwnPost}}" 
-          class="btn purple-btn"
-          bindtap="onContactTA"
-          data-post-id="{{item._id || item.id}}"
-          data-wechat="{{item.contactWechat}}"
-          data-user-id="{{item.userId}}" 
-        >
-          联系TA
-        </button>
-        <button 
-          wx:if="{{!item.isOwnPost}}" 
-          class="btn purple-btn"
-          style="margin-left: 10px;"
-          bindtap="onKnowTA"
-          data-user-id="{{item.userId}}"
-        >
-          了解TA
-        </button>
-      
-        <button 
-          wx:if="{{item.isOwnPost}}" 
-          class="btn green-btn"
-          bindtap="onSelectMember"
-          data-post-id="{{item._id || item.id}}"
-        >
-          选择队友
-        </button>
+        <view class="post-title">{{item.title}}</view>
+        <view class="post-content">{{item.content}}</view>
+        <view class="post-skills">
+          <block wx:for="{{item.skills}}" wx:key="*this">
+            <view class="skill-tag">{{item}}</view>
+          </block>
+        </view>
+        <view class="post-footer">
+          <view class="view-count">浏览：{{item.viewCount}}</view>
+          
+          <button 
+            wx:if="{{!item.isOwnPost}}" 
+            class="btn purple-btn"
+            bindtap="onContactTA"
+            data-post-id="{{item._id || item.id}}"
+            data-wechat="{{item.contactWechat}}"
+            data-user-id="{{item.userId}}" 
+          >
+            联系TA
+          </button>
+          <button 
+            wx:if="{{!item.isOwnPost}}" 
+            class="btn purple-btn"
+            style="margin-left: 10px;"
+            bindtap="onKnowTA"
+            data-user-id="{{item.userId}}"
+          >
+            了解TA
+          </button>
+        
+          <button 
+            wx:if="{{item.isOwnPost}}" 
+            class="btn green-btn"
+            bindtap="onSelectMember"
+            data-post-id="{{item._id || item.id}}"
+          >
+            选择队友
+          </button>
+        </view>
       </view>
     </view>
   </block>
