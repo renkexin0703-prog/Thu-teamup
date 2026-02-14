@@ -46,6 +46,7 @@
           bindtap="onContactTA"
           data-post-id="{{item._id || item.id}}"
           data-wechat="{{item.contactWechat}}"
+          data-user-id="{{item.userId}}" 
         >
           联系TA
         </button>

@@ -21,7 +21,7 @@ Page({
     try {
       // 查询当前帖子的所有联系申请（从 contactRecords 集合）
       const res = await db.collection("contactRecords")
-        .where({ teamUpPostId: postId }) // ← 使用相同的 postId（即 _id）
+        .where({ postId })
         .get();
 
       if (res.data.length > 0) {

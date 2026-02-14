@@ -125,63 +125,72 @@ Page({
     this.setData({ filteredTeamUpPosts: filtered });
   },
 
-  // pages/community/community.js
+ 
+// pages/community/community.js
 onContactTA(e) {
-  const postId = e.currentTarget.dataset.postId; // 获取 _id
+  const postId = e.currentTarget.dataset.postId;
   const wechat = e.currentTarget.dataset.wechat;
-  
+  const userId = e.currentTarget.dataset.userId; // ← 获取发布者 userId
+
   wx.navigateTo({
     url: `/pages/contact-ta/contact-ta?postId=${postId}&wechat=${wechat}`
   });
 
-  this.recordContact(postId, post.userId);
+  // 调用 recordContact 时传入 postId 和 userId
+  this.recordContact(postId, userId);
 },
 
-  // 修复：记录联系行为并更新帖子的申请人列表
-  async recordContact(postId, postAuthorId) {
-    const currentUserId = this.data.currentUserId;
-    const db = wx.cloud.database();
+ // pages/community/community.js
+async recordContact(postId, postAuthorId) {
+  const currentUserId = this.data.currentUserId;
+  const db = wx.cloud.database();
 
-    try {
-      // 1. 查询当前联系人的信息
-      const userRes = await db.collection('users').doc(currentUserId).get();
-      const contactUser = userRes.data;
+  try {
+    // 1. 查询当前联系人的信息
+    const userRes = await db.collection('users').doc(currentUserId).get();
+    const contactUser = userRes.data;
 
-      // 2. 检查是否已记录
-      const res = await db.collection('contactRecords').where({
-        postId,
-        contactedBy: currentUserId
-      }).get();
+    // 2. 检查是否已记录
+    const res = await db.collection('contactRecords').where({
+      postId,
+      contactedBy: currentUserId
+    }).get();
 
-      if (res.data.length === 0) {
-        // 3. 新增联系记录
-        await db.collection('contactRecords').add({
-          data: {
-            postId,
-            contactedBy: currentUserId,
-            contactTime: db.serverDate()
-          }
-        });
+    if (res.data.length === 0) {
+      // 3. 新增联系记录（包含用户信息）
+      await db.collection('contactRecords').add({
+        data: {
+          postId,
+          contactedBy: currentUserId,
+          contactTime: db.serverDate(),
+          userName: contactUser.name || "未知用户",
+          userAvatar: contactUser.avatar || "",
+          userDepartment: contactUser.department || "",
+          userGrade: contactUser.grade || "",
+          skills: contactUser.skills || [],
+          contactWechat: contactUser.wechat || ""
+        }
+      });
 
-        // 4. 关键：把联系人信息写入帖子的applicants字段
-        await db.collection('teamUpPosts').doc(postId).update({
-          data: {
-            applicants: db.command.addToSet({ // 避免重复添加
-              userId: currentUserId,
-              userName: contactUser.name || "未知用户",
-              userAvatar: contactUser.avatar || "",
-              userDepartment: contactUser.department || "",
-              userGrade: contactUser.grade || "",
-              skills: contactUser.skills || [],
-              contactWechat: contactUser.wechat || ""
-            })
-          }
-        });
-      }
-    } catch (err) {
-      console.error("记录联系行为失败：", err);
+      // 4. 同时更新 teamUpPosts.applicants
+      await db.collection('teamUpPosts').doc(postId).update({
+        data: {
+          applicants: db.command.addToSet({
+            userId: currentUserId,
+            userName: contactUser.name || "未知用户",
+            userAvatar: contactUser.avatar || "",
+            userDepartment: contactUser.department || "",
+            userGrade: contactUser.grade || "",
+            skills: contactUser.skills || [],
+            contactWechat: contactUser.wechat || ""
+          })
+        }
+      });
     }
-  },
+  } catch (err) {
+    console.error("记录联系行为失败：", err);
+  }
+},
 
 
   // 点击【了解TA】

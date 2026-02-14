@@ -96,7 +96,8 @@ App({
           skill: userDoc.data.skill || "",
           contact: userDoc.data.contact || {},
           createTime: userDoc.data.createTime,
-          updateTime: userDoc.data.updateTime
+          updateTime: userDoc.data.updateTime,
+          teammates: userDoc.data.teammates || [] 
         };
       } else {
         // 用户不存在 → 使用微信授权信息
@@ -110,7 +111,8 @@ App({
           gender: profileRes.userInfo.gender,
           city: profileRes.userInfo.city,
           province: profileRes.userInfo.province,
-          country: profileRes.userInfo.country
+          country: profileRes.userInfo.country,
+          teammates: []
         };
 
         // 写入云数据库
@@ -123,7 +125,9 @@ App({
             city: userInfo.city,
             province: userInfo.province,
             country: userInfo.country,
+            teammates: [],
             createTime: db.serverDate()
+      
           }
         });
       }
