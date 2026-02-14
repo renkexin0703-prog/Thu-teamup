@@ -76,3 +76,12 @@
   font-size: 12px;
   color: #999;
 }
+/* 为重置按钮添加样式 */
+.reset-btn {
+  font-size: 14px;
+  color: #6777ef;
+  padding: 5px 10px;
+  border: 1px solid #6777ef;
+  border-radius: 5px;
+  margin-left: 10px;
+}

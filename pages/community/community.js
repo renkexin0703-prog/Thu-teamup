@@ -14,6 +14,16 @@ Page({
     filteredTeamUpPosts: [], // 显示的帖子列表
     currentUserId: '' // 当前登录用户 ID
   },
+  // 在 Page({}) 中新增一个方法：重置筛选条件
+resetFilters() {
+  this.setData({
+    deptFilter: 'all',
+    categoryFilter: 'all',
+    sortType: 'deadline',
+    searchValue: ''
+  });
+  this.initActivityList(); // 重新加载初始数据
+},
 
   onLoad() {
     // 【修改这里】从全局变量获取登录用户ID，而非本地缓存
@@ -214,5 +224,17 @@ async recordContact(postId, postAuthorId) {
     wx.navigateTo({
       url: "/pages/publish-teamup/publish-teamup"
     });
-  }
+  },
+  // 在 Page({}) 中新增一个方法：重置筛选条件
+resetFilters() {
+  this.setData({
+    currentFilter: {
+      gender: "不限",
+      departments: [],
+      grade: "",
+      skills: []
+    }
+  });
+  this.loadTeamUpPosts(); // 重新加载全部数据
+}
 });

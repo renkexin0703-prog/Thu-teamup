@@ -13,6 +13,7 @@
   <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillChange">
     <view class="filter-tag">技能：{{currentFilter.skills.length > 0 ? currentFilter.skills.join(',') : '不限'}}</view>
   </picker>
+  <view class="reset-btn" bindtap="resetFilters">重置筛选</view>
 </view>
 
 

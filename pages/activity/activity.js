@@ -70,6 +70,17 @@ Page({
     ]
   },
 
+  // 在 Page({}) 中新增一个方法：重置筛选条件
+resetFilters() {
+  this.setData({
+    deptFilter: 'all',
+    categoryFilter: 'all',
+    sortType: 'deadline',
+    searchValue: ''
+  });
+  this.initActivityList(); // 重新加载初始数据
+},
+
   onLoad() {
     this.initActivityList();
   },

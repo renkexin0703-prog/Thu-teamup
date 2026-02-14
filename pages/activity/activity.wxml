@@ -56,6 +56,7 @@
         </view>
       </van-radio-group>
     </view>
+    <view class="reset-btn" bindtap="resetFilters">重置筛选</view>
   </view>
 
   <!-- 排序选择 -->
