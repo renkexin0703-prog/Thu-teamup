@@ -58,7 +58,7 @@ App({
     userInfo: {}
   },
 
-  async login() {
+  async login(userInfo) {
     try {
       // 第一步：调用微信登录获取 code
       const loginRes = await wx.login();
@@ -81,12 +81,18 @@ App({
 
       // 第三步：从云数据库 users 集合中查询该用户
       const db = wx.cloud.database();
-      const userDoc = await db.collection('users').doc(openid).get();
+      let userDoc;
+      try {
+        userDoc = await db.collection('users').doc(openid).get();
+      } catch (err) {
+        // 如果查不到文档，则 userDoc 为 undefined
+        userDoc = null;
+      }
 
-      let userInfo = {};
-      if (userDoc.data) {
+      let finalUserInfo = {};
+      if (userDoc && userDoc.data) {
         // 用户存在 → 使用数据库中的 name 和 avatar
-        userInfo = {
+        finalUserInfo = {
           id: openid,
           name: userDoc.data.name,
           avatar: userDoc.data.avatar || "",
@@ -97,44 +103,35 @@ App({
           contact: userDoc.data.contact || {},
           createTime: userDoc.data.createTime,
           updateTime: userDoc.data.updateTime,
-          teammates: userDoc.data.teammates || [] 
+          teammates: userDoc.data.teammates || []
         };
       } else {
-        // 用户不存在 → 使用微信授权信息
-        const profileRes = await wx.getUserProfile({
-          desc: '用于完善会员资料'
-        });
-        userInfo = {
+        // 用户不存在 → 使用微信授权信息并创建新文档
+        finalUserInfo = {
           id: openid,
-          name: profileRes.userInfo.nickName,
-          avatar: profileRes.userInfo.avatarUrl,
-          gender: profileRes.userInfo.gender,
-          city: profileRes.userInfo.city,
-          province: profileRes.userInfo.province,
-          country: profileRes.userInfo.country,
-          teammates: []
+          name: userInfo.nickName,
+          avatar: userInfo.avatarUrl,
+          gender: userInfo.gender,
+          city: userInfo.city,
+          province: userInfo.province,
+          country: userInfo.country,
+          teammates: [],
+          createTime: db.serverDate(),
+          updateTime: db.serverDate()
         };
 
         // 写入云数据库
         await db.collection('users').add({
           data: {
             _id: openid,
-            name: userInfo.name,
-            avatar: userInfo.avatar,
-            gender: userInfo.gender,
-            city: userInfo.city,
-            province: userInfo.province,
-            country: userInfo.country,
-            teammates: [],
-            createTime: db.serverDate()
-      
+            ...finalUserInfo
           }
         });
       }
 
       // 4. 更新全局变量和本地缓存
-      this.globalData.userInfo = userInfo;
-      wx.setStorageSync('userInfo', userInfo);
+      this.globalData.userInfo = finalUserInfo;
+      wx.setStorageSync('userInfo', finalUserInfo);
 
       // 5. 跳转首页
       wx.switchTab({ url: '/pages/index/index' });

@@ -12,9 +12,9 @@ Page({
 
     wx.getUserProfile({
       desc: '用于完善会员资料',
-      success: () => {
-        // 触发 app.js 中的 login 方法
-        app.login();
+      success: (profileRes) => {
+        // 将用户信息传递给 app.js 的 login 方法
+        app.login(profileRes.userInfo);
       },
       fail: () => {
         console.error('获取用户信息失败');
