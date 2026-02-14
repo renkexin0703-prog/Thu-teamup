@@ -53,6 +53,7 @@ resetFilters() {
     try {
       const res = await wx.cloud.database().collection('teamUpPosts')
         .where({ isActive: true }) // 只查询活跃帖子
+        .orderBy('createTime', 'desc') // ← 新增：按创建时间倒序
         .get();
 
       const cloudPosts = res.data || [];
