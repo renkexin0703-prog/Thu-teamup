@@ -102,7 +102,7 @@ Page({
     const currentUser = app.globalData.userInfo;
     db.collection('users').doc(currentUser.id).set({
       data: {
-        name: editForm.name || currentUser.name,
+        name: editForm.name,
         gender: editForm.gender,
         grade: editForm.grade,
         dept: editForm.dept,

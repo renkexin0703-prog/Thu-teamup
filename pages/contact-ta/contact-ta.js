@@ -5,14 +5,14 @@ const fakeData = require("../../utils/fake-data.js");
 Page({
   data: {
     wechat: "",
-    postId: "",
+    postId: "", // 这个是 teamUpPosts._id
     userInfo: {}
   },
 
   onLoad(options) {
     this.setData({
       wechat: options.wechat,
-      postId: options.postId
+      postId: options.postId // 接收的是 teamUpPosts._id
     });
 
     const globalUser = app.globalData.userInfo || {};
@@ -46,7 +46,7 @@ Page({
         userAvatar: userInfo.avatar,
         userDepartment: userInfo.department,
         userGrade: userInfo.grade,
-        teamUpPostId: postId,
+        teamUpPostId: postId, // ← 使用 teamUpPosts._id
         applyTime: db.serverDate(),
         skills: userInfo.skills || []
       };
@@ -54,7 +54,7 @@ Page({
       // 2. 插入到 contactRecords 集合
       await db.collection("contactRecords").add({ data: contactRecord });
 
-      // 3. 同步更新 teamUpPosts 的 applicants 字段
+      // 3. 同步更新 teamUpPosts 的 applicants 字段（可选）
       await db.collection("teamUpPosts").doc(postId).update({
         data: {
           applicants: db.command.push(contactRecord)

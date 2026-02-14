@@ -21,7 +21,7 @@ Page({
     try {
       // 查询当前帖子的所有联系申请（从 contactRecords 集合）
       const res = await db.collection("contactRecords")
-        .where({ teamUpPostId: postId })
+        .where({ teamUpPostId: postId }) // ← 使用相同的 postId（即 _id）
         .get();
 
       if (res.data.length > 0) {
@@ -36,14 +36,12 @@ Page({
     }
   },
 
-  // 选择申请人
   onApplicantSelect(e) {
     const selectedIndexArray = e.detail.value;
     const selectedApplicants = selectedIndexArray.map(index => this.data.applicants[index]);
     this.setData({ selectedApplicants });
   },
 
-  // 组队成功后更新状态
   async onTeamUpSuccess() {
     const { selectedApplicants, postId } = this.data;
     const db = wx.cloud.database();

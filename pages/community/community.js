@@ -125,20 +125,17 @@ Page({
     this.setData({ filteredTeamUpPosts: filtered });
   },
 
-  // 修复：onContactTA 传正确的参数+写入申请人列表
-  onContactTA(e) {
-    const postId = e.currentTarget.dataset.postId; // 关键：获取帖子ID
-    const wechat = e.currentTarget.dataset.wechat;
-    const post = this.data.filteredTeamUpPosts.find(p => p._id === postId || p.id === postId);
+  // pages/community/community.js
+onContactTA(e) {
+  const postId = e.currentTarget.dataset.postId; // 获取 _id
+  const wechat = e.currentTarget.dataset.wechat;
+  
+  wx.navigateTo({
+    url: `/pages/contact-ta/contact-ta?postId=${postId}&wechat=${wechat}`
+  });
 
-    // 跳转到联系TA页面
-    wx.navigateTo({
-      url: `/pages/contact-ta/contact-ta?postId=${postId}&wechat=${wechat}`
-    });
-
-    // 记录联系行为+写入帖子的applicants字段
-    this.recordContact(postId, post.userId);
-  },
+  this.recordContact(postId, post.userId);
+},
 
   // 修复：记录联系行为并更新帖子的申请人列表
   async recordContact(postId, postAuthorId) {

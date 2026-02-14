@@ -76,10 +76,10 @@ Page({
     const { editForm } = this.data;
     const app = getApp();
     const currentUser = app.globalData.userInfo;
-
+  
     // 1. 保存到本地缓存
     wx.setStorageSync('userInfo', editForm);
-
+  
     // 2. 同步到全局变量
     app.globalData.userInfo = {
       ...currentUser,
@@ -87,11 +87,12 @@ Page({
       name: editForm.name || currentUser.name,
       avatar: editForm.avatar || currentUser.avatar
     };
-
-    // 3. 更新云数据库（只更新 name 和 avatar）
+  
+    // 3. 强制更新云数据库（无论是否存在）
     const db = wx.cloud.database();
-    db.collection('users').doc(currentUser.id).update({
+    db.collection('users').doc(currentUser.id).set({
       data: {
+        ...editForm,
         name: editForm.name || currentUser.name,
         avatar: editForm.avatar || currentUser.avatar,
         updateTime: db.serverDate()
@@ -101,9 +102,10 @@ Page({
       },
       fail: (err) => {
         console.error('云数据库更新失败:', err);
+        wx.showToast({ title: '保存失败，请重试', icon: 'none' });
       }
     });
-
+  
     // 4. 更新页面数据
     this.setData({
       userInfo: editForm,

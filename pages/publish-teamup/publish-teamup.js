@@ -52,62 +52,66 @@ Page({
     this.setData({ wechat: e.detail.value });
   },
 
-  async submitTeamUp() {
-    const { title, selectedGender, desc, wechat, selectedSkills } = this.data;
-    const db = wx.cloud.database();
-    const globalUser = app.globalData.userInfo || {};
-    const editForm = wx.getStorageSync('userInfo') || {}; // 读取【我的】页本地信息
+ // pages/publish-teamup/publish-teamup.js
+async submitTeamUp() {
+  const { title, selectedGender, desc, wechat, selectedSkills } = this.data;
+  const db = wx.cloud.database();
+  const globalUser = app.globalData.userInfo || {};
+  const editForm = wx.getStorageSync('userInfo') || {};
 
-    // 1. 必填项校验
-    const requiredFields = [
-      { name: "标题", value: title },
-      { name: "性别", value: selectedGender },
-      { name: "微信号", value: wechat }
-    ];
-    const emptyField = requiredFields.find(item => !item.value);
-    if (emptyField) {
-      wx.showToast({ title: `请填写${emptyField.name}`, icon: "none" });
-      return;
-    }
-
-    // 2. 从云数据库读取最新信息
-    let userDbInfo = {};
-    try {
-      const res = await db.collection('users').doc(globalUser.id).get();
-      userDbInfo = res.data;
-    } catch (err) {
-      console.error("读取用户信息失败:", err);
-    }
-
-    // 3. 构造帖子（优先用自定义信息，兜底“微信用户”）
-    const newPost = {
-      _id: `team_${Date.now()}`,
-      id: `team_${Date.now()}`,
-      userId: globalUser.id,
-      userName: editForm.name || userDbInfo.name || globalUser.name || "未知用户",
-      userAvatar: globalUser.avatar || "",
-      userDepartment: userDbInfo.dept || editForm.dept || "未填写",
-      userGrade: userDbInfo.grade || editForm.grade || "未填写",
-      gender: selectedGender,
-      title: title,
-      content: desc || "无描述",
-      skills: selectedSkills.length > 0 ? selectedSkills : (editForm.skill ? editForm.skill.split(',') : []),
-      contactWechat: wechat,
-      viewCount: 0,
-      isActive: true,
-      createTime: db.serverDate(),
-      applicants: []
-    };
-
-    try {
-      await db.collection('teamUpPosts').add({ data: newPost });
-      wx.showToast({ title: "发布成功！", icon: "success" });
-      setTimeout(() => {
-        wx.navigateBack({ delta: 1 });
-      }, 1500);
-    } catch (err) {
-      console.error("发布失败：", err);
-      wx.showToast({ title: "发布失败，请重试", icon: "none" });
-    }
+  // 必填项校验
+  const requiredFields = [
+    { name: "标题", value: title },
+    { name: "性别", value: selectedGender },
+    { name: "微信号", value: wechat }
+  ];
+  const emptyField = requiredFields.find(item => !item.value);
+  if (emptyField) {
+    wx.showToast({ title: `请填写${emptyField.name}`, icon: "none" });
+    return;
   }
+
+  // 读取用户信息
+  let userDbInfo = {};
+  try {
+    const res = await db.collection('users').doc(globalUser.id).get();
+    userDbInfo = res.data;
+  } catch (err) {
+    console.error("读取用户信息失败:", err);
+  }
+
+  // 构造帖子
+  const newPost = {
+    _id: `team_${Date.now()}`, // ← 使用 _id 作为唯一标识
+    userId: globalUser.id,
+    userName: editForm.name || userDbInfo.name || globalUser.name || "未知用户",
+    userAvatar: globalUser.avatar || "",
+    userDepartment: userDbInfo.dept || editForm.dept || "未填写",
+    userGrade: userDbInfo.grade || editForm.grade || "未填写",
+    gender: selectedGender,
+    title: title,
+    content: desc || "无描述",
+    skills: selectedSkills.length > 0 ? selectedSkills : (editForm.skill ? editForm.skill.split(',') : []),
+    contactWechat: wechat,
+    viewCount: 0,
+    isActive: true,
+    createTime: db.serverDate(),
+    applicants: []
+  };
+
+  try {
+    await db.collection('teamUpPosts').add({ data: newPost });
+
+    // 跳转到详情页，并传 _id
+    wx.showToast({ title: "发布成功！", icon: "success" });
+    setTimeout(() => {
+      wx.navigateTo({
+        url: `/pages/teamup-detail/teamup-detail?postId=${newPost._id}`
+      });
+    }, 1500);
+  } catch (err) {
+    console.error("发布失败：", err);
+    wx.showToast({ title: "发布失败，请重试", icon: "none" });
+  }
+}
 });
