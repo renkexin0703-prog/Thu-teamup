@@ -52,7 +52,7 @@ Page({
     this.setData({ wechat: e.detail.value });
   },
 
- // pages/publish-teamup/publish-teamup.js
+// pages/publish-teamup/publish-teamup.js
 async submitTeamUp() {
   const { title, selectedGender, desc, wechat, selectedSkills } = this.data;
   const db = wx.cloud.database();
@@ -92,15 +92,16 @@ async submitTeamUp() {
     title: title,
     content: desc || "无描述",
     skills: selectedSkills.length > 0 
-  ? selectedSkills 
-  : Array.isArray(editForm.skill) 
-    ? editForm.skill 
-    : (typeof editForm.skill === 'string' ? editForm.skill.split(',') : []),
+      ? selectedSkills 
+      : Array.isArray(editForm.skill) 
+        ? editForm.skill 
+        : (typeof editForm.skill === 'string' ? editForm.skill.split(',') : []),
     contactWechat: wechat,
     viewCount: 0,
     isActive: true,
     createTime: db.serverDate(),
-    applicants: []
+    applicants: [],
+    bio: editForm.bio || "" 
   };
 
   try {

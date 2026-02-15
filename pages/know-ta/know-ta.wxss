@@ -1,3 +1,4 @@
+/* pages/know-ta/know-ta.wxss */
 .container {
   padding: 20px;
 }

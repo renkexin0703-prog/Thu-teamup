@@ -1,3 +1,4 @@
+<!-- pages/know-ta/know-ta.wxml -->
 <view class="container">
   <view class="header">了解TA</view>
   <view class="user-info">
@@ -6,5 +7,6 @@
     <view>年级：{{userProfile.grade}}</view>
     <view>院系：{{userProfile.department}}</view>
     <view>技能：{{userProfile.skills}}</view>
+    <view>个人简介：{{userProfile.bio}}</view>
   </view>
 </view>
