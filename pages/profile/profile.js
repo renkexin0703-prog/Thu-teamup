@@ -26,10 +26,10 @@ Page({
   },
 
   onShow() {
-    // 每次进入页面都重新获取最新数据（优先级：本地缓存 > 假数据）
+    // 重新获取最新用户信息
     const localUserInfo = wx.getStorageSync('userInfo') || {};
     const defaultUserInfo = fakeData.userInfo;
-
+  
     this.setData({
       userInfo: {
         ...defaultUserInfo,
@@ -38,6 +38,25 @@ Page({
       myActivities: fakeData.myActivities,
       contactRequests: fakeData.contactRequests
     });
+  
+    // ✅ 新增：从云数据库拉取最新头像
+    const app = getApp();
+    const openid = app.globalData.userInfo.id;
+    if (openid) {
+      const db = wx.cloud.database();
+      db.collection('users').doc(openid).get({
+        success: (res) => {
+          if (res.data && res.data.avatar) {
+            const userInfo = { ...this.data.userInfo };
+            userInfo.avatar = res.data.avatar;
+            this.setData({ userInfo });
+          }
+        },
+        fail: (err) => {
+          console.error("从云数据库拉取头像失败:", err);
+        }
+      });
+    }
   },
 
   // 连续点击头像5次显示模拟审核面板

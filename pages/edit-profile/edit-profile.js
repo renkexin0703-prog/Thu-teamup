@@ -11,7 +11,8 @@ Page({
     department: "",
     skills: [],
     wechat: "",
-    bio: "", // 新增：个人简介
+    bio: "", 
+    avatarUrl: "",
   },
 
   onLoad() {
@@ -29,10 +30,87 @@ Page({
         ? localUserInfo.skill 
         : (localUserInfo.skill ? localUserInfo.skill.split(',') : []),
       bio: localUserInfo.bio || "", // 读取 bio
-      wechat: localUserInfo.wechat || defaultUserInfo.wechat
+      wechat: localUserInfo.wechat || defaultUserInfo.wechat,
+      avatarUrl: localUserInfo.avatar || ""
     });
   },
 
+  // 选择头像
+  chooseAvatar() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+        this.setData({ avatarUrl: tempFilePath });
+
+        // ✅ 直接上传，不再裁剪
+        this.uploadAvatar(tempFilePath);
+      },
+      fail: () => {
+        console.log("选择图片失败");
+      }
+    });
+  },
+
+  // 上传头像到云存储
+uploadAvatar(filePath) {
+  const cloudPath = `avatars/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
+  const db = wx.cloud.database();
+
+  wx.cloud.uploadFile({
+    cloudPath,
+    filePath,
+    success: (res) => {
+      const fileID = res.fileID;
+
+      // 更新本地数据
+      const editForm = {
+        ...this.data.userInfo,
+        avatar: fileID
+      };
+
+      // 1. 保存到本地缓存
+      wx.setStorageSync('userInfo', editForm);
+
+      // 2. 同步到全局变量
+      const app = getApp();
+      app.globalData.userInfo = {
+        ...app.globalData.userInfo,
+        ...editForm
+      };
+
+      // 3. 更新当前页面的 avatarUrl（用于预览）
+      this.setData({ avatarUrl: fileID });
+
+      // 4. 更新云数据库
+      const currentUser = app.globalData.userInfo;
+      if (!currentUser.id) {
+        console.error("用户 ID 不存在，无法更新数据库");
+        return;
+      }
+
+      db.collection('users').doc(currentUser.id).update({
+        data: {
+          avatar: fileID,
+          updateTime: db.serverDate()
+        },
+        success: () => {
+          wx.showToast({ title: "头像上传成功", icon: "success" });
+        },
+        fail: (err) => {
+          console.error("上传失败:", err);
+          wx.showToast({ title: "上传失败，请重试", icon: "none" });
+        }
+      });
+    },
+    fail: (err) => {
+      console.error("上传失败:", err);
+      wx.showToast({ title: "上传失败，请重试", icon: "none" });
+    }
+  });
+},
   // 输入姓名
   onNameInput(e) {
     this.setData({ name: e.detail.value });

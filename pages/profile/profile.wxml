@@ -1,7 +1,11 @@
 
 <!-- 修改个人信息按钮 -->
 <view class="card user-card" bindtap="gotoEditProfile">
-  <image src="{{userInfo.avatar}}" class="user-avatar" bindtap="onAvatarTap" />
+  <image 
+  src="{{userInfo.avatar ? (userInfo.avatar.startsWith('https://') ? userInfo.avatar : 'cloud://cloud1-6g67sh8587f55b79.' + userInfo.avatar) : '/images/default-avatar.png'}}"
+  class="user-avatar"
+  bindtap="onAvatarTap"
+/>
   <view class="user-main-info">
     <view class="user-name">{{userInfo.name}} 
       <block wx:for="{{userInfo.creditTags}}" wx:key="*this" wx:if="{{index < 1}}">

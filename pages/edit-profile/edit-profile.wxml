@@ -1,4 +1,17 @@
 <view class="container">
+  <view class="form-item avatar-item">
+  <text class="label">头像</text>
+  <view class="avatar-container">
+    <image 
+      class="avatar-img" 
+      src="{{userInfo.avatar || '/images/default-avatar.png'}}"
+      mode="aspectFill"
+      bindtap="chooseAvatar"
+    />
+    <button class="upload-btn" bindtap="chooseAvatar">更换</button>
+  </view>
+</view>
+
   <view class="form-item">
     <text class="label">姓名</text>
     <input class="input" placeholder="请输入姓名" value="{{name}}" bindinput="onNameInput" />
@@ -27,10 +40,13 @@
 
   <view class="form-item">
     <text class="label">技能</text>
+    <!-- 显示已选技能 -->
+    <view class="skill-value">{{skills.length > 0 ? skills.join("、") : "暂无技能"}}</view>
+    <!-- 固定显示“请编辑技能”的按钮 -->
     <button class="picker" bindtap="gotoSelectSkills">
-      {{skills.length > 0 ? skills.join("、") : "请选择技能"}}
+      请编辑技能
     </button>
-  </view>
+</view>
 
   <view class="form-item">
     <text class="label">个人简介</text>
@@ -50,4 +66,6 @@
   </view>
 
   <button class="submit-btn" bindtap="onSubmit">确定</button>
-</view>7
+  <!-- 在页面底部添加 canvas -->
+<canvas canvas-id="cut-canvas" style="display: none;"></canvas>
+</view>

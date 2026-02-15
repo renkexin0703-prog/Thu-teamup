@@ -1,3 +1,41 @@
+/* 新增头像样式 */
+.avatar-item {
+  margin-bottom: 30rpx;
+}
+
+.avatar-container {
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  margin: 0 auto;
+}
+
+.avatar-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.upload-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 60rpx;
+  height: 60rpx;
+  background-color: rgba(103, 119, 239, 0.8);
+  color: white;
+  border-radius: 50%;
+  font-size: 24rpx;
+  line-height: 60rpx;
+  text-align: center;
+  z-index: 10;
+}
+
+#cut-canvas {
+  display: none;
+}
+
 .container {
   padding: 20rpx;
 }
