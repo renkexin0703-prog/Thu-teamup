@@ -39,7 +39,8 @@ App({
           gender: userDoc.data.gender || 0,
           dept: userDoc.data.dept || "",
           grade: userDoc.data.grade || "",
-          skill: userDoc.data.skill || "",
+          skill: Array.isArray(userDoc.data.skill) ? userDoc.data.skill : [], // ✅ 确保 skill 是数组
+          bio: userDoc.data.bio || "",
           contact: userDoc.data.contact || {},
           createTime: userDoc.data.createTime,
           updateTime: userDoc.data.updateTime
@@ -85,13 +86,11 @@ App({
       try {
         userDoc = await db.collection('users').doc(openid).get();
       } catch (err) {
-        // 如果查不到文档，则 userDoc 为 undefined
         userDoc = null;
       }
 
       let finalUserInfo = {};
       if (userDoc && userDoc.data) {
-        // 用户存在 → 使用数据库中的 name 和 avatar
         finalUserInfo = {
           id: openid,
           name: userDoc.data.name,
@@ -99,14 +98,14 @@ App({
           gender: userDoc.data.gender || 0,
           dept: userDoc.data.dept || "",
           grade: userDoc.data.grade || "",
-          skill: userDoc.data.skill || "",
+          skill: userDoc.data.skill || [], // ✅ 确保 skill 是数组
+          bio: userDoc.data.bio || "",
           contact: userDoc.data.contact || {},
           createTime: userDoc.data.createTime,
           updateTime: userDoc.data.updateTime,
           teammates: userDoc.data.teammates || []
         };
       } else {
-        // 用户不存在 → 使用微信授权信息并创建新文档
         finalUserInfo = {
           id: openid,
           name: userInfo.nickName,

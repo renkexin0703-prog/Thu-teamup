@@ -14,10 +14,10 @@ exports.main = async (event, context) => {
 
   try {
     // 1. 调用大模型 API
-    const res = await wx.cloud.callFunction({
+    const res = await cloud.callFunction({
       name: 'request',
       data: {
-        url: 'https://llmapi.paratera.com/v1/chat/completions',
+        url: 'https://llmapi.paratera.com/v1',
         method: 'POST',
         header: {
           'Content-Type': 'application/json',

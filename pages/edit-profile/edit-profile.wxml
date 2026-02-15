@@ -32,7 +32,7 @@
     </button>
   </view>
 
-   <view class="form-item">
+  <view class="form-item">
     <text class="label">个人简介</text>
     <textarea
       class="input textarea"
@@ -50,4 +50,4 @@
   </view>
 
   <button class="submit-btn" bindtap="onSubmit">确定</button>
-</view>
+</view>7

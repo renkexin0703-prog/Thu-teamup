@@ -1,3 +1,4 @@
+// pages/mine/mine.js
 Page({
   data: {
     userInfo: wx.getStorageSync('userInfo') || {},
@@ -32,11 +33,34 @@ Page({
   },
 
   onShow() {
-    this.setData({
-      userInfo: wx.getStorageSync('userInfo') || {},
-      userScore: wx.getStorageSync('userScore') || 0,
-      teammatesList: wx.getStorageSync('teammates') || []
-    });
+    const app = getApp();
+    const openid = app.globalData.userInfo?.id;
+
+    if (openid) {
+      const db = wx.cloud.database();
+      db.collection('users').doc(openid).get().then(res => {
+        if (res.data) {
+          this.setData({
+            userInfo: res.data,
+            userScore: wx.getStorageSync('userScore') || 0,
+            teammatesList: wx.getStorageSync('teammates') || []
+          });
+        }
+      }).catch(err => {
+        console.error('获取用户信息失败:', err);
+        this.setData({
+          userInfo: wx.getStorageSync('userInfo') || {},
+          userScore: wx.getStorageSync('userScore') || 0,
+          teammatesList: wx.getStorageSync('teammates') || []
+        });
+      });
+    } else {
+      this.setData({
+        userInfo: wx.getStorageSync('userInfo') || {},
+        userScore: wx.getStorageSync('userScore') || 0,
+        teammatesList: wx.getStorageSync('teammates') || []
+      });
+    }
   },
 
   openEditUserInfo() {

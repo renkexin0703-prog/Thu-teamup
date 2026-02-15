@@ -26,8 +26,8 @@ Page({
       grade: localUserInfo.grade || defaultUserInfo.grade,
       department: localUserInfo.dept || defaultUserInfo.department,
       skills: Array.isArray(localUserInfo.skill) 
-      ? localUserInfo.skill 
-      : (localUserInfo.skill ? localUserInfo.skill.split(',') : []),
+        ? localUserInfo.skill 
+        : (localUserInfo.skill ? localUserInfo.skill.split(',') : []),
       bio: localUserInfo.bio || "", // 读取 bio
       wechat: localUserInfo.wechat || defaultUserInfo.wechat
     });
@@ -62,7 +62,6 @@ Page({
       url: `/pages/select-skills/select-skills?skills=${JSON.stringify(this.data.skills)}`
     });
   },
-  
 
   onBioChange(e) {
     this.setData({ bio: e.detail.value });
@@ -106,36 +105,35 @@ Page({
       ...editForm
     };
 
-    // 3. 强制覆盖云数据库（替换“微信用户”）
+    // 3. ✅ 使用 update 更新部分字段，避免覆盖 skill
     const db = wx.cloud.database();
     const currentUser = app.globalData.userInfo;
-    db.collection('users').doc(currentUser.id).set({
+
+    db.collection('users').doc(currentUser.id).update({
       data: {
         name: editForm.name,
         gender: editForm.gender,
         grade: editForm.grade,
         dept: editForm.dept,
-        skill: editForm.skill,
         bio: editForm.bio,
-        contact: editForm.contact,
+        contact: {
+          phone: editForm.contact?.phone || '',
+          wechat: editForm.wechat
+        },
         avatar: currentUser.avatar,
-        createTime: db.serverDate(),
         updateTime: db.serverDate()
       },
       success: () => {
-        console.log('云数据库信息覆盖成功');
+        console.log('云数据库信息更新成功');
+        wx.showToast({ title: "保存成功！", icon: "success" });
       },
       fail: (err) => {
         console.error('云数据库同步失败:', err);
+        wx.showToast({ title: '保存失败，请重试', icon: 'none' });
       }
     });
 
     // 4. 提示并返回
-    wx.showToast({
-      title: "保存成功！",
-      icon: "success"
-    });
-
     setTimeout(() => {
       wx.navigateBack({
         delta: 1
