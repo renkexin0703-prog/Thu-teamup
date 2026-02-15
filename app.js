@@ -4,10 +4,11 @@ App({
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力');
     } else {
+      // 仅保留云开发初始化（核心），移除 AI 扩展相关代码
       wx.cloud.init({
         env: 'cloud1-6g67sh8587f55b79',
         traceUser: true
-      });
+      }); 
     }
 
     // 1. 先尝试从本地缓存获取用户信息
@@ -25,7 +26,8 @@ App({
   // 从云数据库同步用户信息
   async syncUserInfoFromCloud() {
     try {
-      const openid = this.globalData.userInfo?.id;
+      const wxContext = wx.cloud.getWXContext();
+      const openid = wxContext.OPENID;
       if (!openid) return;
 
       const db = wx.cloud.database();
@@ -39,7 +41,7 @@ App({
           gender: userDoc.data.gender || 0,
           dept: userDoc.data.dept || "",
           grade: userDoc.data.grade || "",
-          skill: Array.isArray(userDoc.data.skill) ? userDoc.data.skill : [], // ✅ 确保 skill 是数组
+          skill: Array.isArray(userDoc.data.skill) ? userDoc.data.skill : [],
           bio: userDoc.data.bio || "",
           contact: userDoc.data.contact || {},
           createTime: userDoc.data.createTime,
@@ -56,7 +58,7 @@ App({
   },
 
   globalData: {
-    userInfo: {}
+    userInfo: {} // 移除 ai 相关变量，因为不再使用
   },
 
   async login(userInfo) {
@@ -98,7 +100,7 @@ App({
           gender: userDoc.data.gender || 0,
           dept: userDoc.data.dept || "",
           grade: userDoc.data.grade || "",
-          skill: userDoc.data.skill || [], // ✅ 确保 skill 是数组
+          skill: userDoc.data.skill || [],
           bio: userDoc.data.bio || "",
           contact: userDoc.data.contact || {},
           createTime: userDoc.data.createTime,

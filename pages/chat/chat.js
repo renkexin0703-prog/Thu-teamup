@@ -3,7 +3,9 @@ Page({
   data: {
     messages: [],
     inputValue: '',
-    loading: false
+    loading: false,
+    currentAiReply: '',
+    scrollTop: 0
   },
 
   onLoad() {
@@ -16,35 +18,56 @@ Page({
   },
 
   async sendMessage() {
-    const { inputValue, messages } = this.data;
-    if (!inputValue.trim()) return;
-
-    const userMessage = { role: 'user', content: inputValue };
+    const { inputValue, loading, messages } = this.data;
+    const trimmedInput = inputValue.trim();
+  
+    if (!trimmedInput) {
+      wx.showToast({ title: '请输入提问内容', icon: 'none' });
+      return;
+    }
+    if (loading) return;
+  
+    const userMessage = { role: 'user', content: trimmedInput };
     const newMessages = [...messages, userMessage];
-    this.setData({ messages: newMessages, inputValue: '', loading: true });
-
+    this.setData({
+      messages: newMessages,
+      inputValue: '',
+      loading: true
+    });
+  
     try {
       const res = await wx.cloud.callFunction({
         name: 'askAI',
         data: {
-          prompt: inputValue
+          prompt: trimmedInput,
+          messages: newMessages.map(item => ({
+            role: item.role === 'user' ? 'user' : 'assistant',
+            content: item.content
+          }))
         }
       });
-
-      if (res.result.success) {
-        const aiMessage = { role: 'ai', content: res.result.response };
-        const updatedMessages = [...newMessages, aiMessage];
-        this.setData({ messages: updatedMessages, loading: false });
-
-        // 保存到本地缓存
-        wx.setStorageSync('chatHistory', updatedMessages.slice(-10));
-      } else {
-        throw new Error(res.result.message);
+  
+      if (!res.result || !res.result.success) {
+        throw new Error(res.result?.message || 'AI 调用失败');
       }
+  
+      const aiMessage = { role: 'ai', content: res.result.response };
+      const updatedMessages = [...newMessages, aiMessage];
+      
+      this.setData({
+        messages: updatedMessages,
+        loading: false, // 这里重置 loading 状态
+        currentAiReply: ''
+      });
+  
+      wx.setStorageSync('chatHistory', updatedMessages.slice(-10));
     } catch (err) {
-      console.error('调用 AI 失败:', err);
-      wx.showToast({ title: '服务暂时不可用，请稍后再试', icon: 'none' });
-      this.setData({ loading: false });
+      console.error('发送消息失败:', err);
+      wx.showToast({ 
+        title: err.message || '服务暂时不可用，请稍后再试', 
+        icon: 'none' 
+      });
+      this.setData({ loading: false }); // 异常时也要重置 loading
     }
   },
 

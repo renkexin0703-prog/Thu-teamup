@@ -1,25 +1,25 @@
-<!-- pages/chat/chat.wxml -->
 <view class="container">
-  <!-- 顶部标题栏 -->
   <view class="header">
     <text class="title">AI问</text>
     <button class="clear-btn" bindtap="clearHistory">清空</button>
   </view>
 
-  <!-- 对话区域 -->
-  <scroll-view class="chat-list" scroll-y scroll-top="{{scrollTop}}">
+  <scroll-view class="chat-list" scroll-y scroll-top="{{scrollTop}}" scroll-into-view="last-message">
     <block wx:for="{{messages}}" wx:key="index">
       <view class="message {{item.role === 'user' ? 'user-message' : 'ai-message'}}">
         <text>{{item.content}}</text>
       </view>
     </block>
-    <!-- Loading 动画 -->
-    <view wx:if="{{loading}}" class="loading">
+
+    <view wx:if="{{currentAiReply}}" class="message ai-message" id="last-message">
+      <text>{{currentAiReply}}</text>
+    </view>
+
+    <view wx:if="{{loading && !currentAiReply}}" class="loading">
       <text>正在思考中...</text>
     </view>
   </scroll-view>
 
-  <!-- 底部输入框 -->
   <view class="input-area">
     <input
       class="input-box"
@@ -28,7 +28,9 @@
       bindinput="onInput"
       confirm-type="send"
       bindconfirm="sendMessage"
+      disabled="{{loading}}" 
     />
-    <button class="send-btn" bindtap="sendMessage">发送</button>
+    <!-- 核心修改：简化禁用条件，只保留 loading 禁用，输入为空时做点击提示 -->
+    <button class="send-btn" bindtap="sendMessage" disabled="{{loading}}">发送</button>
   </view>
 </view>

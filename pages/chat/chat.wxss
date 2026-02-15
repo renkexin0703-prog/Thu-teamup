@@ -1,22 +1,30 @@
 /* pages/chat/chat.wxss */
+page {
+  height: 100%;
+  background-color: #f5f5f5;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  box-sizing: border-box;
 }
 
+/* 顶部标题栏 */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20rpx;
+  padding: 20rpx 30rpx;
   background-color: #6777ef;
   color: white;
+  box-shadow: 0 2rpx 8rpx rgba(103, 119, 239, 0.2);
 }
 
 .title {
   font-size: 36rpx;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .clear-btn {
@@ -24,60 +32,99 @@
   color: white;
   background: transparent;
   border: none;
+  padding: 10rpx 15rpx;
+  border-radius: 8rpx;
 }
 
+.clear-btn:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 对话列表区域 */
 .chat-list {
   flex: 1;
-  padding: 20rpx;
+  padding: 20rpx 30rpx;
   background-color: #f5f5f5;
+  overflow-y: auto;
 }
 
+/* 消息通用样式 */
 .message {
   max-width: 80%;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-  border-radius: 10rpx;
+  padding: 24rpx 28rpx;
+  margin-bottom: 24rpx;
+  border-radius: 16rpx;
   word-wrap: break-word;
+  font-size: 30rpx;
+  line-height: 1.6;
 }
 
+/* 用户消息样式 */
 .user-message {
   background-color: #6777ef;
   color: white;
   margin-left: auto;
+  border-bottom-right-radius: 4rpx; /* 边角差异化，更贴近微信风格 */
 }
 
+/* AI消息样式（适配流式输出） */
 .ai-message {
   background-color: white;
   color: #333;
-  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  margin-right: auto;
+  border-bottom-left-radius: 4rpx; /* 边角差异化 */
 }
 
+/* 加载中样式 */
 .loading {
   text-align: center;
   color: #999;
   font-size: 28rpx;
+  padding: 15rpx 0;
 }
 
+/* 底部输入区域 */
 .input-area {
   display: flex;
   align-items: center;
-  padding: 20rpx;
+  padding: 20rpx 30rpx;
   background-color: white;
   border-top: 1rpx solid #eee;
+  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
 .input-box {
   flex: 1;
-  padding: 20rpx;
-  border: 1rpx solid #ccc;
-  border-radius: 10rpx;
+  padding: 24rpx 28rpx;
+  border: 1rpx solid #e5e5e5;
+  border-radius: 40rpx; /* 圆角更圆润，符合移动端审美 */
   margin-right: 20rpx;
+  font-size: 30rpx;
+  background-color: #f9f9f9;
 }
 
+.input-box:disabled {
+  background-color: #f0f0f0;
+  color: #999;
+}
+
+/* 发送按钮 */
 .send-btn {
   background-color: #6777ef;
   color: white;
   border: none;
-  border-radius: 10rpx;
-  padding: 20rpx 40rpx;
+  border-radius: 40rpx; /* 与输入框圆角统一 */
+  padding: 24rpx 48rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.send-btn[disabled] {
+  background-color: #ccc;
+  color: #fff;
+}
+
+.send-btn:active:not([disabled]) {
+  background-color: #5868df;
 }
