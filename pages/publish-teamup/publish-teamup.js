@@ -91,7 +91,11 @@ async submitTeamUp() {
     gender: selectedGender,
     title: title,
     content: desc || "无描述",
-    skills: selectedSkills.length > 0 ? selectedSkills : (editForm.skill ? editForm.skill.split(',') : []),
+    skills: selectedSkills.length > 0 
+  ? selectedSkills 
+  : Array.isArray(editForm.skill) 
+    ? editForm.skill 
+    : (typeof editForm.skill === 'string' ? editForm.skill.split(',') : []),
     contactWechat: wechat,
     viewCount: 0,
     isActive: true,
