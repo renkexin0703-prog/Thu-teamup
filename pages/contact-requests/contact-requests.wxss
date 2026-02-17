@@ -1,1 +1,68 @@
 /* pages/contact-requests/contact-requests.wxss */
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.page-title {
+  padding: 40rpx 0;
+  text-align: center;
+}
+
+.title-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.empty-container {
+  padding: 100rpx 0;
+}
+
+.contacts-list {
+  background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.avatar-container {
+  margin-right: 20rpx;
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.user-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.user-dept {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.arrow-icon {
+  color: #999;
+}

@@ -292,5 +292,11 @@ onShow() {
         }
       }
     });
+  },
+
+  openContactRequests() {
+    wx.navigateTo({
+      url: '/pages/contact-requests/contact-requests'
+    });
   }
 });

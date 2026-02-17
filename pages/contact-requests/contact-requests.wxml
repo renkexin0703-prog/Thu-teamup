@@ -1,2 +1,40 @@
 <!--pages/contact-requests/contact-requests.wxml-->
-<text>pages/contact-requests/contact-requests.wxml</text>
+<view class="container">
+  <view class="page-title">
+    <text class="title-text">联系我的人</text>
+  </view>
+  
+  <view wx:if="{{loading}}" class="loading-container">
+    <van-loading type="spinner" size="24px" vertical>加载中...</van-loading>
+  </view>
+  
+  <view wx:elif="{{contactRequests.length === 0}}" class="empty-container">
+    <van-empty description="暂无联系请求" />
+  </view>
+  
+  <view wx:else class="contacts-list">
+    <van-cell-group border="{{false}}">
+      <van-cell 
+        wx:for="{{contactRequests}}" 
+        wx:key="_id"
+        is-link
+        bind:click="viewUserProfile"
+        data-userid="{{item._id}}"
+      >
+        <view slot="icon" class="avatar-container">
+          <image 
+            src="{{item.avatar ? (item.avatar.startsWith('https://') ? item.avatar : '/images/default-avatar.png') : '/images/default-avatar.png'}}"
+            class="user-avatar"
+          />
+        </view>
+        <view slot="title" class="user-info">
+          <text class="user-name">{{item.name || '未设置用户名'}}</text>
+          <text class="user-dept">{{item.dept || '未设置院系'}}</text>
+        </view>
+        <view slot="right-icon" class="arrow-icon">
+          <van-icon name="arrow" />
+        </view>
+      </van-cell>
+    </van-cell-group>
+  </view>
+</view>

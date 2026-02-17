@@ -57,6 +57,12 @@
       icon="plus-o"
     />
     <van-cell 
+  title="联系我的人" 
+  is-link
+  bind:click="openContactRequests"
+  icon="friends-o"
+/>
+    <van-cell 
       title="我的合作者" 
       is-link
       bind:click="openTeammates"

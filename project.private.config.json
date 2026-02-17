@@ -1,6 +1,6 @@
 {
   "libVersion": "3.14.1",
-  "projectname": "Thu%E6%B8%85%E7%BB%84%E9%98%9F",
+  "projectname": "Thu-teamup%E4%BA%91%E5%BC%80%E5%8F%91",
   "setting": {
     "urlCheck": false,
     "coverView": true,
@@ -9,6 +9,13 @@
     "preloadBackgroundData": false,
     "autoAudits": false,
     "showShadowRootInWxmlPanel": true,
-    "compileHotReLoad": true
+    "compileHotReLoad": true,
+    "useApiHook": true,
+    "useStaticServer": false,
+    "useLanDebug": false,
+    "showES6CompileOption": false,
+    "checkInvalidKey": true,
+    "ignoreDevUnusedFiles": true,
+    "bigPackageSizeSupport": false
   }
 }
