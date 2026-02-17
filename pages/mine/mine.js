@@ -32,36 +32,52 @@ Page({
     evaluateScore: 5
   },
 
-  onShow() {
-    const app = getApp();
-    const openid = app.globalData.userInfo?.id;
+ // pages/mine/mine.js
+onShow() {
+  const app = getApp();
+  const openid = app.globalData.userInfo?.id;
 
-    if (openid) {
-      const db = wx.cloud.database();
-      db.collection('users').doc(openid).get().then(res => {
-        if (res.data) {
-          this.setData({
-            userInfo: res.data,
-            userScore: wx.getStorageSync('userScore') || 0,
-            teammatesList: wx.getStorageSync('teammates') || []
-          });
+  if (openid) {
+    const db = wx.cloud.database();
+    db.collection('users').doc(openid).get().then(async res => {
+      if (res.data) {
+        const userInfo = res.data;
+        let avatarUrl = '/images/default-avatar.png';
+        if (userInfo.avatar && userInfo.avatar.startsWith('cloud://')) {
+          try {
+            const tempRes = await wx.cloud.getTempFileURL({
+              fileList: [userInfo.avatar]
+            });
+            if (tempRes.fileList && tempRes.fileList.length > 0) {
+              avatarUrl = tempRes.fileList[0].download_url;
+            }
+          } catch (err) {
+            console.error("获取临时文件 URL 失败:", err);
+          }
         }
-      }).catch(err => {
-        console.error('获取用户信息失败:', err);
+
         this.setData({
-          userInfo: wx.getStorageSync('userInfo') || {},
+          userInfo: { ...userInfo, avatar: avatarUrl },
           userScore: wx.getStorageSync('userScore') || 0,
           teammatesList: wx.getStorageSync('teammates') || []
         });
-      });
-    } else {
+      }
+    }).catch(err => {
+      console.error('获取用户信息失败:', err);
       this.setData({
         userInfo: wx.getStorageSync('userInfo') || {},
         userScore: wx.getStorageSync('userScore') || 0,
         teammatesList: wx.getStorageSync('teammates') || []
       });
-    }
-  },
+    });
+  } else {
+    this.setData({
+      userInfo: wx.getStorageSync('userInfo') || {},
+      userScore: wx.getStorageSync('userScore') || 0,
+      teammatesList: wx.getStorageSync('teammates') || []
+    });
+  }
+},
 
   openEditUserInfo() {
     const { userInfo } = this.data;

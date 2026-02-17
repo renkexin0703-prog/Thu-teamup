@@ -26,10 +26,9 @@ Page({
   },
 
   onShow() {
-    // 重新获取最新用户信息
     const localUserInfo = wx.getStorageSync('userInfo') || {};
     const defaultUserInfo = fakeData.userInfo;
-  
+    
     this.setData({
       userInfo: {
         ...defaultUserInfo,
@@ -39,22 +38,30 @@ Page({
       contactRequests: fakeData.contactRequests
     });
   
-    // ✅ 新增：从云数据库拉取最新头像
     const app = getApp();
     const openid = app.globalData.userInfo.id;
     if (openid) {
       const db = wx.cloud.database();
-      db.collection('users').doc(openid).get({
-        success: (res) => {
-          if (res.data && res.data.avatar) {
-            const userInfo = { ...this.data.userInfo };
-            userInfo.avatar = res.data.avatar;
-            this.setData({ userInfo });
+      db.collection('users').doc(openid).get().then(async res => {
+        if (res.data && res.data.avatar) {
+          let avatarUrl = '/images/default-avatar.png';
+          if (res.data.avatar.startsWith('cloud://')) {
+            try {
+              const res = await wx.cloud.getTempFileURL({
+                fileList: [res.data.avatar]
+              });
+              avatarUrl = res.fileList[0].download_url || '/images/default-avatar.png';
+            } catch (err) {
+              console.error("获取临时文件 URL 失败:", err);
+            }
           }
-        },
-        fail: (err) => {
-          console.error("从云数据库拉取头像失败:", err);
+  
+          const userInfo = { ...this.data.userInfo };
+          userInfo.avatar = avatarUrl;
+          this.setData({ userInfo });
         }
+      }).catch(err => {
+        console.error("从云数据库拉取头像失败:", err);
       });
     }
   },

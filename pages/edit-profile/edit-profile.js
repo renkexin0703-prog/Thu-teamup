@@ -85,9 +85,9 @@ uploadAvatar(filePath) {
       this.setData({ avatarUrl: fileID });
 
       // 4. 更新云数据库
-      const currentUser = app.globalData.userInfo;
-      if (!currentUser.id) {
-        console.error("用户 ID 不存在，无法更新数据库");
+      const currentUser = app.globalData.userInfo._openid || app.globalData.userInfo._id;
+      if (!openid) {
+        console.error("用户 openid 不存在，无法更新数据库");
         return;
       }
 
@@ -150,72 +150,81 @@ uploadAvatar(filePath) {
     this.setData({ wechat: e.detail.value });
   },
 
-  // 提交修改
-  onSubmit() {
-    const { name, gender, grade, department, skills, wechat, bio } = this.data;
+  // pages/edit-profile/edit-profile.js
+// 修改 onSubmit() 方法如下：
+onSubmit() {
+  const { name, gender, grade, department, skills, wechat, bio } = this.data;
 
-    // 简单校验
-    if (!name || !gender || !grade || !department || !wechat) {
-      wx.showToast({
-        title: "请填写必填项",
-        icon: "none"
-      });
-      return;
-    }
-
-    // 1. 保存到本地缓存
-    const editForm = {
-      name,
-      gender,
-      grade,
-      dept: department,
-      skill: skills,
-      bio: bio.trim(), // 去除首尾空格
-      wechat: wechat.trim(),
-      avatar: this.data.userInfo.avatar || ""
-    };
-    wx.setStorageSync('userInfo', editForm);
-
-    // 2. 同步到全局变量（可选）
-    const app = getApp();
-    app.globalData.userInfo = {
-      ...app.globalData.userInfo,
-      ...editForm
-    };
-
-    // 3. ✅ 使用 update 更新部分字段，避免覆盖 skill
-    const db = wx.cloud.database();
-    const currentUser = app.globalData.userInfo;
-
-    db.collection('users').doc(currentUser.id).update({
-      data: {
-        name: editForm.name,
-        gender: editForm.gender,
-        grade: editForm.grade,
-        dept: editForm.dept,
-        bio: editForm.bio,
-        contact: {
-          phone: editForm.contact?.phone || '',
-          wechat: editForm.wechat
-        },
-        avatar: currentUser.avatar,
-        updateTime: db.serverDate()
-      },
-      success: () => {
-        console.log('云数据库信息更新成功');
-        wx.showToast({ title: "保存成功！", icon: "success" });
-      },
-      fail: (err) => {
-        console.error('云数据库同步失败:', err);
-        wx.showToast({ title: '保存失败，请重试', icon: 'none' });
-      }
+  // 简单校验
+  if (!name || !gender || !grade || !department || !wechat) {
+    wx.showToast({
+      title: "请填写必填项",
+      icon: "none"
     });
-
-    // 4. 提示并返回
-    setTimeout(() => {
-      wx.navigateBack({
-        delta: 1
-      });
-    }, 1500);
+    return;
   }
+
+  // 1. 构造要保存的数据
+  const editForm = {
+    name,
+    gender,
+    grade,
+    dept: department,
+    skill: skills,
+    bio: bio.trim(),
+    wechat: wechat.trim(),
+    avatar: this.data.avatarUrl || this.data.userInfo.avatar // ✅ 关键：使用新上传的 avatarUrl
+  };
+
+  // 2. 保存到本地缓存
+  wx.setStorageSync('userInfo', editForm);
+
+  // 3. 同步到全局变量
+  const app = getApp();
+  app.globalData.userInfo = {
+    ...app.globalData.userInfo,
+    ...editForm
+  };
+
+  // 4. ✅ 更新云数据库：必须包含 avatar 字段
+  const db = wx.cloud.database();
+  const currentUser = app.globalData.userInfo;
+
+  db.collection('users').doc(currentUser.id).update({
+    data: {
+      name: editForm.name,
+      gender: editForm.gender,
+      grade: editForm.grade,
+      dept: editForm.dept,
+      bio: editForm.bio,
+      contact: {
+        phone: editForm.contact?.phone || '',
+        wechat: editForm.wechat
+      },
+      avatar: editForm.avatar, // ✅ 必须加上这行！
+      updateTime: db.serverDate()
+    },
+    success: () => {
+      console.log('云数据库信息更新成功');
+      wx.showToast({ title: "保存成功！", icon: "success" });
+      const pages = getCurrentPages();
+const minePage = pages.find(page => page.route === 'pages/mine/mine');
+if (minePage) {
+  // 如果 mine 页面在栈中，直接调用它的 onShow 方法刷新
+  minePage.onShow();
+}
+    },
+    fail: (err) => {
+      console.error('云数据库同步失败:', err);
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+    }
+  });
+
+  // 5. 提示并返回
+  setTimeout(() => {
+    wx.navigateBack({
+      delta: 1
+    });
+  }, 1500);
+}
 });

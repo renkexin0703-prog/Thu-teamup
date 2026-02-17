@@ -3,11 +3,11 @@
   <text class="label">头像</text>
   <view class="avatar-container">
     <image 
-      class="avatar-img" 
-      src="{{userInfo.avatar || '/images/default-avatar.png'}}"
-      mode="aspectFill"
-      bindtap="chooseAvatar"
-    />
+  class="avatar-img" 
+  src="{{avatarUrl || userInfo.avatar || '/images/default-avatar.png'}}"
+  mode="aspectFill"
+  bindtap="chooseAvatar"
+/>
     <button class="upload-btn" bindtap="chooseAvatar">更换</button>
   </view>
 </view>

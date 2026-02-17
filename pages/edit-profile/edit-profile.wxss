@@ -7,7 +7,7 @@
   position: relative;
   width: 120rpx;
   height: 120rpx;
-  margin: 0 auto;
+  margin: 0 auto 80rpx;
 }
 
 .avatar-img {
@@ -19,15 +19,17 @@
 
 .upload-btn {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 60rpx;
-  height: 60rpx;
+  /* 关键修改：从右下角移到正下方 */
+  bottom: -70rpx;  /* 负值，让按钮在头像下方 */
+  left: 50%;       /* 水平居中 */
+  transform: translateX(-50%); /* 精确居中 */
+  width: 120rpx;   /* 按钮宽度，可根据需要调整 */
+  height: 60rpx;  /* 按钮高度，可根据需要调整 */
   background-color: rgba(103, 119, 239, 0.8);
   color: white;
-  border-radius: 50%;
+  border-radius: 30rpx; /* 圆角，让按钮更像一个长条 */
   font-size: 24rpx;
-  line-height: 60rpx;
+  line-height: 40rpx;
   text-align: center;
   z-index: 10;
 }
