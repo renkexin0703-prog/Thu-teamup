@@ -1,39 +1,34 @@
 {
-  "cloudfunctionRoot": "cloudfunctions",
-  "appid": "wx8a3348885c364300",
-  "projectname": "Thu-teamup",
-  "description": "",
   "setting": {
-    "urlCheck": true,
-    "es6": true,
-    "postcss": true,
-    "minified": true,
-    "newFeature": true,
-    "autoAudits": true,
-    "useWePY": false,
-    "useCompiler": false,
-    "useMultiFrame": false,
-    "useCustomRuntime": false,
-    "useQuickStart": false,
-    "useCloud": true,
-    "cloud": {
-      "env": "cloud1-6g67sh8587f55b79"
+    "es6": false,
+    "postcss": false,
+    "compileWorklet": false,
+    "minified": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "enhance": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
     }
   },
-  "debuggerSetting": {},
   "compileType": "miniprogram",
+  "simulatorPluginLibVersion": {},
   "packOptions": {
-    "include": [],
-    "ignore": [
-      {
-        "type": "folder",
-        "value": "/minitest"
-      },
-      {
-        "type": "folder",
-        "value": "minitest"
-      }
-    ]
+    "ignore": [],
+    "include": []
   },
-  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
+  "appid": "wxe5159c838825bb6f",
+  "editorSetting": {}
 }
