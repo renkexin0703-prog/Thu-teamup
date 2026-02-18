@@ -1,76 +1,153 @@
 // app.js
 App({
   onLaunch() {
+    console.log('小程序启动');
+    
+    // 检查云开发支持
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力');
+      // 直接设置默认用户信息
+      this.setupLocalUser();
     } else {
-      // 仅保留云开发初始化（核心），移除 AI 扩展相关代码
-      wx.cloud.init({
-        env: 'cloud1-6g67sh8587f55b79',
-        traceUser: true
-      }); 
-    }
-
-    // 1. 先尝试从本地缓存获取用户信息
-    const localUserInfo = wx.getStorageSync('userInfo') || {};
-
-    // 2. 如果本地缓存为空，则从云数据库获取
-    if (!localUserInfo.id) {
-      this.syncUserInfoFromCloud();
-    } else {
-      // 否则直接使用本地缓存的数据
-      this.globalData.userInfo = localUserInfo;
+      try {
+        // 初始化云开发环境
+        wx.cloud.init({
+          env: 'cloud1-6g67sh8587f55b79',
+          traceUser: true
+        });
+        console.log('云开发初始化成功');
+        
+        // 延迟执行用户信息同步
+        setTimeout(() => {
+          this.initializeUserInfo();
+        }, 800);
+        
+      } catch (error) {
+        console.error('云开发初始化异常:', error);
+        this.setupLocalUser();
+      }
     }
   },
 
-  // 从云数据库同步用户信息
-  async syncUserInfoFromCloud() {
+  // 设置本地默认用户
+  setupLocalUser() {
+    const defaultUserInfo = {
+      id: 'local_user_' + Date.now(),
+      name: '本地用户',
+      avatar: '/images/default-avatar.png',
+      credit: 80,
+      gender: 0,
+      dept: '未设置',
+      grade: '未设置',
+      skill: [],
+      contact: {}
+    };
+    
+    this.globalData.userInfo = defaultUserInfo;
+    wx.setStorageSync('userInfo', defaultUserInfo);
+    console.log('已设置本地默认用户:', defaultUserInfo);
+  },
+
+  // 初始化用户信息
+  initializeUserInfo() {
     try {
+      // 优先使用本地缓存
+      const cachedUser = wx.getStorageSync('userInfo');
+      console.log('本地缓存用户信息:', cachedUser);
+      
+      if (cachedUser && cachedUser.id) {
+        this.globalData.userInfo = cachedUser;
+        console.log('使用本地缓存的用户信息');
+      } else {
+        // 尝试从云端获取
+        this.fetchCloudUserInfo();
+      }
+    } catch (error) {
+      console.error('初始化用户信息失败:', error);
+      this.setupLocalUser();
+    }
+  },
+
+  // 从云端获取用户信息
+  async fetchCloudUserInfo() {
+    try {
+      console.log('开始获取云端用户信息...');
+      
+      // 获取微信上下文
       const wxContext = wx.cloud.getWXContext();
       const openid = wxContext.OPENID;
-      if (!openid) return;
-
-      const db = wx.cloud.database();
-      const userDoc = await db.collection('users').doc(openid).get();
-
-      if (userDoc.data) {
-        const userInfo = {
-          id: openid,
-          name: userDoc.data.name || "微信用户",
-          avatar: userDoc.data.avatar || "",
-          gender: userDoc.data.gender || 0,
-          dept: userDoc.data.dept || "",
-          grade: userDoc.data.grade || "",
-          skill: Array.isArray(userDoc.data.skill) ? userDoc.data.skill : [],
-          bio: userDoc.data.bio || "",
-          contact: userDoc.data.contact || {},
-          createTime: userDoc.data.createTime,
-          updateTime: userDoc.data.updateTime
-        };
-
-        // 更新全局变量和本地缓存
-        this.globalData.userInfo = userInfo;
-        wx.setStorageSync('userInfo', userInfo);
-      }
-    } catch (err) {
-      console.error("从云数据库同步用户信息失败:", err);
-    }
-  },
-
-  globalData: {
-    userInfo: {} // 移除 ai 相关变量，因为不再使用
-  },
-
-  async login(userInfo) {
-    try {
-      // 第一步：调用微信登录获取 code
-      const loginRes = await wx.login();
-      if (!loginRes.code) {
-        console.error("获取 code 失败");
+      console.log('获取到openid:', openid);
+      
+      if (!openid) {
+        console.log('无法获取openid，使用本地用户');
+        this.setupLocalUser();
         return;
       }
 
-      // 第二步：调用云函数 getOpenid 获取 openid
+      // 查询云数据库
+      const db = wx.cloud.database();
+      const result = await db.collection('users').doc(openid).get();
+      console.log('云端查询结果:', result);
+      
+      if (result.data) {
+        // 构建用户信息对象
+        const userInfo = {
+          id: openid,
+          name: result.data.name || '微信用户',
+          avatar: this.processAvatarUrl(result.data.avatar),
+          credit: result.data.credit || 80,
+          gender: result.data.gender || 0,
+          dept: result.data.dept || '未设置',
+          grade: result.data.grade || '未设置',
+          skill: Array.isArray(result.data.skill) ? result.data.skill : [],
+          contact: result.data.contact || {},
+          createTime: result.data.createTime,
+          updateTime: result.data.updateTime
+        };
+        
+        // 保存到全局和本地
+        this.globalData.userInfo = userInfo;
+        wx.setStorageSync('userInfo', userInfo);
+        console.log('云端用户信息加载成功:', userInfo);
+      } else {
+        console.log('云端无用户数据，创建本地用户');
+        this.setupLocalUser();
+      }
+    } catch (error) {
+      console.error('获取云端用户信息失败:', error);
+      this.setupLocalUser();
+    }
+  },
+
+  // 处理头像URL
+  processAvatarUrl(avatarUrl) {
+    if (!avatarUrl) return '/images/default-avatar.png';
+    
+    // 如果是云存储URL，清理重复前缀
+    if (avatarUrl.startsWith('cloud://')) {
+      const cleaned = avatarUrl.replace(/cloud:\/\/[^.]+\./, 'cloud://');
+      console.log('清理头像URL:', avatarUrl, '->', cleaned);
+      return cleaned;
+    }
+    
+    return avatarUrl;
+  },
+
+  globalData: {
+    userInfo: {} // 用户信息对象
+  },
+
+  // 登录方法（保持原有逻辑）
+  async login(userInfo) {
+    try {
+      // 第一步：获取微信登录code
+      const loginRes = await wx.login();
+      if (!loginRes.code) {
+        console.error("获取code失败");
+        return;
+      }
+
+      // 第二步：调用云函数获取openid
       const cloudRes = await wx.cloud.callFunction({
         name: 'getOpenid',
         data: { code: loginRes.code }
@@ -78,11 +155,11 @@ App({
 
       const openid = cloudRes.result.openid;
       if (!openid) {
-        console.error("获取 openid 失败");
+        console.error("获取openid失败");
         return;
       }
 
-      // 第三步：从云数据库 users 集合中查询该用户
+      // 第三步：查询或创建用户记录
       const db = wx.cloud.database();
       let userDoc;
       try {
@@ -93,10 +170,11 @@ App({
 
       let finalUserInfo = {};
       if (userDoc && userDoc.data) {
+        // 用户已存在
         finalUserInfo = {
           id: openid,
           name: userDoc.data.name,
-          avatar: userDoc.data.avatar || "",
+          avatar: userDoc.data.avatar || "/images/default-avatar.png",
           gender: userDoc.data.gender || 0,
           dept: userDoc.data.dept || "",
           grade: userDoc.data.grade || "",
@@ -104,24 +182,23 @@ App({
           bio: userDoc.data.bio || "",
           contact: userDoc.data.contact || {},
           createTime: userDoc.data.createTime,
-          updateTime: userDoc.data.updateTime,
-          teammates: userDoc.data.teammates || []
+          updateTime: userDoc.data.updateTime
         };
       } else {
+        // 创建新用户
         finalUserInfo = {
           id: openid,
           name: userInfo.nickName,
-          avatar: userInfo.avatarUrl,
+          avatar: userInfo.avatarUrl || "/images/default-avatar.png",
           gender: userInfo.gender,
           city: userInfo.city,
           province: userInfo.province,
           country: userInfo.country,
-          teammates: [],
           createTime: db.serverDate(),
           updateTime: db.serverDate()
         };
 
-        // 写入云数据库
+        // 写入数据库
         await db.collection('users').add({
           data: {
             _id: openid,
@@ -130,14 +207,15 @@ App({
         });
       }
 
-      // 4. 更新全局变量和本地缓存
+      // 更新全局状态和本地缓存
       this.globalData.userInfo = finalUserInfo;
       wx.setStorageSync('userInfo', finalUserInfo);
 
-      // 5. 跳转首页
+      // 跳转到首页
       wx.switchTab({ url: '/pages/index/index' });
+      
     } catch (err) {
-      console.error("登录失败:", err);
+      console.error("登录流程失败:", err);
       wx.showToast({ title: "登录失败，请重试", icon: "none" });
     }
   }

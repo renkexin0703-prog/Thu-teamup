@@ -1,5 +1,6 @@
 // pages/mine/mine.js
 Page({
+
   data: {
     userInfo: wx.getStorageSync('userInfo') || {},
     userScore: wx.getStorageSync('userScore') || 0,
@@ -10,6 +11,7 @@ Page({
       grade: '',
       dept: '',
       skill: '',
+      avatar: '',
       contact: {
         phone: '',
         wechat: ''
@@ -32,55 +34,117 @@ Page({
     evaluateScore: 5
   },
 
- // pages/mine/mine.js
-onShow() {
-  const app = getApp();
-  const openid = app.globalData.userInfo?.id;
+  onShow() {
+    console.log('=== 进入我的页面 ===');
+    this.loadCurrentUserInfo();
+  },
 
-  if (openid) {
-    const db = wx.cloud.database();
-    db.collection('users').doc(openid).get().then(async res => {
-      if (res.data) {
-        const userInfo = res.data;
-        let avatarUrl = '/images/default-avatar.png';
-        if (userInfo.avatar && userInfo.avatar.startsWith('cloud://')) {
-          try {
-            const tempRes = await wx.cloud.getTempFileURL({
-              fileList: [userInfo.avatar]
-            });
-            if (tempRes.fileList && tempRes.fileList.length > 0) {
-              avatarUrl = tempRes.fileList[0].download_url;
+  // 替换 loadCurrentUserInfo 方法
+loadCurrentUserInfo() {
+  try {
+    // 从本地缓存获取用户信息
+    const localUserInfo = wx.getStorageSync('userInfo') || {};
+    console.log('本地用户信息:', localUserInfo);
+    
+    if (localUserInfo && Object.keys(localUserInfo).length > 0) {
+      let avatarUrl = localUserInfo.avatar || '/images/default-avatar.png';
+      
+      // 如果是云存储URL，获取临时访问链接
+      if (avatarUrl.startsWith('cloud://')) {
+        wx.cloud.getTempFileURL({
+          fileList: [avatarUrl],
+          success: (res) => {
+            if (res.fileList && res.fileList[0] && res.fileList[0].tempFileURL) {
+              this.setData({
+                userInfo: { 
+                  ...localUserInfo, 
+                  avatar: res.fileList[0].tempFileURL 
+                },
+                userScore: wx.getStorageSync('userScore') || 0,
+                teammatesList: wx.getStorageSync('teammates') || []
+              });
+              console.log('使用临时URL加载头像成功');
             }
-          } catch (err) {
-            console.error("获取临时文件 URL 失败:", err);
+          },
+          fail: (err) => {
+            console.error('获取临时URL失败:', err);
+            // 失败时使用默认头像
+            this.setData({
+              userInfo: { 
+                ...localUserInfo, 
+                avatar: '/images/default-avatar.png' 
+              },
+              userScore: wx.getStorageSync('userScore') || 0,
+              teammatesList: wx.getStorageSync('teammates') || []
+            });
           }
-        }
-
+        });
+      } else {
+        // 直接使用URL
         this.setData({
-          userInfo: { ...userInfo, avatar: avatarUrl },
+          userInfo: { 
+            ...localUserInfo, 
+            avatar: avatarUrl 
+          },
           userScore: wx.getStorageSync('userScore') || 0,
           teammatesList: wx.getStorageSync('teammates') || []
         });
       }
-    }).catch(err => {
-      console.error('获取用户信息失败:', err);
+      
+      console.log('用户信息加载完成:', this.data.userInfo);
+    } else {
+      // 使用默认信息
       this.setData({
-        userInfo: wx.getStorageSync('userInfo') || {},
-        userScore: wx.getStorageSync('userScore') || 0,
-        teammatesList: wx.getStorageSync('teammates') || []
+        userInfo: {
+          name: '未登录用户',
+          avatar: '/images/default-avatar.png',
+          credit: 80
+        },
+        userScore: 0,
+        teammatesList: []
       });
-    });
-  } else {
+      console.log('使用默认用户信息');
+    }
+  } catch (error) {
+    console.error('加载用户信息失败:', error);
     this.setData({
-      userInfo: wx.getStorageSync('userInfo') || {},
-      userScore: wx.getStorageSync('userScore') || 0,
-      teammatesList: wx.getStorageSync('teammates') || []
+      userInfo: {
+        name: '加载失败',
+        avatar: '/images/default-avatar.png',
+        credit: 80
+      }
     });
   }
 },
+  // 新增方法：处理头像URL
+  handleAvatarUrl(avatarUrl) {
+    if (!avatarUrl) {
+      return '/images/default-avatar.png';
+    }
+    
+    console.log('原始头像URL:', avatarUrl);
+    
+    // 处理云存储URL格式问题
+    if (avatarUrl.startsWith('cloud://')) {
+      // 清理重复的环境ID前缀
+      let cleanUrl = avatarUrl.replace(/cloud:\/\/[^.]+\./, 'cloud://');
+      console.log('清理后URL:', cleanUrl);
+      return cleanUrl;
+    }
+    
+    // 处理相对路径
+    if (avatarUrl.startsWith('/')) {
+      return avatarUrl;
+    }
+    
+    // 其他情况返回默认头像
+    return '/images/default-avatar.png';
+  },
 
   openEditUserInfo() {
     const { userInfo } = this.data;
+    console.log('打开编辑界面，当前用户信息:', userInfo);
+    
     this.setData({
       editForm: {
         name: userInfo.name || '',
@@ -88,6 +152,7 @@ onShow() {
         grade: userInfo.grade || '',
         dept: userInfo.dept || '',
         skill: userInfo.skill || '',
+        avatar: userInfo.avatar || '/images/default-avatar.png',
         contact: {
           phone: userInfo.contact?.phone || '',
           wechat: userInfo.contact?.wechat || ''
@@ -95,10 +160,60 @@ onShow() {
       },
       editUserInfoShow: true
     });
+    console.log('编辑表单数据:', this.data.editForm);
   },
 
   closeEditUserInfo() {
     this.setData({ editUserInfoShow: false });
+  },
+
+  // 新增：选择头像
+  chooseAvatar() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['original', 'compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+        this.uploadAvatar(tempFilePath);
+      },
+      fail: (err) => {
+        console.error('选择图片失败:', err);
+        wx.showToast({ title: '选择图片失败', icon: 'none' });
+      }
+    });
+  },
+
+  // 新增：上传头像到云存储
+  uploadAvatar(filePath) {
+    const app = getApp();
+    const openid = app.globalData.userInfo?.id;
+    
+    if (!openid) {
+      wx.showToast({ title: '请先登录', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({ title: '上传中...' });
+    
+    // 上传到云存储
+    wx.cloud.uploadFile({
+      cloudPath: `avatars/${openid}_${Date.now()}.png`,
+      filePath: filePath,
+      success: (res) => {
+        // 更新表单中的头像URL
+        this.setData({
+          'editForm.avatar': res.fileID
+        });
+        wx.hideLoading();
+        wx.showToast({ title: '头像选择成功', icon: 'success' });
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('上传头像失败:', err);
+        wx.showToast({ title: '上传失败，请重试', icon: 'none' });
+      }
+    });
   },
 
   onEditFormChange(e) {
@@ -139,19 +254,18 @@ onShow() {
       },
       success: () => {
         console.log('云数据库信息更新成功');
+        // 更新页面显示的用户信息
+        this.setData({
+          userInfo: { ...this.data.userInfo, ...editForm },
+          editUserInfoShow: false
+        });
+        wx.showToast({ title: '信息保存成功', icon: 'success' });
       },
       fail: (err) => {
         console.error('云数据库更新失败:', err);
         wx.showToast({ title: '保存失败，请重试', icon: 'none' });
       }
     });
-  
-    // 4. 更新页面数据
-    this.setData({
-      userInfo: editForm,
-      editUserInfoShow: false
-    });
-    wx.showToast({ title: '信息保存成功', icon: 'success' });
   },
 
   openSubmitActivity() {
@@ -299,4 +413,5 @@ onShow() {
       url: '/pages/contact-requests/contact-requests'
     });
   }
+
 });

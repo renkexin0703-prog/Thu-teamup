@@ -3,3 +3,25 @@
   --van-rate-icon-size: 40rpx;
   --van-rate-selected-color: var(--primary-color);
 }
+
+/* 头像上传区域样式 */
+.avatar-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 0;
+}
+
+.avatar-preview {
+  position: relative;
+}
+
+.upload-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 8rpx;
+}
+
+.upload-btn::after {
+  border: none;
+}

@@ -26,46 +26,47 @@ Page({
   },
 
   onShow() {
+    // 🔧 最小化修改：强制使用正确的默认头像
     const localUserInfo = wx.getStorageSync('userInfo') || {};
-    const defaultUserInfo = fakeData.userInfo;
+    
+    // 确保头像使用正确的路径
+    const safeUserInfo = {
+      ...fakeData.userInfo,
+      ...localUserInfo,
+      avatar: '/images/default-avatar.png'  // 强制使用默认头像路径
+    };
     
     this.setData({
-      userInfo: {
-        ...defaultUserInfo,
-        ...localUserInfo
-      },
+      userInfo: safeUserInfo,
       myActivities: fakeData.myActivities,
       contactRequests: fakeData.contactRequests
     });
   
+    // 🔧 修改云数据库查询部分 - 添加安全检查
     const app = getApp();
-    const openid = app.globalData.userInfo.id;
+    const openid = app.globalData.userInfo?.id;
+    
     if (openid) {
       const db = wx.cloud.database();
-      db.collection('users').doc(openid).get().then(async res => {
-        if (res.data && res.data.avatar) {
-          let avatarUrl = '/images/default-avatar.png';
-          if (res.data.avatar.startsWith('cloud://')) {
-            try {
-              const res = await wx.cloud.getTempFileURL({
-                fileList: [res.data.avatar]
-              });
-              avatarUrl = res.fileList[0].download_url || '/images/default-avatar.png';
-            } catch (err) {
-              console.error("获取临时文件 URL 失败:", err);
-            }
+      db.collection('users').doc(openid).get({
+        success: (res) => {
+          if (res && res.data) {
+            // 只在数据有效时才更新
+            const updatedUserInfo = {
+              ...this.data.userInfo,
+              ...res.data,
+              avatar: '/images/default-avatar.png'  // 始终使用默认头像
+            };
+            this.setData({ userInfo: updatedUserInfo });
           }
-  
-          const userInfo = { ...this.data.userInfo };
-          userInfo.avatar = avatarUrl;
-          this.setData({ userInfo });
+        },
+        fail: (err) => {
+          console.log("云数据库查询失败，使用默认数据");  // 降级处理
         }
-      }).catch(err => {
-        console.error("从云数据库拉取头像失败:", err);
       });
     }
   },
-
+  
   // 连续点击头像5次显示模拟审核面板
   onAvatarTap() {
     const tapCount = this.data.tapCount + 1;

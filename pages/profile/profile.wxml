@@ -1,13 +1,12 @@
-
 <!-- 修改个人信息按钮 -->
 <view class="card user-card" bindtap="gotoEditProfile">
   <image 
-  src="{{userInfo.avatar ? (userInfo.avatar.startsWith('https://') ? userInfo.avatar : 'cloud://cloud1-6g67sh8587f55b79.' + userInfo.avatar) : '/images/default-avatar.png'}}"
-  class="user-avatar"
-  bindtap="onAvatarTap"
-/>
+    src="{{userInfo.avatar || '/images/default-avatar.png'}}"
+    class="user-avatar"
+    bindtap="onAvatarTap"
+  />
   <view class="user-main-info">
-    <view class="user-name">{{userInfo.name}} 
+    <view class="user-name">{{userInfo.name}}
       <block wx:for="{{userInfo.creditTags}}" wx:key="*this" wx:if="{{index < 1}}">
         <text class="credit-tag">{{item}}</text>
       </block>
@@ -16,15 +15,15 @@
       {{userInfo.gender}} | {{userInfo.grade}} | {{userInfo.department}}
     </view>
     <view class="user-skills">
-  技能：{{userInfo.skill ? userInfo.skill.join('、') : '未设置'}}
-</view>
+      技能：{{userInfo.skill ? userInfo.skill.join('、') : '未设置'}}
+    </view>
     <view class="user-wechat">
       微信号：{{userInfo.wechat}}
     </view>
     <!-- 新增：个人简介 -->
-  <view class="user-bio" wx:if="{{userInfo.bio}}">
-    简介：{{userInfo.bio}}
-  </view>
+    <view class="user-bio" wx:if="{{userInfo.bio}}">
+      简介：{{userInfo.bio}}
+    </view>
   </view>
   <view class="credit-points">
     <view class="credit-score">{{userInfo.creditScore}}分</view>
@@ -32,8 +31,7 @@
     <view class="points-score">{{userInfo.points}}积分</view>
     <view class="points-desc">可兑换礼品</view>
   </view>
-  </view>
-
+</view>
 
 <!-- 信誉分详情 -->
 <view class="card">

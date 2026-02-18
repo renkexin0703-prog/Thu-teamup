@@ -1,4 +1,19 @@
 <view class="container">
+  <view class="container">
+  <!-- 调试信息显示 -->
+  <view style="padding: 20rpx; background: #ffeeee; margin-bottom: 20rpx;">
+    <view>调试信息:</view>
+    <view>userInfo.avatar: {{userInfo.avatar}}</view>
+    <view>显示的头像URL: {{userInfo.avatar || '/images/default-avatar.png'}}</view>
+    <view>完整userInfo: {{userInfo}}</view>
+  </view>
+  
+  <!-- 原有的个人信息卡片代码保持不变 -->
+  <view class="bg-white rounded-lg p-20 mb-20" bind:click="openEditUserInfo">
+    <!-- ... 后续代码不变 ... -->
+  </view>
+</view>
+
  <!-- 个人信息卡片 -->
 <view class="bg-white rounded-lg p-20 mb-20" bind:click="openEditUserInfo">
   <view class="flex-row justify-between mb-20">
@@ -91,6 +106,27 @@
   >
     <view class="popup-card" style="width: 90%;">
       <text class="font-bold text-36rpx block mb-20">编辑个人信息</text>
+      
+      <!-- 头像上传区域 -->
+      <view class="avatar-upload-area mb-20">
+        <view class="avatar-preview">
+          <van-image
+            width="120"
+            height="120"
+            radius="60"
+            src="{{editForm.avatar || '/images/default-avatar.png'}}"
+            fit="cover"
+          />
+        </view>
+        <van-button 
+          class="upload-btn mt-10"
+          size="small"
+          bind:click="chooseAvatar"
+        >
+          更换头像
+        </van-button>
+      </view>
+      
       <van-cell-group border="{{false}}">
         <van-field
           label="用户名"
