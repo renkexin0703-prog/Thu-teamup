@@ -1,3 +1,10 @@
+<!-- pages/index/index.wxml -->
+<!-- 核心容器：授权登录 -->
+<view class="container">
+  <button wx:if="{{!hasUserInfo}}" bindtap="getUserProfile">点击授权登录</button>
+</view>
+
+<!-- 筛选栏 -->
 <view class="filter-bar">
   <view class="filter-title">筛选：</view>
   <!-- 性别筛选 -->
@@ -29,6 +36,7 @@
   </picker>
 </view>
 
+<!-- 活动列表（每个卡片底部直接显示两个按钮） -->
 <view class="activity-list">
   <block wx:for="{{filteredActivities}}" wx:key="id">
     <view class="card">
@@ -37,13 +45,16 @@
       <view class="activity-info">院系：{{item.department}}</view>
       <view class="activity-info">截止时间：{{item.deadline}}</view>
       <view class="activity-info">已组队：{{item.teamUpCount}}人</view>
-      <view class="btn" bindtap="gotoTeamUp">一键组队</view>
+
+      <!-- 核心：卡片底部直接放两个并排按钮 -->
+      <view class="card-buttons">
+        <view class="btn btn-primary" bindtap="onQuickTeamUp" data-id="{{item.id}}">
+          一键组队
+        </view>
+        <view class="btn btn-secondary" bindtap="onPopupDetail" data-id="{{item.id}}">
+          查看详情
+        </view>
+      </view>
     </view>
   </block>
-</view>
-
-<!-- pages/index/index.wxml -->
-<view class="container">
-  <button wx:if="{{!hasUserInfo}}" bindtap="getUserProfile">点击授权登录</button>
-  
 </view>

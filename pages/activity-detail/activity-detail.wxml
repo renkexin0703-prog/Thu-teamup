@@ -1,0 +1,22 @@
+<!--pages/activity-detail/activity-detail.wxml-->
+<text>pages/activity-detail/activity-detail.wxml</text>
+<view class="container">
+  <!-- 活动标题 -->
+  <view class="title">{{ activityDetail.title }}</view>
+  
+  <!-- 活动详情 -->
+  <van-cell-group border="true" class="mt-20">
+    <van-cell label="主办方" value="{{ activityDetail.organizer }}" />
+    <van-cell label="院系标签" value="{{ activityDetail.dept || activityDetail.department }}" />
+    <van-cell label="截止日期" value="{{ activityDetail.deadline }}" />
+    <van-cell label="难度/类型" value="{{ activityDetail.difficulty }}" />
+    <van-cell label="组队人数" value="{{ activityDetail.teamJoined }}/{{ activityDetail.teamTotal }}" wx:if="{{ activityDetail.teamJoined }}" />
+    <van-cell label="活动介绍" value="{{ activityDetail.intro }}" />
+    <van-cell label="联系方式" value="{{ activityDetail.contact }}" wx:if="{{ activityDetail.contact }}" />
+  </van-cell-group>
+
+  <!-- 跳转到外部详情链接（可选） -->
+  <button bindtap="openDetailUrl" class="purple-btn mt-20 w-100" wx:if="{{ activityDetail.detailUrl }}">
+    打开官方详情页
+  </button>
+</view>

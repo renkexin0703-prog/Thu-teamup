@@ -56,7 +56,6 @@
         </view>
       </van-radio-group>
     </view>
-    <view class="reset-btn" bindtap="resetFilters">重置筛选</view>
   </view>
 
   <!-- 排序选择 -->
@@ -118,8 +117,11 @@
         <van-cell label="组队人数" value="{{ currentActivity.teamJoined }}/{{ currentActivity.teamTotal }}" />
       </van-cell-group>
  
-      <!-- 一键组队按钮 -->
-      <button bindtap="onQuickTeamUp" class="purple-btn mt-20 w-100">一键组队</button>
+      <!-- 一键组队和比赛详情按钮 -->
+<view class="flex-row">
+  <button bindtap="onQuickTeamUp" class="purple-btn mt-20" style="flex: 1; margin-right: 10px;">一键组队</button>
+  <button bindtap="onShowDetails" class="purple-btn mt-20" style="flex: 1;">比赛详情</button>
+</view>
     </view>
   </van-popup>
 </view>

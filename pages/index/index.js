@@ -13,7 +13,14 @@ Page({
     },
     filteredActivities: [],
     hasUserInfo: false, // 是否已授权用户信息
-    userInfo: {} // 用户信息
+    userInfo: {}, // 用户信息
+    // 新增：活动ID到详情链接的映射表（修复语法错误：补全逗号）
+    activityDetailLinks: {
+      "act_001": "https://mp.weixin.qq.com/s/OvAIUdFS_TLAQub_c1xxvA", // 第一届“智斗大模型”
+      "act_002": "https://mp.weixin.qq.com/s/7vde-xqt6_cegGsQyVXH-Q?scene=1&click_id=15", // 虚拟仿真创意设计大赛
+      "act_003": "https://mp.weixin.qq.com/s/mLRyv6QXqBrOU8J4jIwP1w?scene=1&click_id=13", // 紫荆杯学生寒假电竞大赛
+      "act_004": "https://example.com/activity4"  // 第九届软件设计大赛
+    }
   },
 
   onLoad() {
@@ -132,49 +139,45 @@ Page({
     this.setData({ filteredActivities: filtered });
   },
 
-  gotoTeamUp() {
-    console.log("点击了一键组队按钮");
-    wx.navigateTo({
-      url: '/pages/publish-teamup/publish-teamup',
-      success: () => {
-        console.log("成功跳转到发起组队页面");
-      },
-      fail: (err) => {
-        console.error("跳转失败:", err);
-        wx.showToast({
-          title: "跳转失败，请重试",
-          icon: "none"
-        });
-      }
+  // ========== 核心：卡片底部按钮事件 ==========
+  // 一键组队按钮（接收活动ID，带提示）
+  onQuickTeamUp(e) {
+    const actId = e.currentTarget.dataset.id;
+    console.log("一键组队-活动ID：", actId);
+    wx.showToast({
+      title: `活动${actId}一键组队成功`,
+      icon: 'success',
+      duration: 1500
     });
   },
 
-  // 【一键组队】按钮点击事件
-  onQuickTeamUp() {
-    console.log("点击了一键组队按钮");
-
-    // 打印跳转路径
-    console.log("尝试跳转到:", '/pages/publish-teamup/publish-teamup');
-
-    // 检查页面栈长度
-    const pageStackLength = getCurrentPages().length;
-    console.log("当前页面栈长度:", pageStackLength);
-
-    // 如果页面栈过深，使用 redirectTo
-    const navigateMethod = pageStackLength >= 9 ? wx.redirectTo : wx.navigateTo;
-
-    navigateMethod({
-      url: '/pages/publish-teamup/publish-teamup',
-      success: () => {
-        console.log("成功跳转到发起组队页面");
-      },
-      fail: (err) => {
-        console.error("跳转失败:", err);
-        wx.showToast({
-          title: "跳转失败，请重试",
-          icon: "none"
-        });
-      }
-    });
+  // 查看详情按钮（跳转指定链接，修复逻辑）
+  onPopupDetail(e) {
+    const actId = e.currentTarget.dataset.id;
+    console.log("查看详情-活动ID：", actId);
+    
+    // 从映射表中获取对应链接
+    const link = this.data.activityDetailLinks[actId];
+    
+    if (link) {
+      // 对链接进行编码，避免特殊字符导致跳转失败
+      const encodedUrl = encodeURIComponent(link);
+      // 跳转到webview页面承载外部链接
+      wx.navigateTo({
+        url: `/pages/webview/webview?url=${encodedUrl}`,
+        fail: (err) => {
+          console.error("跳转详情页失败：", err);
+          wx.showToast({
+            title: "跳转失败，请检查页面是否存在",
+            icon: "none"
+          });
+        }
+      });
+    } else {
+      wx.showToast({
+        title: "暂无该活动详情链接",
+        icon: "none"
+      });
+    }
   }
 });

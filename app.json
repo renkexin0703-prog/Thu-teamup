@@ -2,6 +2,7 @@
   "pages": [
     "pages/login/login",
     "pages/index/index",
+    "pages/webview/webview",  
     "pages/community/community",
     "pages/select-teammates/select-teammates",
     "pages/contact-ta/contact-ta",
@@ -16,7 +17,9 @@
     "pages/publish-activity/publish-activity",
     "pages/publish-teamup/publish-teamup",
     "pages/chat/chat",
-    "pages/select-skills/select-skills"
+    "pages/select-skills/select-skills",
+    "pages/activity-detail/activity-detail",
+    "pages/webview"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -43,7 +46,7 @@
         "selectedIconPath": "/images/tab-community-active.png"
       },
       {
-        "pagePath": "pages/chat/chat", 
+        "pagePath": "pages/chat/chat",
         "text": "AI问",
         "iconPath": "/images/tab-chat.png",
         "selectedIconPath": "/images/tab-chat-active.png"
@@ -56,7 +59,8 @@
       }
     ]
   },
-  
   "style": "v2",
   "sitemapLocation": "sitemap.json"
+ 
+  
 }

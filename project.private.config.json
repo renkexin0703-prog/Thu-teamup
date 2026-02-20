@@ -1,6 +1,6 @@
 {
   "libVersion": "3.14.1",
-  "projectname": "Thu-teamup%E4%BA%91%E5%BC%80%E5%8F%91",
+  "projectname": "Thu-teamup",
   "setting": {
     "urlCheck": false,
     "coverView": true,
@@ -17,5 +17,6 @@
     "checkInvalidKey": true,
     "ignoreDevUnusedFiles": true,
     "bigPackageSizeSupport": false
-  }
+  },
+  "condition": {}
 }

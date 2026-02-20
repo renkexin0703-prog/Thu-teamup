@@ -54,32 +54,76 @@ const userInfo = {
 
 // ===================== 活动数据 =====================
 // 已审核通过的活动（全体可见）
+// ===================== 活动数据 =====================
+// 已审核通过的活动（全体可见）
 const approvedActivities = [
   {
     id: "act_001",
-    title: "跨院系AI创新大赛",
-    organizer: "计算机系科协",
-    department: "计算机系",
+    title: "第一届“智斗大模型”————学科难题挑战赛",
+    organizer: "清华大学电子工程系",
+    department: "电子系",
     grade: "不限",
-    deadline: "2026-03-15",
+    deadline: "2026-03-8",
     teamUpCount: 12,
     status: "approved",
     cover: "https://mmbiz.qpic.cn/mmbiz_jpg/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0",
-    skills: ["Python", "深度学习", "算法"]
+    skills: ["物理", "数学", "化学","生物","信息","工程"],
+    // 新增：详情页需要的字段
+    intro: "本次挑战赛聚焦大模型在学科难题解决中的应用，面向全校学生开放，旨在挖掘大模型的实际应用价值。", // 活动介绍
+    detailUrl: "https://xxx.com/act_001", // 比赛详情页链接（可选）
+    contact: "电子系学生会 李同学 138xxxx1234" // 联系方式（可选）
   },
   {
     id: "act_002",
-    title: "人文与科技跨界论坛",
-    organizer: "新雅书院",
-    department: "新雅书院",
-    grade: "大二至大四",
-    deadline: "2026-03-20",
+    title: "虚拟仿真创意设计大赛",
+    organizer: "清华大学材料学院",
+    department: "材料学院",
+    grade: "本科生/研究生",
+    deadline: "2026-03-31",
+    teamUpCount: 12,
+    status: "approved",
+    cover: "https://mmbiz.qpic.cn/mmbiz_jpg/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0",
+    skills: ["虚拟仿真"],
+    // 新增字段
+    intro: "虚拟仿真创意设计大赛面向材料学院全体学生，鼓励结合虚拟仿真技术开展材料设计创新。",
+    detailUrl: "https://xxx.com/act_002",
+    contact: "材料学院 张老师 139xxxx5678"
+  },
+  // 其他活动（act_003、act_004）按同样方式补充字段即可
+  {
+    id: "act_003",
+    title: "紫荆杯学生寒假电竞大赛",
+    organizer: "学生紫荆电竞社",
+    department: "学生紫荆电竞社",
+    grade: "不限",
+    deadline: "2026-01-23",
     teamUpCount: 8,
     status: "approved",
     cover: "https://mmbiz.qpic.cn/mmbiz_jpg/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0",
-    skills: ["文案", "策划", "沟通"]
+    skills: ["电竞"],
+    intro: "紫荆杯电竞大赛涵盖LOL、王者荣耀等热门项目，以娱乐竞技为主，丰富寒假校园生活。",
+    detailUrl: "https://xxx.com/act_003",
+    contact: "电竞社 王同学 137xxxx9012"
+  },
+  {
+    id: "act_004",
+    title: "第九届软件设计大赛",
+    organizer: "电子系科协软件部",
+    department: "电子系科协软件部",
+    grade: "不限",
+    deadline: "2026-03-8",
+    teamUpCount: 8,
+    status: "approved",
+    cover: "https://mmbiz.qpic.cn/mmbiz_jpg/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0",
+    skills: ["软件设计"],
+    intro: "第九届软件设计大赛聚焦实用型软件开发，鼓励跨院系组队，优秀作品将推荐至校级竞赛。",
+    detailUrl: "https://xxx.com/act_004",
+    contact: "电子系科协 赵同学 136xxxx3456"
   }
 ];
+
+// 其他数据（myActivities、teamUpPosts 等）无需修改
+
 
 // 待审核/驳回的活动（仅自己可见）【审核状态相关假数据区域】
 const myActivities = [

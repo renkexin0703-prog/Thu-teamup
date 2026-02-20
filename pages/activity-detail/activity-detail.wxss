@@ -1,0 +1,23 @@
+/* pages/activity-detail/activity-detail.wxss */
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  padding: 20rpx 0;
+}
+
+.purple-btn {
+  background-color: #6777ef;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  padding: 16rpx 0;
+  border: none;
+}
