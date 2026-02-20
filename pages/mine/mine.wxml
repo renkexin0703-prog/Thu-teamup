@@ -1,5 +1,5 @@
 <view class="container">
-  <view class="container">
+  
   <!-- 调试信息显示 -->
   <view style="padding: 20rpx; background: #ffeeee; margin-bottom: 20rpx;">
     <view>调试信息:</view>

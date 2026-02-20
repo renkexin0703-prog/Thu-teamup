@@ -1,70 +1,4 @@
 // pages/activity-detail/activity-detail.js
-Page({
-
-  /**
-   * 页面的初始数据
-   */
-  data: {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
-})
-const fakeData = require("../../utils/fake-data.js"); // 引入假数据
 
 Page({
   data: {
@@ -105,7 +39,7 @@ Page({
           difficulty: '简单',
           teamJoined: 8,
           teamTotal: 15,
-          intro: '文学院征文比赛以“青春”为主题，鼓励原创文学作品'
+          intro: '文学院征文比赛以"青春"为主题，鼓励原创文学作品'
         },
         {
           id: 3,
@@ -148,5 +82,51 @@ Page({
     });
     // 如果是H5链接，用下面的代码：
     // wx.openURL({ url: this.data.activityDetail.detailUrl });
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+    // 页面显示时的逻辑
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide() {
+    // 页面隐藏时的逻辑
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload() {
+    // 页面卸载时的逻辑
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+    // 下拉刷新逻辑
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom() {
+    // 上拉触底逻辑
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage() {
+    // 分享逻辑
+    return {
+      title: this.data.activityDetail.title || '活动详情',
+      path: '/pages/activity-detail/activity-detail?id=' + (this.data.activityDetail.id || '')
+    };
   }
 });
