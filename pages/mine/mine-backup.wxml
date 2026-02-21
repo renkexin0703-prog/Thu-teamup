@@ -1,0 +1,318 @@
+<view class="container">
+  
+  <!-- 调试信息显示 -->
+  <view wx:if="{{__isDebugMode}}" style="padding: 20rpx; background: #ffeeee; margin-bottom: 20rpx;">
+    <view>🔧 调试面板 (刷新次数: {{refreshCount}})</view>
+    <view>当前头像URL: {{userInfo.avatar}}</view>
+    <view>显示的头像: {{userInfo.avatar || '/images/default-avatar.png'}}</view>
+    <view>用户信息: {{userInfo.name}} (信誉分: {{userInfo.credit}})</view>
+    <view>头像类型: {{userInfo.avatar.indexOf('cloud://') !== -1 ? '云存储' : '普通URL'}}</view>
+    <view style="margin-top: 10rpx;">
+      <van-button size="small" bind:click="debugRefresh" style="margin-right: 10rpx;">🔄 强制刷新</van-button>
+      <van-button size="small" bind:click="forceSyncFromEdit" style="margin-right: 10rpx;">⚡ 同步编辑页数据</van-button>
+      <van-button size="small" bind:click="testCloudFunction" style="margin-right: 10rpx;">🧪 测试云函数</van-button>
+      <van-button size="small" bind:click="manualTest" style="margin-right: 10rpx;">🎯 手动测试</van-button>
+      <van-button size="small" bind:click="manualRefresh" style="background: #ff0000; color: white; margin-right: 10rpx;">🔥 紧急刷新</van-button>
+      <van-button size="small" bind:click="hardRefresh" style="background: #000000; color: white;">💣 硬核刷新</van-button>
+    </view>
+  </view>
+
+  <!-- 个人信息卡片 -->
+  <view class="bg-white rounded-lg p-20 mb-20" bind:click="openEditUserInfo">
+    <view class="flex-row justify-between mb-20">
+      <van-avatar 
+        size="80" 
+        src="{{userInfo.avatar || '/images/default-avatar.png'}}" 
+        class="mr-20"
+      />
+      <view class="flex-col">
+        <text class="font-bold text-36rpx">{{userInfo.name || '未设置用户名'}}</text>
+        <text class="text-light">信誉分：{{userInfo.credit || 80}}</text>
+      </view>
+      <!-- 刷新按钮 -->
+      <view>
+        <van-button 
+          size="small" 
+          type="primary" 
+          bind:tap="hardRefresh" 
+          style="height: 60rpx;"
+        >
+          🔄 刷新
+        </van-button>
+      </view>
+    </view>
+    <van-cell-group border="{{false}}">
+      <van-cell label="性别" value="{{userInfo.gender || '未设置'}}" />
+      <van-cell label="年级" value="{{userInfo.grade || '未设置'}}" />
+      <van-cell label="院系" value="{{userInfo.dept || '未设置'}}" />
+      <!-- ✅ 显示技能 -->
+      <van-cell label="技能" value="{{userInfo.skill && Array.isArray(userInfo.skill) ? userInfo.skill.join('、') : '未设置'}}" />
+    </van-cell-group>
+  </view>
+
+  <!-- 积分模块 -->
+  <view class="bg-white rounded-lg p-20 mb-20">
+    <text class="font-bold text-32rpx block mb-20">积分中心</text>
+    <view class="flex-row justify-between mb-20">
+      <text>当前积分：</text>
+      <text class="text-primary font-bold">{{userScore}}</text>
+    </view>
+    <van-divider />
+    <view class="mt-20">
+      <text class="block mb-10">积分获取：</text>
+      <view class="flex-row flex-wrap">
+        <van-tag class="mr-10 mb-10 purple-tag">投稿活动 +50</van-tag>
+        <van-tag class="mr-10 mb-10 purple-tag">组队成功 +20</van-tag>
+        <van-tag class="mr-10 mb-10 purple-tag">每日登录 +5</van-tag>
+        <van-tag class="mr-10 mb-10 purple-tag">发圈宣传 +50</van-tag>
+      </view>
+    </view>
+    <view class="mt-20">
+      <text class="block mb-10">积分消耗：</text>
+      <view class="flex-row flex-wrap">
+        <van-tag class="mr-10 mb-10 purple-tag">文创礼品 50积分</van-tag>
+        <van-tag class="mr-10 mb-10 purple-tag">面试券 100积分</van-tag>
+      </view>
+    </view>
+    <van-button class="purple-btn mt-20 w-100" bind:click="checkIn">每日登录领积分</van-button>
+  </view>
+
+  <!-- 功能入口 -->
+  <view class="bg-white rounded-lg p-20 mb-20">
+    <van-cell 
+      title="我要提供活动！" 
+      is-link
+      bind:click="openSubmitActivity"
+      icon="plus-o"
+    />
+    <van-cell 
+  title="联系我的人" 
+  is-link
+  bind:click="openContactRequests"
+  icon="friends-o"
+/>
+    <van-cell 
+      title="我的合作者" 
+      is-link
+      bind:click="openTeammates"
+      icon="friends-o"
+    />
+    <van-cell 
+      title="发圈宣传领积分" 
+      is-link
+      bind:click="shareToCircle"
+      icon="share-o"
+    />
+    <van-cell 
+      title="积分兑换礼品" 
+      is-link
+      bind:click="exchangeGift"
+      icon="gift-o"
+    />
+  </view>
+
+  <!-- 编辑个人信息弹窗 -->
+  <van-popup
+    show="{{editUserInfoShow}}"
+    position="center"
+    closeable
+    bind:close="closeEditUserInfo"
+  >
+    <view class="popup-card" style="width: 90%;">
+      <text class="font-bold text-36rpx block mb-20">编辑个人信息</text>
+      
+      <!-- 头像上传区域 -->
+      <view class="avatar-upload-area mb-20">
+        <view class="avatar-preview">
+          <van-image
+            width="120"
+            height="120"
+            radius="60"
+            src="{{editForm.avatar || '/images/default-avatar.png'}}"
+            fit="cover"
+          />
+        </view>
+        <van-button 
+          class="upload-btn mt-10"
+          size="small"
+          bind:click="chooseAvatar"
+        >
+          更换头像
+        </van-button>
+      </view>
+      
+      <van-cell-group border="{{false}}">
+        <van-field
+          label="用户名"
+          value="{{editForm.name}}"
+          bind:change="onEditFormChange"
+          data-key="name"
+          placeholder="请输入用户名"
+        />
+        <van-field
+          label="性别"
+          value="{{editForm.gender}}"
+          bind:change="onEditFormChange"
+          data-key="gender"
+          placeholder="请输入性别"
+        />
+        <van-field
+          label="年级"
+          value="{{editForm.grade}}"
+          bind:change="onEditFormChange"
+          data-key="grade"
+          placeholder="请输入年级"
+        />
+        <van-field
+          label="院系"
+          value="{{editForm.dept}}"
+          bind:change="onEditFormChange"
+          data-key="dept"
+          placeholder="请输入院系"
+        />
+        <van-field
+          label="技能"
+          value="{{editForm.skill}}"
+          bind:change="onEditFormChange"
+          data-key="skill"
+          placeholder="请输入技能"
+        />
+        <van-field
+          label="电话"
+          value="{{editForm.contact.phone}}"
+          bind:change="onEditFormChange"
+          data-key="phone"
+          placeholder="请输入电话"
+        />
+        <van-field
+          label="微信号"
+          value="{{editForm.contact.wechat}}"
+          bind:change="onEditFormChange"
+          data-key="wechat"
+          placeholder="请输入微信号"
+        />
+      </van-cell-group>
+      <van-button 
+        class="purple-btn mt-20 w-100"
+        bind:click="saveUserInfo"
+      >
+        保存信息
+      </van-button>
+    </view>
+  </van-popup>
+
+  <!-- 提交活动弹窗 -->
+  <van-popup
+    show="{{submitActivityShow}}"
+    position="center"
+    closeable
+    bind:close="closeSubmitActivity"
+  >
+    <view class="popup-card" style="width: 90%;">
+      <text class="font-bold text-36rpx block mb-20">提交活动信息</text>
+      <van-cell-group border="{{false}}">
+        <van-field
+          label="活动标题"
+          value="{{activityForm.title}}"
+          bind:change="onActivityFormChange"
+          data-key="title"
+          placeholder="请输入活动标题"
+        />
+        <van-field
+          label="主办方"
+          value="{{activityForm.organizer}}"
+          bind:change="onActivityFormChange"
+          data-key="organizer"
+          placeholder="请输入主办方"
+        />
+        <van-field
+          label="院系标签"
+          value="{{activityForm.dept}}"
+          bind:change="onActivityFormChange"
+          data-key="dept"
+          placeholder="请输入院系标签"
+        />
+        <van-field
+          label="大类标签"
+          value="{{activityForm.category}}"
+          bind:change="onActivityFormChange"
+          data-key="category"
+          placeholder="请输入大类标签（工科/理科/文科/美术）"
+        />
+        <van-field
+          label="截止日期"
+          value="{{activityForm.deadline}}"
+          bind:change="onActivityFormChange"
+          data-key="deadline"
+          placeholder="请输入截止日期（YYYY-MM-DD）"
+        />
+        <van-field
+          label="难度/类型"
+          value="{{activityForm.difficulty}}"
+          bind:change="onActivityFormChange"
+          data-key="difficulty"
+          placeholder="请输入难度/类型"
+        />
+      </van-cell-group>
+      <van-button 
+        class="purple-btn mt-20 w-100"
+        bind:click="submitActivityInfo"
+      >
+        提交审核
+      </van-button>
+    </view>
+  </van-popup>
+
+  <!-- 我的合作者弹窗 -->
+  <van-popup
+    show="{{teammatesShow}}"
+    position="center"
+    closeable
+    bind:close="closeTeammates"
+    style="overflow-y: auto;"
+  >
+    <view class="popup-card" style="width: 90%; max-height: 80vh;">
+      <text class="font-bold text-36rpx block mb-20">我的合作者</text>
+      <van-cell-group border="{{false}}">
+        <van-cell 
+          wx:for="{{teammatesList}}" 
+          wx:key="id"
+          title="{{item.name}}"
+          label="院系：{{item.dept}} | 技能：{{item.skill}}"
+          is-link
+          bind:click="evaluateTeammate"
+          data-teammate="{{item}}"
+        />
+      </van-cell-group>
+    </view>
+  </van-popup>
+
+  <!-- 评价队友弹窗 -->
+  <van-popup
+    show="{{evaluateShow}}"
+    position="center"
+    closeable
+    bind:close="closeEvaluate"
+  >
+    <view class="popup-card">
+      <text class="font-bold text-36rpx block mb-20">评价队友</text>
+      <van-field
+        label="技能标签评价"
+        value="{{evaluateTag}}"
+        bind:change="onEvaluateTagChange"
+        placeholder="如：后端大神、超靠谱"
+      />
+      <van-rate 
+        value="{{evaluateScore}}"
+        bind:change="onEvaluateScoreChange"
+        class="mt-20"
+      />
+      <van-button 
+        class="purple-btn mt-20 w-100"
+        bind:click="submitEvaluate"
+      >
+        提交评价
+      </van-button>
+    </view>
+  </van-popup>
+</view>

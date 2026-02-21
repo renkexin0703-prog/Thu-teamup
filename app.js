@@ -20,7 +20,7 @@ App({
         // 延迟执行用户信息同步
         setTimeout(() => {
           this.initializeUserInfo();
-        }, 800);
+        }, 1000);
         
       } catch (error) {
         console.error('云开发初始化异常:', error);
@@ -73,9 +73,20 @@ App({
     try {
       console.log('开始获取云端用户信息...');
       
-      // 获取微信上下文
-      const wxContext = wx.cloud.getWXContext();
-      const openid = wxContext.OPENID;
+      // 正确方式：调用云函数获取openid
+      let openidResult;
+      try {
+        openidResult = await wx.cloud.callFunction({
+          name: 'getOpenid'
+        });
+        console.log('云函数调用结果:', openidResult);
+      } catch (cloudErr) {
+        console.error('云函数调用失败:', cloudErr);
+        this.setupLocalUser();
+        return;
+      }
+      
+      const openid = openidResult.result?.openid;
       console.log('获取到openid:', openid);
       
       if (!openid) {
@@ -133,11 +144,7 @@ App({
     return avatarUrl;
   },
 
-  globalData: {
-    userInfo: {} // 用户信息对象
-  },
-
-  // 登录方法（保持原有逻辑）
+  // 登录方法
   async login(userInfo) {
     try {
       // 第一步：获取微信登录code
@@ -218,5 +225,10 @@ App({
       console.error("登录流程失败:", err);
       wx.showToast({ title: "登录失败，请重试", icon: "none" });
     }
+  },
+
+  globalData: {
+    userInfo: {}, // 用户信息对象
+    onAvatarUpdate: null // 头像更新回调函数
   }
 });
