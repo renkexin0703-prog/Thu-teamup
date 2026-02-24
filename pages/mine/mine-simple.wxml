@@ -1,17 +1,12 @@
 <view class="container">
   
-  <!-- 超级调试面板 -->
-  <view style="padding: 20rpx; background: #ffcccc; margin-bottom: 20rpx;">
-    <view style="font-weight: bold; margin-bottom: 10rpx;">🚨 紧急调试面板</view>
+  <!-- 调试信息（可选） -->
+  <view wx:if="{{__debugMode}}" style="padding: 20rpx; background: #ffeeee; margin-bottom: 20rpx;">
+    <view>🔧 调试信息</view>
     <view>当前头像: {{userInfo.avatar}}</view>
     <view>用户姓名: {{userInfo.name}}</view>
-    <view>用户ID: {{userInfo.id}}</view>
-    <button bindtap="emergencyRefresh" style="background: #ff0000; color: white; margin-top: 10rpx;">
-      💣 紧急强制刷新
-    </button>
-    <button bindtap="showCloudData" style="background: #0000ff; color: white; margin-top: 10rpx; margin-left: 10rpx;">
-      ☁️ 查看云端数据
-    </button>
+    <view>信誉分: {{userInfo.credit}}</view>
+    <button size="mini" bindtap="refreshData">🔄 手动刷新</button>
   </view>
 
   <!-- 用户信息卡片 -->
@@ -20,24 +15,24 @@
       <!-- 头像 -->
       <van-avatar 
         size="80" 
-        src="{{userInfo.avatar || '/images/default-avatar.png'}}" 
+        src="{{userInfo.avatar}}" 
         class="mr-20"
       />
       
       <!-- 用户基本信息 -->
       <view class="flex-col flex-1">
-        <text class="font-bold text-36rpx">{{userInfo.name || '加载中...'}}</text>
-        <text class="text-light">信誉分：{{userInfo.credit || 80}}</text>
+        <text class="font-bold text-36rpx">{{userInfo.name}}</text>
+        <text class="text-light">信誉分：{{userInfo.credit}}</text>
       </view>
       
-      <!-- 强制刷新按钮 -->
+      <!-- 刷新按钮 -->
       <van-button 
         size="small" 
         type="primary" 
-        bindtap="forceRefreshAvatar"
+        bindtap="refreshData"
         style="height: 60rpx;"
       >
-        🔥 强制刷新头像
+        🔄 刷新
       </van-button>
     </view>
     
@@ -60,6 +55,40 @@
     <van-button class="purple-btn mt-20 w-100" bindtap="checkIn">
       每日登录领积分
     </van-button>
+  </view>
+
+  <!-- 功能入口 -->
+  <view class="bg-white rounded-lg p-20 mb-20">
+    <van-cell 
+      title="我要提供活动！" 
+      is-link
+      bindtap="openSubmitActivity"
+      icon="plus-o"
+    />
+    <van-cell 
+      title="联系我的人" 
+      is-link
+      bindtap="openContactRequests"
+      icon="friends-o"
+    />
+    <van-cell 
+      title="我的合作者" 
+      is-link
+      bindtap="openTeammates"
+      icon="friends-o"
+    />
+    <van-cell 
+      title="发圈宣传领积分" 
+      is-link
+      bindtap="shareToCircle"
+      icon="share-o"
+    />
+    <van-cell 
+      title="积分兑换礼品" 
+      is-link
+      bindtap="exchangeGift"
+      icon="gift-o"
+    />
   </view>
 
 </view>

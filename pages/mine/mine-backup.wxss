@@ -1,0 +1,42 @@
+/* 页面特有样式 */
+.van-rate {
+  --van-rate-icon-size: 40rpx;
+  --van-rate-selected-color: var(--primary-color);
+}
+
+/* 头像上传区域样式 */
+.avatar-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 0;
+  background-color: #f8f8f8;
+  border-radius: 16rpx;
+  margin: 20rpx 0;
+}
+
+.avatar-preview {
+  position: relative;
+  margin-bottom: 20rpx;
+}
+
+.avatar-preview van-image {
+  border: 4rpx solid #fff;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.upload-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  padding: 0 30rpx;
+}
+
+.upload-btn::after {
+  border: none;
+}
+
+.upload-btn:active {
+  opacity: 0.8;
+}
