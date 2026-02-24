@@ -87,3 +87,11 @@
 .btn:active {
   background: #4cae4c;
 }
+
+.tip-text {
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+  margin-top: 20rpx;
+  line-height: 1.5;
+}

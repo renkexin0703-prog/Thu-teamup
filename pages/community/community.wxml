@@ -78,6 +78,9 @@
             选择队友
           </button>
         </view>
+         <view wx:if="{{!item.isOwnPost}}" class="contact-tip">
+          当您点击“联系TA”后，对方即可选择您为队友，请复制对方的微信号并在微信内联系TA。
+        </view>
       </view>
     </view>
   </block>

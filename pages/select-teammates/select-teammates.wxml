@@ -19,4 +19,8 @@
 
   <!-- 组队成功按钮 -->
   <view class="btn" bindtap="onTeamUpSuccess">组队成功</view>
+  <!-- 新增提示文字 -->
+  <view class="tip-text">
+    组队成功后，您的帖子将会下架，请保证您与合适的队友已有联系。
+  </view>
 </view>
