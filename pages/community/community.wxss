@@ -152,10 +152,41 @@ page {
 .btn-primary { background: #6777ef; color: #fff; }
 .btn-secondary { background: #fff; color: #6777ef; border: 2rpx solid #6777ef; }
 
+/* 悬浮发布按钮 - 优化为右下角圆形 */
 .fab-btn {
+  position: fixed;
+  /* 距离右边和底部的距离 */
+  right: 40rpx;
+  bottom: 140rpx; /* 避开底部 tabbar 的高度 */
+  
+  /* 设置为圆形 */
   width: 100rpx;
   height: 100rpx;
+  border-radius: 50%;
+  
+  /* 背景渐变色，提升质感 */
   background: linear-gradient(135deg, #6777ef, #8e9eff);
+  color: #ffffff;
+  
+  /* 居中显示加号 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 60rpx;
-  box-shadow: 0 10rpx 25rpx rgba(103, 119, 239, 0.4);
+  font-weight: 300;
+  
+  /* 增加立体阴影感 */
+  box-shadow: 0 10rpx 20rpx rgba(103, 119, 239, 0.4);
+  
+  /* 确保在最上层 */
+  z-index: 999;
+  
+  /* 点击时的反馈动画 */
+  transition: all 0.2s ease;
+}
+
+/* 点击时的缩放效果 */
+.fab-btn:active {
+  transform: scale(0.9);
+  box-shadow: 0 5rpx 10rpx rgba(103, 119, 239, 0.2);
 }
