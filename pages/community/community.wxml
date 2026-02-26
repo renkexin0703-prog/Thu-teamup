@@ -1,87 +1,75 @@
-
-<view class="filter-bar">
-  <view class="filter-title">筛选：</view>
-  <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderChange">
-    <view class="filter-tag">性别：{{currentFilter.gender}}</view>
-  </picker>
-  <picker mode="multiSelector" range="{{[filterOptions.departments]}}" bindchange="onDeptChange">
-    <view class="filter-tag">院系：{{currentFilter.departments.length > 0 ? currentFilter.departments.join(',') : '不限'}}</view>
-  </picker>
-  <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeChange">
-    <view class="filter-tag">年级：{{currentFilter.grade || '不限'}}</view>
-  </picker>
-  <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillChange">
-    <view class="filter-tag">技能：{{currentFilter.skills.length > 0 ? currentFilter.skills.join(',') : '不限'}}</view>
-  </picker>
-  <view class="reset-btn" bindtap="resetFilters">重置筛选</view>
-</view>
-
-
-<view class="btn" style="margin: 10px;" bindtap="gotoPublishTeamUp">发起组队</view>
-
-
-<view class="teamup-list">
-  <block wx:for="{{filteredTeamUpPosts}}" wx:key="_id">
-    <!-- 背景图容器 -->
-    <view class="card-container" wx:if="{{item.isActive}}">
-      <!-- 背景图 -->
-      <image 
-        class="post-bg" 
-        src="{{item.isOwnPost ? '../../images/my-post-bg.png' : '../../images/other-post-bg.png'}}"
-      ></image>
-
-      <!-- 内容层 -->
-      <view class="card-content">
-        <view class="post-header">
-          <image src="{{item.userAvatar}}" class="avatar" />
-          <view class="user-info">
-            <view class="username">{{item.userName}}</view>
-            <view class="user-dept">{{item.userDepartment}} {{item.userGrade}}</view>
-          </view>
-          <view class="gender-tag">{{item.gender}}</view>
-        </view>
-        <view class="post-title">{{item.title}}</view>
-        <view class="post-content">{{item.content}}</view>
-        <view class="post-skills">
-          <block wx:for="{{item.skills}}" wx:key="*this">
-            <view class="skill-tag">{{item}}</view>
-          </block>
-        </view>
-        <view class="post-footer">
-          
-          <button 
-            wx:if="{{!item.isOwnPost}}" 
-            class="btn purple-btn"
-            bindtap="onContactTA"
-            data-post-id="{{item._id || item.id}}"
-            data-wechat="{{item.contactWechat}}"
-            data-user-id="{{item.userId}}" 
-          >
-            联系TA
-          </button>
-          <button 
-            wx:if="{{!item.isOwnPost}}" 
-            class="btn purple-btn"
-            style="margin-left: 10px;"
-            bindtap="onKnowTA"
-            data-user-id="{{item.userId}}"
-          >
-            了解TA
-          </button>
-        
-          <button 
-            wx:if="{{item.isOwnPost}}" 
-            class="btn green-btn"
-            bindtap="onSelectMember"
-            data-post-id="{{item._id || item.id}}"
-          >
-            选择队友
-          </button>
-        </view>
-         <view wx:if="{{!item.isOwnPost}}" class="contact-tip">
-          当您点击“联系TA”后，对方即可选择您为队友，请复制对方的微信号并在微信内联系TA。
-        </view>
+<view class="container">
+  <view class="header-section">
+    <view class="brand-logo">
+      <text class="logo-main">社区组队</text>
+      <text class="logo-badge">THU</text>
+    </view>
+    
+    <view class="filter-box">
+      <view class="filter-row">
+        <text class="f-label">性别</text>
+        <scroll-view scroll-x class="f-scroll">
+          <view wx:for="{{filterOptions.gender}}" wx:key="*this" 
+                class="f-tag {{currentFilter.gender == item ? 'active' : ''}}" 
+                bindtap="onGenderChange" data-index="{{index}}">{{item}}</view>
+        </scroll-view>
+      </view>
+      <view class="filter-row">
+        <text class="f-label">年级</text>
+        <scroll-view scroll-x class="f-scroll">
+          <view wx:for="{{filterOptions.grades}}" wx:key="*this" 
+                class="f-tag {{currentFilter.grade == item ? 'active' : ''}}" 
+                bindtap="onGradeChange" data-index="{{index}}">{{item}}</view>
+        </scroll-view>
+        <text class="reset-link" bindtap="resetFilters">重置</text>
       </view>
     </view>
-  </block>
+  </view>
+
+  <view class="post-list">
+    <view wx:if="{{filteredTeamUpPosts.length === 0}}" class="empty-tip">
+      <view>暂无匹配的组队需求</view>
+    </view>
+
+    <block wx:for="{{filteredTeamUpPosts}}" wx:key="id">
+      <view class="post-card">
+        <view class="post-tags-top">
+          <text class="category-tag">组队招募</text>
+          <view class="target-badge" wx:if="{{item.targetGrades}}">招：{{item.targetGrades}}</view>
+        </view>
+
+        <view class="post-header">
+          <image class="avatar" src="{{item.userAvatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          <view class="user-info">
+            <view class="user-name">{{item.userName}}</view>
+            <view class="user-meta">{{item.userDepartment || '清华大学'}} · {{item.userGrade}}</view>
+          </view>
+        </view>
+
+        <view class="post-body">
+          <view class="post-title">{{item.title}}</view>
+          <view class="post-desc">{{item.content}}</view>
+          
+          <view class="skill-tags">
+            <text class="s-tag" wx:for="{{item.targetSkills}}" wx:for-item="skill" wx:key="*this"># {{skill}}</text>
+          </view>
+        </view>
+
+        <view class="post-footer">
+          <view class="time-hint">刚刚发布</view> 
+          <view class="footer-btns">
+            <block wx:if="{{item.isOwnPost}}">
+              <view class="mini-btn btn-primary" bindtap="onSelectMember" data-post-id="{{item._id || item.id}}">管理组队</view>
+            </block>
+            <block wx:else>
+              <view class="mini-btn btn-secondary" bindtap="onKnowTA" data-user-id="{{item.userId}}">了解TA</view>
+              <view class="mini-btn btn-primary" bindtap="onContactTA" data-id="{{item._id || item.id}}">联系TA</view>
+            </block>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="fab-btn" bindtap="gotoPublishTeamUp">+</view>
 </view>

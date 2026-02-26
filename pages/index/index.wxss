@@ -1,95 +1,123 @@
-/* 核心基础样式 */
-.activity-list {
-  padding-bottom: 20px;
+/* 页面基础 */
+page {
+  background-color: #f6f7fb;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
 }
 
-.activity-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #333;
+/* --- 顶部 Logo 设计 --- */
+.header-section {
+  padding: 60rpx 40rpx 30rpx;
+  background: white;
+  border-bottom-left-radius: 40rpx;
+  border-bottom-right-radius: 40rpx;
+  margin-bottom: 20rpx;
 }
 
-.activity-info {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 4px;
-}
-
-.filter-title {
-  font-size: 14px;
-  color: #333;
-  margin-right: 8px;
-}
-
-/* 页面容器基础样式 */
-.container {
-  padding: 15px;
-}
-
-/* 筛选栏样式 */
-.filter-bar {
+.brand-logo {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  padding: 10px 15px;
-  background-color: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  margin-bottom: 15px;
+  margin-bottom: 10rpx;
 }
 
-/* 筛选标签样式 */
-.filter-tag {
-  padding: 6px 12px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-right: 10px;
-  margin-bottom: 8px;
+.logo-main {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #6777ef;
+  letter-spacing: 2rpx;
 }
 
-/* 筛选标签激活态 */
-.filter-tag.active {
-  background-color: #6777ef;
-  color: #fff;
+.logo-badge {
+  font-size: 18rpx;
+  background: #6777ef;
+  color: white;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  margin-left: 15rpx;
+  font-weight: bold;
 }
 
-/* 活动卡片样式 */
-.card {
-  background-color: #fff;
-  padding: 15px;
-  margin: 0 15px 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+.brand-slogan {
+  font-size: 24rpx;
+  color: #99a2aa;
+  letter-spacing: 1rpx;
 }
 
-/* 卡片底部双按钮 */
-.card-buttons {
+/* --- 活动卡片精修 --- */
+.activity-card {
+  background: #ffffff;
+  margin: 24rpx 30rpx;
+  padding: 30rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(103, 119, 239, 0.06);
+}
+
+.main-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  line-height: 1.5;
+  margin-bottom: 20rpx;
+}
+
+.info-grid {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
-  width: 100%;
+  flex-direction: column;
+  gap: 10rpx;
 }
 
-/* 通用按钮 */
-.btn {
+.info-item {
+  font-size: 24rpx;
+  display: flex;
+}
+
+.label {
+  color: #95a5a6;
+  width: 80rpx;
+}
+
+.value {
+  color: #34495e;
   flex: 1;
-  padding: 8px 0;
-  font-size: 12px;
-  text-align: center;
-  border-radius: 4px;
-  -webkit-tap-highlight-color: transparent;
 }
 
-/* 一键组队主按钮 */
-.btn-primary {
-  background-color: #6777ef;
+/* --- 胶囊小按钮设计 --- */
+.card-actions {
+  display: flex;
+  justify-content: flex-end; /* 按钮向右靠拢 */
+  margin-top: 30rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #f8f9fa;
+  gap: 16rpx;
+}
+
+.mini-btn {
+  padding: 12rpx 32rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  border-radius: 100rpx; /* 胶囊圆角 */
+  transition: all 0.2s;
+}
+
+.btn-filled {
+  background: #6777ef;
   color: #fff;
 }
 
-/* 查看详情次按钮 */
-.btn-secondary {
-  background-color: #6777ef;
-  color: #ffffff;
-  border: 1px solid #6777ef;
+.btn-plain {
+  background: #f0f2ff;
+  color: #6777ef;
+  border: 1rpx solid #d0d7ff;
+}
+
+.mini-btn:active {
+  transform: scale(0.96);
+  opacity: 0.8;
+}
+
+/* 隐藏不必要的登录按钮占位 */
+.login-btn {
+  background: #6777ef;
+  color: white;
+  margin: 40rpx;
+  border-radius: 45rpx;
 }

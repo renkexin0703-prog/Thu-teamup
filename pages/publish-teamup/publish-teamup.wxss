@@ -1,33 +1,126 @@
+/* 页面背景 */
+page {
+  background-color: #f8f9fc;
+}
+
 .form-container {
-  padding: 15px;
+  padding: 30rpx;
 }
 
 .form-item {
-  margin-bottom: 20px;
+  margin-bottom: 35rpx;
+  background: #fff;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.03);
 }
 
 .form-label {
-  font-size: 14px;
+  font-size: 28rpx;
+  font-weight: bold;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 20rpx;
+  display: block;
 }
 
+/* --- 修复后的输入框样式 --- */
 .form-input {
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
+  width: 100%;
+  /* 关键点 1：不要设置固定的 height，使用 min-height 保证下限 */
+  min-height: 80rpx; 
+  /* 关键点 2：适当减少上下 padding，给文字留出垂直空间 */
+  padding: 16rpx 20rpx;
+  border: 1rpx solid #f0f0f0;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  background: #fafafa;
+  box-sizing: border-box;
+  /* 关键点 3：确保行高正常 */
+  line-height: 1.5; 
+}
+
+/* 针对标题这一行可能文字较多，确保不会重叠 */
+.form-item {
+  margin-bottom: 35rpx;
+  background: #fff;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.03);
+  /* 确保溢出内容可见 */
+  overflow: visible; 
 }
 
 .form-textarea {
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 14px;
-  min-height: 100px;
-  line-height: 1.5;
+  width: 100%;
+  padding: 20rpx;
+  border: 1rpx solid #f0f0f0;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  background: #fafafa;
+  min-height: 200rpx;
+  line-height: 1.6;
+  box-sizing: border-box;
 }
 
 .placeholder {
+  color: #bbb;
+}
+
+/* --- 多选框样式优化 --- */
+.multi-select-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  background: #f0f2ff; /* 浅紫色背景 */
+  padding: 12rpx 20rpx;
+  border-radius: 10rpx;
+  transition: all 0.2s;
+  /* 三列布局，减去 gap 的宽度 */
+  width: calc(33.33% - 11rpx); 
+  box-sizing: border-box;
+}
+
+.checkbox-item text {
+  font-size: 24rpx;
+  color: #6777ef;
+  margin-left: 6rpx;
+}
+
+/* 缩放自带的 Checkbox 样式 */
+checkbox {
+  transform: scale(0.7);
+}
+
+/* --- 发布按钮区域 --- */
+.submit-area {
+  margin-top: 60rpx;
+  padding: 0 20rpx 80rpx;
+  text-align: center;
+}
+
+.btn-submit {
+  background: #6777ef;
+  color: #ffffff;
+  height: 90rpx;
+  line-height: 90rpx;
+  border-radius: 45rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  box-shadow: 0 8rpx 20rpx rgba(103, 119, 239, 0.3);
+}
+
+.btn-submit:active {
+  transform: translateY(2rpx);
+  opacity: 0.9;
+}
+
+.tip-text {
+  font-size: 24rpx;
   color: #999;
+  margin-top: 24rpx;
 }

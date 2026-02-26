@@ -1,123 +1,195 @@
-/* 背景图容器 */
-.card-container {
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+page {
+  background-color: #f7f8fa;
 }
 
-/* 背景图 */
-.post-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  object-fit: cover; /* 填充并裁剪 */
-  opacity:0.5;
+
+.header-section {
+  background: #fff;
+  padding: 40rpx 30rpx 30rpx;
+  border-bottom-left-radius: 40rpx;
+  border-bottom-right-radius: 40rpx;
+  margin-bottom: 20rpx;
 }
 
-/* 内容层 */
-.card-content {
-  position: relative;
-  z-index: 2;
-  padding: 15px;
-  color: #333;
+.brand-logo {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 30rpx;
 }
 
-.teamup-list {
-  padding-bottom: 20px;
+.logo-main {
+  font-size: 46rpx;
+  font-weight: 800;
+  color: #6777ef;
+  background: linear-gradient(120deg, #6777ef, #8e9eff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.logo-badge {
+  font-size: 18rpx;
+  background: #6777ef;
+  color: #fff;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  margin-left: 15rpx;
+  font-weight: bold;
+}
+
+/* 筛选区优化 */
+.f-tag {
+  display: inline-block;
+  padding: 8rpx 28rpx;
+  background: #f1f3f8;
+  color: #666;
+  font-size: 24rpx;
+  border-radius: 30rpx;
+  margin-right: 15rpx;
+  transition: 0.3s;
+}
+
+.f-tag.active {
+  background: #6777ef;
+  color: #fff;
+  box-shadow: 0 4rpx 10rpx rgba(103, 119, 239, 0.3);
+}
+
+/* 帖子卡片增强 */
+.post-card {
+  background: #fff;
+  margin: 24rpx 30rpx;
+  padding: 34rpx;
+  border-radius: 32rpx;
+  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.05);
+}
+
+.post-tags-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.category-tag {
+  font-size: 20rpx;
+  color: #6777ef;
+  font-weight: bold;
+  letter-spacing: 1rpx;
+}
+
+.target-badge {
+  font-size: 20rpx;
+  color: #ff7675;
+  background: rgba(255, 118, 117, 0.1);
+  padding: 4rpx 16rpx;
+  border-radius: 30rpx;
 }
 
 .post-header {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 50%;
-  margin-right: 10px;
+  border: 4rpx solid #f0f2ff;
 }
 
-.user-info {
-  flex: 1;
-}
-
-.username {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.user-dept {
-  font-size: 12px;
-  color: #666;
-}
-
-.gender-tag {
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background-color: #f0f0f0;
-  color: #666;
+.user-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2d3436;
 }
 
 .post-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-size: 34rpx;
+  color: #2d3436;
+  margin: 24rpx 0 16rpx;
 }
 
-.post-content {
-  font-size: 14px;
-  color: #191818;
-  margin-bottom: 10px;
-  line-height: 1.5;
+
+.post-desc {
+  font-size: 28rpx;
+  color: #636e72;
+  margin-bottom: 24rpx;
 }
 
-.post-skills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.skill-tag {
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 15px;
-  background-color: #e8f4ff;
+/* 标签颜色加深 */
+.s-tag {
+  font-size: 22rpx;
   color: #6777ef;
+  background: #f0f2ff;
+  padding: 6rpx 20rpx;
+  border-radius: 10rpx;
+  font-weight: 500;
 }
 
 .post-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 30rpx;
+  padding-top: 24rpx;
+  border-top: 2rpx dashed #f1f3f8;
 }
 
-.view-count {
-  font-size: 12px;
-  color: #999;
+.time-hint {
+  font-size: 22rpx;
+  color: #b2bec3;
 }
-/* 为重置按钮添加样式 */
-.reset-btn {
-  font-size: 14px;
-  color: #6777ef;
-  padding: 5px 10px;
-  border: 1px solid #6777ef;
-  border-radius: 5px;
-  margin-left: 10px;
+
+.footer-btns {
+  display: flex;
+  gap: 16rpx;
 }
-.contact-tip {
+
+.mini-btn {
+  padding: 14rpx 36rpx;
   font-size: 24rpx;
-  color: #999;
-  margin-top: 10rpx;
-  line-height: 1.5;
-  text-align: center;
+  font-weight: 600;
+  border-radius: 100rpx;
+}
+
+.btn-primary { background: #6777ef; color: #fff; }
+.btn-secondary { background: #fff; color: #6777ef; border: 2rpx solid #6777ef; }
+
+/* 悬浮发布按钮 - 优化为右下角圆形 */
+.fab-btn {
+  position: fixed;
+  /* 距离右边和底部的距离 */
+  right: 40rpx;
+  bottom: 140rpx; /* 避开底部 tabbar 的高度 */
+  
+  /* 设置为圆形 */
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  
+  /* 背景渐变色，提升质感 */
+  background: linear-gradient(135deg, #6777ef, #8e9eff);
+  color: #ffffff;
+  
+  /* 居中显示加号 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+  font-weight: 300;
+  
+  /* 增加立体阴影感 */
+  box-shadow: 0 10rpx 20rpx rgba(103, 119, 239, 0.4);
+  
+  /* 确保在最上层 */
+  z-index: 999;
+  
+  /* 点击时的反馈动画 */
+  transition: all 0.2s ease;
+}
+
+/* 点击时的缩放效果 */
+.fab-btn:active {
+  transform: scale(0.9);
+  box-shadow: 0 5rpx 10rpx rgba(103, 119, 239, 0.2);
 }
