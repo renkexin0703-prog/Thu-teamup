@@ -1,53 +1,36 @@
-<!-- pages/index/index.wxml -->
-<view class="container">
-  <button wx:if="{{!hasUserInfo}}" bindtap="getUserProfile">点击授权登录</button>
+<view class="container" wx:if="{{!hasUserInfo}}">
+  <button class="login-btn" bindtap="getUserProfile">点击授权登录</button>
 </view>
 
-<!-- 筛选栏 -->
-<view class="filter-bar">
-  <view class="filter-title">筛选：</view>
-  
-  <!-- 性别筛选（单选，横向正常显示） -->
-  <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
-    <view class="filter-tag {{currentFilter.gender !== '不限' ? 'active' : ''}}">
-      性别：{{currentFilter.gender}}
-    </view>
-  </picker>
-
-  <!-- 院系筛选（单选，横向正常显示） -->
-  <picker mode="selector" range="{{sortedDepartments}}" value="{{deptIndex}}" bindchange="onDeptChange">
-    <view class="filter-tag {{currentFilter.department ? 'active' : ''}}">
-      院系：{{currentFilter.department || '不限'}}
-    </view>
-  </picker>
-
-  <!-- 年级筛选（单选，横向正常显示） -->
-  <picker mode="selector" range="{{gradeOptions}}" value="{{gradeIndex}}" bindchange="onGradeChange">
-    <view class="filter-tag {{currentFilter.grade ? 'active' : ''}}">
-      年级：{{currentFilter.grade || '不限'}}
-    </view>
-  </picker>
-
-  <!-- 技能筛选（单选，横向正常显示，已修复乱序） -->
-  <picker mode="selector" range="{{sortedSkills}}" value="{{skillIndex}}" bindchange="onSkillChange">
-    <view class="filter-tag {{currentFilter.skill ? 'active' : ''}}">
-      技能：{{currentFilter.skill || '不限'}}
-    </view>
-  </picker>
+<view class="header-section">
+  <view class="brand-logo">
+    <text class="logo-main">清组队</text>
+    <text class="logo-badge">THU</text>
+  </view>
+  <view class="brand-slogan">最靠谱的校园组队平台</view>
 </view>
 
-<!-- 活动列表 -->
 <view class="activity-list">
-  <block wx:for="{{filteredActivities}}" wx:key="id">
-    <view class="card">
-      <view class="activity-title">{{item.title}}</view>
-      <view class="activity-info">主办方：{{item.organizer}}</view>
-      <view class="activity-info">院系：{{item.department}}</view>
-      <view class="activity-info">截止时间：{{item.deadline}}</view>
-      <view class="activity-info">已组队：{{item.teamUpCount}}人</view>
-      <view class="card-buttons">
-        <view class="btn btn-primary" bindtap="onQuickTeamUp" data-id="{{item.id}}">一键组队</view>
-        <view class="btn btn-secondary" bindtap="onPopupDetail" data-id="{{item.id}}">查看详情</view>
+  <block wx:for="{{allActivities}}" wx:key="id">
+    <view class="activity-card">
+      <view class="card-body">
+        <view class="main-title">{{item.title}}</view>
+        
+        <view class="info-grid">
+          <view class="info-item">
+            <text class="label">主办：</text>
+            <text class="value">{{item.organizer || '清华大学'}}</text>
+          </view>
+          <view class="info-item">
+            <text class="label">截止：</text>
+            <text class="value">{{item.deadline}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="card-actions">
+        <view class="mini-btn btn-plain" bindtap="onPopupDetail" data-id="{{item.id || item._id}}">查看详情</view>
+        <view class="mini-btn btn-filled" bindtap="onQuickTeamUp" data-id="{{item.id || item._id}}">一键组队</view>
       </view>
     </view>
   </block>

@@ -1,24 +1,50 @@
 <view class="form-container">
   <view class="form-item">
     <view class="form-label">组队标题</view>
-    <input class="form-input" placeholder="请输入组队标题" bindinput="onTitleInput" />
+    <input class="form-input" placeholder="请输入组队标题" value="{{title}}" bindinput="onTitleInput" />
   </view>
+
   <view class="form-item">
     <view class="form-label">性别要求</view>
     <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderSelect">
-  <view class="form-input placeholder">{{selectedGender || '请选择性别要求'}}</view>
-</picker>
+      <view class="form-input {{selectedGender ? '' : 'placeholder'}}">
+        {{selectedGender || '请选择性别要求'}}
+      </view>
+    </picker>
+  </view>
+
+  <view class="form-item">
+    <view class="form-label">招募年级 (可多选)</view>
+    <checkbox-group class="multi-select-group" bindchange="onGradeChange">
+      <label class="checkbox-item" wx:for="{{gradeOptions}}" wx:key="value">
+        <checkbox value="{{item.value}}" checked="{{item.checked}}" color="#6777ef" />
+        <text class="checkbox-text">{{item.name}}</text>
+      </label>
+    </checkbox-group>
+  </view>
+
+  <view class="form-item">
+    <view class="form-label">所需技能 (可多选)</view>
+    <checkbox-group class="multi-select-group" bindchange="onSkillChange">
+      <label class="checkbox-item" wx:for="{{skillOptions}}" wx:key="value">
+        <checkbox value="{{item.value}}" checked="{{item.checked}}" color="#6777ef" />
+        <text class="checkbox-text">{{item.name}}</text>
+      </label>
+    </checkbox-group>
   </view>
 
   <view class="form-item">
     <view class="form-label">组队描述</view>
-    <textarea class="form-textarea" placeholder="请输入组队详细描述" bindinput="onDescInput"></textarea>
+    <textarea class="form-textarea" placeholder="请详细描述你的需求，例如：希望队友有建模经验、时间充裕等" bindinput="onDescInput"></textarea>
   </view>
+
   <view class="form-item">
     <view class="form-label">你的微信号</view>
-    <input class="form-input" placeholder="方便队友联系你" bindinput="onWechatInput" />
+    <input class="form-input" placeholder="方便感兴趣的队友联系你" bindinput="onWechatInput" />
   </view>
   
-  <view class="btn" bindtap="submitTeamUp">发布组队</view>
+  <view class="submit-area">
+    <view class="btn-submit" bindtap="submitTeamUp">发布至社区</view>
+    <view class="tip-text">发布后，同学们可在“社区”板块看到并联系你</view>
+  </view>
 </view>
-
