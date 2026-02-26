@@ -13,47 +13,53 @@ exports.main = async (event, context) => {
   }
 
   try {
+    // 🔥 核心改动：欢迎语直接返回固定内容，不调用AI
+    if (prompt === '发送个性化欢迎语') {
+      const fixedWelcomeMsg = `
+你好，我是Deepseek-Teamup智能体，很高兴见到你！
+我可以帮你解答清华校园活动、组队相关的各种问题，比如：
+1. 最近有什么适合我的校园活动？
+2. 帮我找软件设计大赛的组队帖；
+3. 计算机系有哪些特色组队活动？
+有任何想了解的，都可以尽管问～
+      `.trim();
+
+      return { success: true, response: fixedWelcomeMsg };
+    }
+
+    // ========== 以下是原有正常提问的AI调用逻辑 ==========
     console.log('开始调用 DeepSeek API');
 
-    // 🔥 核心：区分欢迎语和正常提问，定制不同Prompt
-    let systemContent = '';
-    let userPrompt = prompt;
+    // 🔥 新增：从数据库获取所有组队帖
+    const db = cloud.database();
+    const allTeamPostsRes = await db.collection('teamUpPosts').limit(20).get();
+    const allTeamPosts = allTeamPostsRes.data;
 
-    // 首次欢迎语Prompt（基于上下文个性化）
-    if (prompt === '发送个性化欢迎语') {
-      systemContent = `
-你是Deepseek-Teamup智能体，负责清华校园活动与组队咨询，需遵守：
-1. 欢迎语要结合【用户上下文】中的信息（院系、年级、技能）做个性化问候；
-2. 引导语要举例具体的提问方向（如活动推荐、组队帖查找）；
-3. 语气亲切自然，符合校园场景，避免机械；
-4. 若上下文无用户信息，使用通用欢迎语。
+    // 构建完整的上下文（包含所有组队帖）
+    const fullContext = `
+${userContext}
 
-【用户上下文】
-${userContext || '暂无用户上下文'}
+### 所有组队帖
+${allTeamPosts.map(post => {
+      const postSkills = Array.isArray(post.skills) ? post.skills : [];
+      return `- 标题：${post.title || '无'}\n  发布人：${post.userName || '未知'}\n  院系：${post.userDepartment || '未知'}\n  技能要求：${postSkills.join(', ') || '暂无'}\n  状态：${post.isActive ? '活跃中' : '已下架'}`;
+    }).join('\n')}
+    `.trim();
 
-欢迎语要求：
-- 开头：你好，我是Deepseek-Teamup智能体，很高兴见到你！
-- 中间：结合用户信息做个性化问候（如“作为计算机系大三的同学”）；
-- 结尾：引导用户提问，举例2-3个具体问题（如“最近有什么适合计算机系的活动？”“帮我找软件设计大赛的组队帖”）。
-      `;
-      userPrompt = '请生成符合要求的个性化欢迎语';
-    } 
-    // 正常对话Prompt（保留之前的推理逻辑）
-    else {
-      systemContent = `
+    // 正常对话Prompt
+    const systemContent = `
 你是一个专业的清华校园组队/活动推荐智能助手，需遵守以下规则：
+0.长度限制：最多300字.分点不超过2条，每条一句话；
 1. 基础信息优先：必须以【用户上下文】中的信息为核心（用户信息、组队帖、院系介绍、小程序规则）；
 2. 智能推理要求：
    - 可基于用户的院系、技能、已发布的组队帖，推导适合的活动/组队方向；
-   - 可结合院系特点（如计算机系擅长编程），给用户个性化建议；
-   - 可解释推荐理由（比如“你是计算机系大三学生，擅长Python，适合参加软件设计大赛”）；
 3. 信息边界：如果上下文没有相关基础信息（如未提及某活动），不要编造，但可基于通用校园常识补充合理建议；
 4. 回答风格：自然流畅，像真人沟通，分点清晰（必要时），避免机械生硬。
+5.社区页面没有搜索功能，也没有技能筛选，你可以推荐“重点关注院系”。
 
 【用户上下文】
-${userContext || '暂无用户上下文'}
-      `;
-    }
+${fullContext}
+    `.trim();
 
     // 构建对话历史
     const chatHistory = [];
@@ -66,7 +72,7 @@ ${userContext || '暂无用户上下文'}
       });
     }
 
-    // 调用参数（保留0.7温度，兼顾推理和自然度）
+    // 调用参数
     const options = {
       method: 'POST',
       url: 'https://api.deepseek.com/v1/chat/completions',
@@ -77,13 +83,13 @@ ${userContext || '暂无用户上下文'}
       body: {
         model: 'deepseek-chat',
         messages: [
-          { role: 'system', content: systemContent.trim() },
+          { role: 'system', content: systemContent },
           ...chatHistory,
-          { role: 'user', content: userPrompt }
+          { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
-        max_tokens: 1200,
-        top_p: 0.9,
+        temperature: 0.3,
+        max_tokens: 256,
+        top_p: 0.5,
         presence_penalty: 0.1,
         frequency_penalty: 0.1
       },
@@ -93,14 +99,14 @@ ${userContext || '暂无用户上下文'}
     console.log('DeepSeek 调用参数:', JSON.stringify(options.body, null, 2));
     const res = await rp(options);
     console.log('DeepSeek 返回:', res);
-    
+
     const aiReply = res.choices[0].message.content;
     return { success: true, response: aiReply };
 
   } catch (err) {
     console.error('DeepSeek 调用失败:', err);
-    return { 
-      success: false, 
+    return {
+      success: false,
       message: err.message || '调用AI失败，请稍后重试',
       detail: err.response ? err.response.body : ''
     };
