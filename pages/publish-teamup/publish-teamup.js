@@ -12,28 +12,54 @@ Page({
     selectedSkills: []
   },
 
-  onLoad(options) {
-    const globalUser = app.globalData.userInfo || {};
-    if (!globalUser.id) {
-      wx.showToast({ title: "请先完成微信登录", icon: "none" });
-      wx.redirectTo({ url: "/pages/login/login" });
-      return;
-    }
+  // pages/publish-teamup/publish-teamup.js
+onLoad(options) {
+  const globalUser = app.globalData.userInfo || {};
+  if (!globalUser.id) {
+    wx.showToast({ title: "请先完成微信登录", icon: "none" });
+    wx.redirectTo({ url: "/pages/login/login" });
+    return;
+  }
 
-    if (options.title) {
-      this.setData({ title: decodeURIComponent(options.title) });
-    }
-    if (options.skills) {
-      const skills = decodeURIComponent(options.skills).split(",");
-      this.setData({ selectedSkills: skills });
-    }
+  // 解析传参
+  if (options.title) {
+    this.setData({ title: decodeURIComponent(options.title) });
+  }
+  if (options.skills) {
+    const skills = decodeURIComponent(options.skills).split(",");
+    this.setData({ selectedSkills: skills });
+  }
 
-    // 预填技能
-    const userSkills = globalUser.skills || [];
-    if (userSkills.length > 0) {
-      this.setData({ selectedSkills: userSkills });
-    }
-  },
+  // ✅ 从云端 users 库中获取最新用户信息
+  this.fetchUserInfoFromCloud(globalUser.id);
+},
+
+// 新增方法：从云端获取用户信息
+async fetchUserInfoFromCloud(userId) {
+  const db = wx.cloud.database();
+  try {
+    const res = await db.collection('users').doc(userId).get();
+    const userInfo = res.data;
+
+    // 更新页面数据中的技能和其他字段
+    this.setData({
+      selectedSkills: userInfo.skill || [], // ✅ 使用正确的字段名 skill
+      wechat: userInfo.contact?.wechat || "", // ✅ 使用 contact.wechat
+      desc: userInfo.bio || ""
+    });
+
+    // 同步到全局变量和本地缓存
+    const app = getApp();
+    app.globalData.userInfo = {
+      ...app.globalData.userInfo,
+      ...userInfo
+    };
+    wx.setStorageSync('userInfo', userInfo);
+  } catch (err) {
+    console.error("获取用户信息失败:", err);
+    wx.showToast({ title: "获取用户信息失败", icon: "none" });
+  }
+},
 
   onTitleInput(e) {
     this.setData({ title: e.detail.value });

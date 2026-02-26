@@ -4,5 +4,34 @@
 }
 
 .van-cell {
-  --van-cell-border-color: transparent;
+  --van-cell-border-color: transparent !important;
+}
+/* 背景图容器 */
+.card-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 背景图容器 */
+.card-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden; /* 防止背景图超出圆角 */
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* 新增：清空van-cell默认白色背景，避免覆盖背景图 */
+  background: transparent !important;
+  /* 新增：给容器固定高度，确保背景图有显示空间 */
+  height: 200rpx;
+}
+
+/* 内容层 */
+.card-content {
+  position: relative;
+  z-index: 2;
+  padding: 15px;
+  color: #333;
 }

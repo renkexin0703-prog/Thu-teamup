@@ -41,7 +41,7 @@
   <view class="form-item">
     <text class="label">技能</text>
     <!-- 显示已选技能 -->
-    <view class="skill-value">{{skills.length > 0 ? skills.join("、") : "暂无技能"}}</view>
+    <view class="skill-value">{{ skills.join("、")}}</view>
     <!-- 固定显示“请编辑技能”的按钮 -->
     <button class="picker" bindtap="gotoSelectSkills">
       请编辑技能

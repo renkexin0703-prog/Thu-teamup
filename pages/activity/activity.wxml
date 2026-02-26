@@ -70,20 +70,28 @@
   </view>
 
   <!-- 活动列表 -->
-  <van-list
-    loading="{{ loading }}"
-    finished="{{ finished }}"
-    finished-text="没有更多了"
-    bind:load="onLoadMore"
+<van-list
+  loading="{{ loading }}"
+  finished="{{ finished }}"
+  finished-text="没有更多了"
+  bind:load="onLoadMore"
+>
+  <van-cell 
+    wx:for="{{ activityList }}" 
+    wx:key="id"
+    clickable
+    bind:click="openActivityCard"
+    data-activity="{{ item }}"
+    class="mb-10 bg-white rounded-lg card-container"
   >
-    <van-cell 
-      wx:for="{{ activityList }}" 
-      wx:key="id"
-      clickable
-      bind:click="openActivityCard"
-      data-activity="{{ item }}"
-      class="mb-10 bg-white rounded-lg"
-    >
+    <!-- 背景图 -->
+    <image 
+      class="post-bg" 
+      src="../../images/activity-post.png"
+    ></image>
+
+    <!-- 内容层 -->
+    <view class="card-content">
       <view slot="title" class="text-primary font-bold">{{ item.title }}</view>
       <view slot="label" class="flex-row flex-wrap">
         <van-tag class="mr-10 mb-5 purple-tag">{{ item.dept }}</van-tag>
@@ -93,8 +101,9 @@
       <view slot="value" class="text-light">
         截止：{{ item.deadline }} | 组队：{{ item.teamJoined }}/{{ item.teamTotal }}
       </view>
-    </van-cell>
-  </van-list>
+    </view>
+  </van-cell>
+</van-list>
 
   <!-- 活动卡片弹窗 -->
   <van-popup

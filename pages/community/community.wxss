@@ -16,6 +16,7 @@
   left: 0;
   z-index: 1;
   object-fit: cover; /* 填充并裁剪 */
+  opacity:0.5;
 }
 
 /* 内容层 */
@@ -73,7 +74,7 @@
 
 .post-content {
   font-size: 14px;
-  color: #666;
+  color: #191818;
   margin-bottom: 10px;
   line-height: 1.5;
 }

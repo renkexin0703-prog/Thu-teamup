@@ -41,6 +41,12 @@ Page({
     const selectedApplicants = selectedIndexArray.map(index => this.data.applicants[index]);
     this.setData({ selectedApplicants });
   },
+  onKnowContact(e) {
+    const userId = e.currentTarget.dataset.userId;
+    wx.navigateTo({
+      url: `/pages/know-and-contact/know-and-contact?userId=${userId}`
+    });
+  },
 
   async onTeamUpSuccess() {
     const { selectedApplicants, postId } = this.data;
