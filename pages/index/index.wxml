@@ -1,5 +1,4 @@
 <!-- pages/index/index.wxml -->
-<!-- 核心容器：授权登录 -->
 <view class="container">
   <button wx:if="{{!hasUserInfo}}" bindtap="getUserProfile">点击授权登录</button>
 </view>
@@ -7,36 +6,37 @@
 <!-- 筛选栏 -->
 <view class="filter-bar">
   <view class="filter-title">筛选：</view>
-  <!-- 性别筛选 -->
-  <picker mode="selector" range="{{filterOptions.gender}}" bindchange="onGenderChange">
-    <view class="filter-tag {{currentFilter.gender === filterOptions.gender[e.detail.value] ? 'active' : ''}}">
+  
+  <!-- 性别筛选（单选，横向正常显示） -->
+  <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}" bindchange="onGenderChange">
+    <view class="filter-tag {{currentFilter.gender !== '不限' ? 'active' : ''}}">
       性别：{{currentFilter.gender}}
     </view>
   </picker>
 
-  <!-- 院系筛选 -->
-  <picker mode="multiSelector" range="{{filterOptions.departments}}" bindchange="onDeptChange">
-    <view class="filter-tag">
-      院系：{{currentFilter.departments.length > 0 ? currentFilter.departments.join(',') : '不限'}}
+  <!-- 院系筛选（单选，横向正常显示） -->
+  <picker mode="selector" range="{{sortedDepartments}}" value="{{deptIndex}}" bindchange="onDeptChange">
+    <view class="filter-tag {{currentFilter.department ? 'active' : ''}}">
+      院系：{{currentFilter.department || '不限'}}
     </view>
   </picker>
 
-  <!-- 年级筛选 -->
-  <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeChange">
-    <view class="filter-tag">
+  <!-- 年级筛选（单选，横向正常显示） -->
+  <picker mode="selector" range="{{gradeOptions}}" value="{{gradeIndex}}" bindchange="onGradeChange">
+    <view class="filter-tag {{currentFilter.grade ? 'active' : ''}}">
       年级：{{currentFilter.grade || '不限'}}
     </view>
   </picker>
 
-  <!-- 技能筛选 -->
-  <picker mode="multiSelector" range="{{filterOptions.skills}}" bindchange="onSkillChange">
-    <view class="filter-tag">
-      技能：{{currentFilter.skills.length > 0 ? currentFilter.skills.join(',') : '不限'}}
+  <!-- 技能筛选（单选，横向正常显示，已修复乱序） -->
+  <picker mode="selector" range="{{sortedSkills}}" value="{{skillIndex}}" bindchange="onSkillChange">
+    <view class="filter-tag {{currentFilter.skill ? 'active' : ''}}">
+      技能：{{currentFilter.skill || '不限'}}
     </view>
   </picker>
 </view>
 
-<!-- 活动列表（每个卡片底部直接显示两个按钮） -->
+<!-- 活动列表 -->
 <view class="activity-list">
   <block wx:for="{{filteredActivities}}" wx:key="id">
     <view class="card">
@@ -45,15 +45,9 @@
       <view class="activity-info">院系：{{item.department}}</view>
       <view class="activity-info">截止时间：{{item.deadline}}</view>
       <view class="activity-info">已组队：{{item.teamUpCount}}人</view>
-
-      <!-- 核心：卡片底部直接放两个并排按钮 -->
       <view class="card-buttons">
-        <view class="btn btn-primary" bindtap="onQuickTeamUp" data-id="{{item.id}}">
-          一键组队
-        </view>
-        <view class="btn btn-secondary" bindtap="onPopupDetail" data-id="{{item.id}}">
-          查看详情
-        </view>
+        <view class="btn btn-primary" bindtap="onQuickTeamUp" data-id="{{item.id}}">一键组队</view>
+        <view class="btn btn-secondary" bindtap="onPopupDetail" data-id="{{item.id}}">查看详情</view>
       </view>
     </view>
   </block>

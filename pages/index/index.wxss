@@ -54,7 +54,7 @@
   color: #fff;
 }
 
-/* 活动卡片样式（移除点击指针，无需弹窗） */
+/* 活动卡片样式 */
 .card {
   background-color: #fff;
   padding: 15px;
@@ -63,38 +63,33 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* ========== 核心：卡片底部双按钮样式 ========== */
-/* 按钮容器：强制并排 */
+/* 卡片底部双按钮 */
 .card-buttons {
   display: flex;
-  gap: 10px; /* 按钮之间的间距 */
+  gap: 10px;
   margin-top: 15px;
   width: 100%;
 }
 
-/* 通用按钮样式（覆盖原有btn） */
+/* 通用按钮 */
 .btn {
-  flex: 1; /* 两个按钮平分宽度 */
+  flex: 1;
   padding: 8px 0;
   font-size: 12px;
   text-align: center;
   border-radius: 4px;
-  /* 去掉点击高亮 */
   -webkit-tap-highlight-color: transparent;
 }
 
-/* 一键组队按钮（主按钮） */
+/* 一键组队主按钮 */
 .btn-primary {
   background-color: #6777ef;
   color: #fff;
 }
 
-
-/* 查看详情按钮（次按钮） */
+/* 查看详情次按钮 */
 .btn-secondary {
-  background-color: #6777ef;     /* 背景改为白色 */
-  color:  #fff;                 /* 文字改为蓝色，和主按钮呼应 */
-  border: 1px solid #6777ef;    /* 边框改为蓝色 */
+  background-color: #6777ef;
+  color: #ffffff;
+  border: 1px solid #6777ef;
 }
-
-/* 移除冗余的button重置样式（无需弹窗里的button） */
