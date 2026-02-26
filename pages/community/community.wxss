@@ -21,6 +21,7 @@ page {
   font-weight: 800;
   color: #6777ef;
   background: linear-gradient(120deg, #6777ef, #8e9eff);
+  background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
