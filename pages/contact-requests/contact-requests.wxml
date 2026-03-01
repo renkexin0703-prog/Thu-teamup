@@ -1,40 +1,129 @@
 <!--pages/contact-requests/contact-requests.wxml-->
 <view class="container">
-  <view class="page-title">
-    <text class="title-text">联系我的人</text>
-  </view>
-  
-  <view wx:if="{{loading}}" class="loading-container">
-    <van-loading type="spinner" size="24px" vertical>加载中...</van-loading>
-  </view>
-  
-  <view wx:elif="{{contactRequests.length === 0}}" class="empty-container">
-    <van-empty description="暂无联系请求" />
-  </view>
-  
-  <view wx:else class="contacts-list">
-    <van-cell-group border="{{false}}">
-      <van-cell 
-        wx:for="{{contactRequests}}" 
-        wx:key="_id"
-        is-link
-        bind:click="viewUserProfile"
-        data-userid="{{item._id}}"
+  <!-- 页面标题和刷新按钮 -->
+  <view class="page-header">
+    <view class="page-title">
+      <text class="title-text">联系我的人</text>
+    </view>
+    <view class="refresh-section">
+      <van-button 
+        size="small" 
+        type="primary" 
+        bind:click="refreshContacts"
+        custom-class="refresh-btn"
       >
-        <view slot="icon" class="avatar-container">
-          <image 
-            src="{{item.avatar ? (item.avatar.startsWith('https://') ? item.avatar : '/images/default-avatar.png') : '/images/default-avatar.png'}}"
-            class="user-avatar"
-          />
+        🔄 重新加载
+      </van-button>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <van-loading type="spinner" size="32px" vertical>
+      <view class="loading-text">正在加载联系人...</view>
+    </van-loading>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{contactRequests.length === 0}}" class="empty-container">
+    <van-empty 
+      description="暂无联系人" 
+      image="https://img.yzcdn.cn/vant/empty-image-default.png"
+    />
+    <van-button 
+      type="primary" 
+      block 
+      bind:click="refreshContacts"
+      custom-class="generate-btn"
+    >
+      点击加载联系人
+    </van-button>
+  </view>
+
+  <!-- 联系人列表 -->
+  <view wx:else class="contacts-list">
+    <view class="list-header">
+      <text class="total-count">共 {{contactRequests.length}} 位联系人</text>
+      <text class="last-update">更新时间: {{lastRefreshTime}}</text>
+    </view>
+    
+    <van-cell-group border="{{false}}" inset>
+      <van-swipe-cell 
+        wx:for="{{contactRequests}}" 
+        wx:key="id"
+        right-width="80"
+      >
+        <van-cell 
+          is-link
+          bind:click="viewUserProfile"
+          data-contact="{{item}}"
+          custom-class="contact-cell"
+        >
+          <!-- 头像区域 -->
+          <view slot="icon" class="avatar-container">
+            <van-image
+              round
+              width="50"
+              height="50"
+              src="{{item.avatar}}"
+              fit="cover"
+              show-loading
+              show-error
+            />
+            <view class="online-badge"></view>
+          </view>
+          
+          <!-- 用户信息 -->
+          <view slot="title" class="user-info">
+            <view class="user-name-row">
+              <text class="user-name">{{item.name}}</text>
+              <van-tag 
+                type="primary" 
+                size="medium"
+                custom-class="grade-tag"
+              >
+                {{item.grade}}
+              </van-tag>
+            </view>
+            <text class="user-dept">{{item.dept}}</text>
+            <view class="skills-container">
+              <van-tag 
+                wx:for="{{item.skills}}" 
+                wx:key="*this"
+                size="small"
+                custom-class="skill-tag"
+              >
+                {{item}}
+              </van-tag>
+            </view>
+            <text class="contact-time">联系时间: {{item.contactTime}}</text>
+          </view>
+          
+          <!-- 微信号 -->
+          <view slot="label" class="wechat-info">
+            <van-icon name="wechat" size="14" color="#07c160" />
+            <text class="wechat-text">{{item.wechat}}</text>
+          </view>
+        </van-cell>
+        
+        <!-- 右侧滑动操作 -->
+        <view slot="right" class="swipe-right-actions">
+          <van-button 
+            square 
+            type="primary" 
+            bind:click="shareContact"
+            data-contact="{{item}}"
+          >
+            分享
+          </van-button>
         </view>
-        <view slot="title" class="user-info">
-          <text class="user-name">{{item.name || '未设置用户名'}}</text>
-          <text class="user-dept">{{item.dept || '未设置院系'}}</text>
-        </view>
-        <view slot="right-icon" class="arrow-icon">
-          <van-icon name="arrow" />
-        </view>
-      </van-cell>
+      </van-swipe-cell>
     </van-cell-group>
+    
+    <!-- 底部提示 -->
+    <view class="footer-tip">
+      <van-icon name="info-o" size="16" />
+      <text class="tip-text">下拉可刷新联系人列表</text>
+    </view>
   </view>
 </view>
