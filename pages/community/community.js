@@ -89,9 +89,31 @@ Page({
     }, () => this.applyFilters());
   },
 
-  onContactTA(e) {
-    const id = e.currentTarget.dataset.id;
-    wx.navigateTo({ url: `/pages/chat/chat?id=${id}` });
+  async onContactTA(e) {
+    const postId = e.currentTarget.dataset.id; // 这里用postId更准确
+  
+    try {
+      // 1. 从云端数据库查询这条帖子的完整信息
+      const db = wx.cloud.database();
+      const postRes = await db.collection('teamUpPosts').doc(postId).get();
+      const postData = postRes.data;
+  
+      if (!postData) {
+        wx.showToast({ title: "未找到该帖子信息", icon: "none" });
+        return;
+      }
+  
+      // 2. 取出微信号（如果没有，给个默认值）
+      const wechat = postData.contactWechat || "未填写微信号";
+  
+      // 3. 跳转到contact-ta页面，同时传postId和wechat
+      wx.navigateTo({
+        url: `/pages/contact-ta/contact-ta?postId=${postId}&wechat=${encodeURIComponent(wechat)}`
+      });
+    } catch (err) {
+      console.error("获取帖子信息失败：", err);
+      wx.showToast({ title: "获取信息失败，请重试", icon: "none" });
+    }
   },
 
   onKnowTA(e) {
