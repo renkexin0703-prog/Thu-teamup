@@ -56,7 +56,7 @@
         </view>
 
         <view class="post-footer">
-          <view class="time-hint">刚刚发布</view> 
+          <view class="time-hint"> </view> 
           <view class="footer-btns">
             <block wx:if="{{item.isOwnPost}}">
               <view class="mini-btn btn-primary" bindtap="onSelectMember" data-post-id="{{item._id || item.id}}">管理组队</view>
