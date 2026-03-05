@@ -197,6 +197,7 @@ onSubmit() {
       gender: editForm.gender,
       grade: editForm.grade,
       dept: editForm.dept,
+      department: department, // 同时保存为 department 字段，确保兼容性
       bio: editForm.bio,
       contact: {
         phone: editForm.contact?.phone || '',
