@@ -55,43 +55,44 @@ Page({
   },
 
   // 上传头像到云存储
-uploadAvatar(filePath) {
-  const cloudPath = `avatars/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
-  const db = wx.cloud.database();
+  uploadAvatar(filePath) {
+    const cloudPath = `avatars/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
+    const db = wx.cloud.database();
 
-  wx.cloud.uploadFile({
-    cloudPath,
-    filePath,
-    success: (res) => {
-      const fileID = res.fileID;
+    wx.cloud.uploadFile({
+      cloudPath,
+      filePath,
+      success: (res) => {
+        const fileID = res.fileID;
 
-      // 更新本地数据
-      const editForm = {
-        ...this.data.userInfo,
-        avatar: fileID
-      };
+        // 更新本地数据
+        const editForm = {
+          ...this.data.userInfo,
+          avatar: fileID
+        };
 
-      // 1. 保存到本地缓存
-      wx.setStorageSync('userInfo', editForm);
+        // 1. 保存到本地缓存
+        wx.setStorageSync('userInfo', editForm);
 
-      // 2. 同步到全局变量
-      const app = getApp();
-      app.globalData.userInfo = {
-        ...app.globalData.userInfo,
-        ...editForm
-      };
+        // 2. 同步到全局变量
+        const app = getApp();
+        app.globalData.userInfo = {
+          ...app.globalData.userInfo,
+          ...editForm
+        };
 
-      // 3. 更新当前页面的 avatarUrl（用于预览）
-      this.setData({ avatarUrl: fileID });
+        // 3. 更新当前页面的 avatarUrl（用于预览）
+        this.setData({ avatarUrl: fileID });
 
-      // 4. 更新云数据库
-      const currentUser = app.globalData.userInfo._openid || app.globalData.userInfo._id;
-      if (!openid) {
-        console.error("用户 openid 不存在，无法更新数据库");
-        return;
-      }
+        // 4. 更新云数据库
+        const currentUser = app.globalData.userInfo;
+        const userId = currentUser.id || currentUser._id || currentUser._openid;
+        if (!userId) {
+          console.error("用户 ID 不存在，无法更新数据库");
+          return;
+        }
 
-      db.collection('users').doc(currentUser.id).update({
+        db.collection('users').doc(userId).update({
         data: {
           avatar: fileID,
           updateTime: db.serverDate()
@@ -205,15 +206,15 @@ onSubmit() {
       updateTime: db.serverDate()
     },
     success: () => {
-      console.log('云数据库信息更新成功');
-      wx.showToast({ title: "保存成功！", icon: "success" });
-      const pages = getCurrentPages();
-const minePage = pages.find(page => page.route === 'pages/mine/mine');
-if (minePage) {
-  // 如果 mine 页面在栈中，直接调用它的 onShow 方法刷新
-  minePage.onShow();
-}
-    },
+        console.log('云数据库信息更新成功');
+        wx.showToast({ title: "保存成功！", icon: "success" });
+        const pages = getCurrentPages();
+        const profilePage = pages.find(page => page.route === 'pages/profile/profile');
+        if (profilePage) {
+          // 如果 profile 页面在栈中，直接调用它的 onShow 方法刷新
+          profilePage.onShow();
+        }
+      },
     fail: (err) => {
       console.error('云数据库同步失败:', err);
       wx.showToast({ title: '保存失败，请重试', icon: 'none' });

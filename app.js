@@ -1,4 +1,3 @@
-// app.js
 App({
   onLaunch() {
     console.log('小程序启动');
@@ -51,17 +50,8 @@ App({
   // 初始化用户信息
   initializeUserInfo() {
     try {
-      // 优先使用本地缓存
-      const cachedUser = wx.getStorageSync('userInfo');
-      console.log('本地缓存用户信息:', cachedUser);
-      
-      if (cachedUser && cachedUser.id) {
-        this.globalData.userInfo = cachedUser;
-        console.log('使用本地缓存的用户信息');
-      } else {
-        // 尝试从云端获取
-        this.fetchCloudUserInfo();
-      }
+      // 不再优先使用本地缓存，而是直接从云端获取
+      this.fetchCloudUserInfo();
     } catch (error) {
       console.error('初始化用户信息失败:', error);
       this.setupLocalUser();
@@ -73,9 +63,13 @@ App({
     try {
       console.log('开始获取云端用户信息...');
       
-      // 获取微信上下文
-      const wxContext = wx.cloud.getWXContext();
-      const openid = wxContext.OPENID;
+      // 使用云函数获取openid
+      const cloudRes = await wx.cloud.callFunction({
+        name: 'getOpenid',
+        data: {}
+      });
+      
+      const openid = cloudRes.result.openid;
       console.log('获取到openid:', openid);
       
       if (!openid) {
@@ -111,7 +105,23 @@ App({
         console.log('云端用户信息加载成功:', userInfo);
       } else {
         console.log('云端无用户数据，创建本地用户');
-        this.setupLocalUser();
+        // 如果云端没有用户数据，创建一个默认用户
+        const defaultUserInfo = {
+          id: openid,
+          name: '微信用户',
+          avatar: '/images/default-avatar.png',
+          credit: 80,
+          gender: 0,
+          dept: '未设置',
+          grade: '未设置',
+          skill: [],
+          contact: {},
+          createTime: db.serverDate()
+        };
+        
+        this.globalData.userInfo = defaultUserInfo;
+        wx.setStorageSync('userInfo', defaultUserInfo);
+        console.log('已创建默认用户信息:', defaultUserInfo);
       }
     } catch (error) {
       console.error('获取云端用户信息失败:', error);
