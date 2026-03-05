@@ -63,7 +63,10 @@
             </block>
             <block wx:else>
               <view class="mini-btn btn-secondary" bindtap="onKnowTA" data-user-id="{{item.userId}}">了解TA</view>
-              <view class="mini-btn btn-primary" bindtap="onContactTA" data-id="{{item._id || item.id}}">联系TA</view>
+              <view class="mini-btn btn-primary" bindtap="onContactTA" 
+      data-id="{{item._id || item.id}}" 
+      data-wechat="{{item.contactWechat || ''}}"
+      data-user-id="{{item.userId}}">联系TA</view>
             </block>
           </view>
         </view>
