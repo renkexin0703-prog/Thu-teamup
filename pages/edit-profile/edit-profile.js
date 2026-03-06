@@ -188,24 +188,25 @@ onSubmit() {
   };
 
   // 4. ✅ 更新云数据库：必须包含 avatar 字段
-  const db = wx.cloud.database();
-  const currentUser = app.globalData.userInfo;
+      const db = wx.cloud.database();
+      const currentUser = app.globalData.userInfo;
 
-  db.collection('users').doc(currentUser.id).update({
-    data: {
-      name: editForm.name,
-      gender: editForm.gender,
-      grade: editForm.grade,
-      dept: editForm.dept,
-      department: department, // 同时保存为 department 字段，确保兼容性
-      bio: editForm.bio,
-      contact: {
-        phone: editForm.contact?.phone || '',
-        wechat: editForm.wechat
-      },
-      avatar: editForm.avatar, // ✅ 必须加上这行！
-      updateTime: db.serverDate()
-    },
+      db.collection('users').doc(currentUser.id).update({
+        data: {
+          name: editForm.name,
+          gender: editForm.gender,
+          grade: editForm.grade,
+          dept: editForm.dept,
+          department: department, // 同时保存为 department 字段，确保兼容性
+          bio: editForm.bio,
+          wechat: editForm.wechat, // 单独保存 wechat 字段
+          contact: {
+            phone: editForm.contact?.phone || '',
+            wechat: editForm.wechat
+          },
+          avatar: editForm.avatar, // ✅ 必须加上这行！
+          updateTime: db.serverDate()
+        },
     success: () => {
         console.log('云数据库信息更新成功');
         wx.showToast({ title: "保存成功！", icon: "success" });

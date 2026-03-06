@@ -39,7 +39,19 @@ App({
       dept: '未设置',
       grade: '未设置',
       skill: [],
-      contact: {}
+      contact: {},
+      wechat: '',
+      bio: '',
+      points: 0,
+      pointsRecord: [],
+      creditScore: 80,
+      creditTags: [],
+      creditDesc: '',
+      gifts: [
+        { id: "gift_001", name: "清华文创笔记本", needPoints: 100, stock: 99 },
+        { id: "gift_002", name: "技术面试券", needPoints: 200, stock: 50 },
+        { id: "gift_003", name: "编程书籍", needPoints: 300, stock: 30 }
+      ]
     };
     
     this.globalData.userInfo = defaultUserInfo;
@@ -95,6 +107,18 @@ App({
           grade: result.data.grade || '未设置',
           skill: Array.isArray(result.data.skill) ? result.data.skill : [],
           contact: result.data.contact || {},
+          wechat: result.data.wechat || '',
+          bio: result.data.bio || '',
+          points: result.data.points || 0,
+          pointsRecord: Array.isArray(result.data.pointsRecord) ? result.data.pointsRecord : [],
+          creditScore: result.data.creditScore || 80,
+          creditTags: Array.isArray(result.data.creditTags) ? result.data.creditTags : [],
+          creditDesc: result.data.creditDesc || '',
+          gifts: Array.isArray(result.data.gifts) ? result.data.gifts : [
+            { id: "gift_001", name: "清华文创笔记本", needPoints: 100, stock: 99 },
+            { id: "gift_002", name: "技术面试券", needPoints: 200, stock: 50 },
+            { id: "gift_003", name: "编程书籍", needPoints: 300, stock: 30 }
+          ],
           createTime: result.data.createTime,
           updateTime: result.data.updateTime
         };
@@ -116,6 +140,18 @@ App({
           grade: '未设置',
           skill: [],
           contact: {},
+          wechat: '',
+          bio: '',
+          points: 0,
+          pointsRecord: [],
+          creditScore: 80,
+          creditTags: [],
+          creditDesc: '',
+          gifts: [
+            { id: "gift_001", name: "清华文创笔记本", needPoints: 100, stock: 99 },
+            { id: "gift_002", name: "技术面试券", needPoints: 200, stock: 50 },
+            { id: "gift_003", name: "编程书籍", needPoints: 300, stock: 30 }
+          ],
           createTime: db.serverDate()
         };
         
@@ -191,6 +227,17 @@ App({
           skill: userDoc.data.skill || [],
           bio: userDoc.data.bio || "",
           contact: userDoc.data.contact || {},
+          wechat: userDoc.data.wechat || '',
+          points: userDoc.data.points || 0,
+          pointsRecord: Array.isArray(userDoc.data.pointsRecord) ? userDoc.data.pointsRecord : [],
+          creditScore: userDoc.data.creditScore || 80,
+          creditTags: Array.isArray(userDoc.data.creditTags) ? userDoc.data.creditTags : [],
+          creditDesc: userDoc.data.creditDesc || '',
+          gifts: Array.isArray(userDoc.data.gifts) ? userDoc.data.gifts : [
+            { id: "gift_001", name: "清华文创笔记本", needPoints: 100, stock: 99 },
+            { id: "gift_002", name: "技术面试券", needPoints: 200, stock: 50 },
+            { id: "gift_003", name: "编程书籍", needPoints: 300, stock: 30 }
+          ],
           createTime: userDoc.data.createTime,
           updateTime: userDoc.data.updateTime
         };
@@ -204,6 +251,18 @@ App({
           city: userInfo.city,
           province: userInfo.province,
           country: userInfo.country,
+          wechat: '',
+          bio: '',
+          points: 0,
+          pointsRecord: [],
+          creditScore: 80,
+          creditTags: [],
+          creditDesc: '',
+          gifts: [
+            { id: "gift_001", name: "清华文创笔记本", needPoints: 100, stock: 99 },
+            { id: "gift_002", name: "技术面试券", needPoints: 200, stock: 50 },
+            { id: "gift_003", name: "编程书籍", needPoints: 300, stock: 30 }
+          ],
           createTime: db.serverDate(),
           updateTime: db.serverDate()
         };
