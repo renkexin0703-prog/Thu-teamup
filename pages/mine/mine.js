@@ -141,9 +141,34 @@ loadCurrentUserInfo() {
     return '/images/default-avatar.png';
   },
 
+  // 规范化要保存到数据库中的头像地址，避免把临时路径写入 users.avatar
+  normalizeAvatarForSave(avatarUrl, fallbackAvatar) {
+    if (!avatarUrl) {
+      return fallbackAvatar || '/images/default-avatar.png';
+    }
+    // 屏蔽本地临时路径（如 http://tmp/、127.0.0.1/__tmp__ 等）
+    if (
+      avatarUrl.startsWith('http://tmp') ||
+      avatarUrl.includes('__tmp__') ||
+      avatarUrl.startsWith('http://127.0.0.1')
+    ) {
+      return fallbackAvatar || '/images/default-avatar.png';
+    }
+    // 云文件 ID
+    if (avatarUrl.startsWith('cloud://')) {
+      return avatarUrl;
+    }
+    // 正常的 https 外网地址也允许直接保存
+    if (avatarUrl.startsWith('https://')) {
+      return avatarUrl;
+    }
+    return fallbackAvatar || '/images/default-avatar.png';
+  },
+
   openEditUserInfo() {
     const { userInfo } = this.data;
-    console.log('打开编辑界面，当前用户信息:', userInfo);
+    const storedUserInfo = wx.getStorageSync('userInfo') || {};
+    console.log('打开编辑界面，当前用户信息:', userInfo, '本地缓存用户信息:', storedUserInfo);
     
     this.setData({
       editForm: {
@@ -152,7 +177,8 @@ loadCurrentUserInfo() {
         grade: userInfo.grade || '',
         dept: userInfo.dept || '',
         skill: userInfo.skill || '',
-        avatar: userInfo.avatar || '/images/default-avatar.png',
+        // 头像优先使用本地缓存中持久化的值，避免使用渲染时的临时访问链接
+        avatar: storedUserInfo.avatar || userInfo.avatar || '/images/default-avatar.png',
         contact: {
           phone: userInfo.contact?.phone || '',
           wechat: userInfo.contact?.wechat || ''
@@ -232,31 +258,38 @@ loadCurrentUserInfo() {
     const app = getApp();
     const currentUser = app.globalData.userInfo;
   
+    // 统一处理要保存的头像，避免临时路径写入数据库
+    const safeAvatar = this.normalizeAvatarForSave(editForm.avatar, currentUser?.avatar);
+    const newEditForm = {
+      ...editForm,
+      avatar: safeAvatar
+    };
+
     // 1. 保存到本地缓存
-    wx.setStorageSync('userInfo', editForm);
+    wx.setStorageSync('userInfo', newEditForm);
   
     // 2. 同步到全局变量
     app.globalData.userInfo = {
       ...currentUser,
-      ...editForm,
-      name: editForm.name || currentUser.name,
-      avatar: editForm.avatar || currentUser.avatar
+      ...newEditForm,
+      name: newEditForm.name || currentUser.name,
+      avatar: safeAvatar
     };
   
     // 3. 强制更新云数据库（无论是否存在）
     const db = wx.cloud.database();
     db.collection('users').doc(currentUser.id).set({
       data: {
-        ...editForm,
-        name: editForm.name || currentUser.name,
-        avatar: editForm.avatar || currentUser.avatar,
+        ...newEditForm,
+        name: newEditForm.name || currentUser.name,
+        avatar: safeAvatar,
         updateTime: db.serverDate()
       },
       success: () => {
         console.log('云数据库信息更新成功');
         // 更新页面显示的用户信息
         this.setData({
-          userInfo: { ...this.data.userInfo, ...editForm },
+          userInfo: { ...this.data.userInfo, ...newEditForm },
           editUserInfoShow: false
         });
         wx.showToast({ title: '信息保存成功', icon: 'success' });

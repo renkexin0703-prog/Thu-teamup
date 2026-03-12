@@ -33,12 +33,6 @@
   </view>
 </view>
 
-<!-- 信誉分详情 -->
-<view class="card">
-  <view class="card-header">信誉分详情</view>
-  <view class="credit-desc-text">{{userInfo.creditDesc}}</view>
-</view>
-
 <!-- 核心功能区 -->
 <view class="card func-card">
   <view class="func-item" bindtap="gotoPublishActivity">
@@ -54,11 +48,6 @@
   <view class="func-item" bindtap="gotoGiftExchange">
     <text>🎁 礼品兑换</text>
     <text class="func-tip">文创/面试券</text>
-    <icon type="arrowright" size="16" color="#999" />
-  </view>
-  <view class="func-item" bindtap="gotoMyPartners">
-    <text>👥 我的合作者</text>
-    <text class="func-tip">{{userInfo.partners.length}}位队友</text>
     <icon type="arrowright" size="16" color="#999" />
   </view>
   <view class="func-item" bindtap="gotoMyActivities">

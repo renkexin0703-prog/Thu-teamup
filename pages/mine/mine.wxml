@@ -24,7 +24,6 @@
     />
     <view class="flex-col">
       <text class="font-bold text-36rpx">{{userInfo.name || '未设置用户名'}}</text>
-      <text class="text-light">信誉分：{{userInfo.credit || 80}}</text>
     </view>
   </view>
   <van-cell-group border="{{false}}">
@@ -72,15 +71,9 @@
       icon="plus-o"
     />
     <van-cell 
-  title="联系我的人" 
-  is-link
-  bind:click="openContactRequests"
-  icon="friends-o"
-/>
-    <van-cell 
-      title="我的合作者" 
+      title="联系我的人" 
       is-link
-      bind:click="openTeammates"
+      bind:click="openContactRequests"
       icon="friends-o"
     />
     <van-cell 
@@ -245,59 +238,6 @@
         bind:click="submitActivityInfo"
       >
         提交审核
-      </van-button>
-    </view>
-  </van-popup>
-
-  <!-- 我的合作者弹窗 -->
-  <van-popup
-    show="{{teammatesShow}}"
-    position="center"
-    closeable
-    bind:close="closeTeammates"
-    style="overflow-y: auto;"
-  >
-    <view class="popup-card" style="width: 90%; max-height: 80vh;">
-      <text class="font-bold text-36rpx block mb-20">我的合作者</text>
-      <van-cell-group border="{{false}}">
-        <van-cell 
-          wx:for="{{teammatesList}}" 
-          wx:key="id"
-          title="{{item.name}}"
-          label="院系：{{item.dept}} | 技能：{{item.skill}}"
-          is-link
-          bind:click="evaluateTeammate"
-          data-teammate="{{item}}"
-        />
-      </van-cell-group>
-    </view>
-  </van-popup>
-
-  <!-- 评价队友弹窗 -->
-  <van-popup
-    show="{{evaluateShow}}"
-    position="center"
-    closeable
-    bind:close="closeEvaluate"
-  >
-    <view class="popup-card">
-      <text class="font-bold text-36rpx block mb-20">评价队友</text>
-      <van-field
-        label="技能标签评价"
-        value="{{evaluateTag}}"
-        bind:change="onEvaluateTagChange"
-        placeholder="如：后端大神、超靠谱"
-      />
-      <van-rate 
-        value="{{evaluateScore}}"
-        bind:change="onEvaluateScoreChange"
-        class="mt-20"
-      />
-      <van-button 
-        class="purple-btn mt-20 w-100"
-        bind:click="submitEvaluate"
-      >
-        提交评价
       </van-button>
     </view>
   </van-popup>

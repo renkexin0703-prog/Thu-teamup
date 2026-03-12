@@ -69,24 +69,90 @@ Page({
                 this.setData({ loading: false });
                 if (contactsRes && contactsRes.data) {
                   console.log("获取联系我的人数据成功:", contactsRes.data);
-                  // 处理数据格式
-                  const contacts = contactsRes.data.map(item => ({
-                    id: item._id || item.id,
-                    name: item.userName || item.name || '未知用户',
-                    avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
-                    dept: item.userDepartment || item.dept || '未知院系',
-                    grade: item.userGrade || item.grade || '未知年级',
-                    wechat: item.wechat || 'wx_' + (item.userId || ''),
-                    skills: item.skills || [],
-                    contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
-                  }));
                   
-                  this.setData({ contactRequests: contacts });
-                  wx.showToast({ 
-                    title: `加载成功，共${contacts.length}位联系人`, 
-                    icon: 'success',
-                    duration: 1500
-                  });
+                  // 从联系记录中提取发起人的 openid，用于到 users 集合中查头像
+                  const openids = Array.from(
+                    new Set(
+                      (contactsRes.data || [])
+                        .map(item => item._openid)
+                        .filter(Boolean)
+                    )
+                  );
+                  
+                  if (openids.length > 0) {
+                    db.collection('users')
+                      .where({
+                        _id: db.command.in(openids)
+                      })
+                      .get({
+                        success: (usersRes) => {
+                          const avatarMap = {};
+                          if (usersRes && usersRes.data) {
+                            usersRes.data.forEach(u => {
+                              if (u && u._id) {
+                                avatarMap[u._id] = u.avatar || '/images/default-avatar.png';
+                              }
+                            });
+                          }
+                          
+                          const contacts = contactsRes.data.map(item => ({
+                            id: item._id || item.id,
+                            name: item.userName || item.name || '未知用户',
+                            // 优先使用 users 表中根据 _openid 查到的头像
+                            avatar: avatarMap[item._openid] || item.userAvatar || item.avatar || '/images/default-avatar.png',
+                            dept: item.userDepartment || item.dept || '未知院系',
+                            grade: item.userGrade || item.grade || '未知年级',
+                            wechat: item.wechat || 'wx_' + (item.userId || ''),
+                            skills: item.skills || [],
+                            contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
+                          }));
+                          
+                          this.setData({ contactRequests: contacts });
+                          wx.showToast({ 
+                            title: `加载成功，共${contacts.length}位联系人`, 
+                            icon: 'success',
+                            duration: 1500
+                          });
+                        },
+                        fail: (err) => {
+                          console.error('根据 openid 获取用户头像失败，降级使用记录内头像:', err);
+                          const contacts = contactsRes.data.map(item => ({
+                            id: item._id || item.id,
+                            name: item.userName || item.name || '未知用户',
+                            avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
+                            dept: item.userDepartment || item.dept || '未知院系',
+                            grade: item.userGrade || item.grade || '未知年级',
+                            wechat: item.wechat || 'wx_' + (item.userId || ''),
+                            skills: item.skills || [],
+                            contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
+                          }));
+                          this.setData({ contactRequests: contacts });
+                          wx.showToast({ 
+                            title: `加载成功，共${contacts.length}位联系人`, 
+                            icon: 'success',
+                            duration: 1500
+                          });
+                        }
+                      });
+                  } else {
+                    // 没有有效的 openid，直接使用记录中的头像字段
+                    const contacts = contactsRes.data.map(item => ({
+                      id: item._id || item.id,
+                      name: item.userName || item.name || '未知用户',
+                      avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
+                      dept: item.userDepartment || item.dept || '未知院系',
+                      grade: item.userGrade || item.grade || '未知年级',
+                      wechat: item.wechat || 'wx_' + (item.userId || ''),
+                      skills: item.skills || [],
+                      contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
+                    }));
+                    this.setData({ contactRequests: contacts });
+                    wx.showToast({ 
+                      title: `加载成功，共${contacts.length}位联系人`, 
+                      icon: 'success',
+                      duration: 1500
+                    });
+                  }
                 } else {
                   console.log("联系我的人数据为空");
                   this.setData({ contactRequests: [] });
@@ -220,24 +286,88 @@ Page({
                 wx.hideLoading();
                 if (contactsRes && contactsRes.data) {
                   console.log("刷新联系我的人数据成功:", contactsRes.data);
-                  // 处理数据格式
-                  const contacts = contactsRes.data.map(item => ({
-                    id: item._id || item.id,
-                    name: item.userName || item.name || '未知用户',
-                    avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
-                    dept: item.userDepartment || item.dept || '未知院系',
-                    grade: item.userGrade || item.grade || '未知年级',
-                    wechat: item.wechat || 'wx_' + (item.userId || ''),
-                    skills: item.skills || [],
-                    contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
-                  }));
                   
-                  this.setData({ contactRequests: contacts });
-                  this.updateRefreshInfo();
-                  wx.showToast({ 
-                    title: `刷新成功，共${contacts.length}位联系人`, 
-                    icon: 'success' 
-                  });
+                  // 从联系记录中提取发起人的 openid，用于到 users 集合中查头像
+                  const openids = Array.from(
+                    new Set(
+                      (contactsRes.data || [])
+                        .map(item => item._openid)
+                        .filter(Boolean)
+                    )
+                  );
+                  
+                  if (openids.length > 0) {
+                    db.collection('users')
+                      .where({
+                        _id: db.command.in(openids)
+                      })
+                      .get({
+                        success: (usersRes) => {
+                          const avatarMap = {};
+                          if (usersRes && usersRes.data) {
+                            usersRes.data.forEach(u => {
+                              if (u && u._id) {
+                                avatarMap[u._id] = u.avatar || '/images/default-avatar.png';
+                              }
+                            });
+                          }
+                          
+                          const contacts = contactsRes.data.map(item => ({
+                            id: item._id || item.id,
+                            name: item.userName || item.name || '未知用户',
+                            avatar: avatarMap[item._openid] || item.userAvatar || item.avatar || '/images/default-avatar.png',
+                            dept: item.userDepartment || item.dept || '未知院系',
+                            grade: item.userGrade || item.grade || '未知年级',
+                            wechat: item.wechat || 'wx_' + (item.userId || ''),
+                            skills: item.skills || [],
+                            contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
+                          }));
+                          
+                          this.setData({ contactRequests: contacts });
+                          this.updateRefreshInfo();
+                          wx.showToast({ 
+                            title: `刷新成功，共${contacts.length}位联系人`, 
+                            icon: 'success' 
+                          });
+                        },
+                        fail: (err) => {
+                          console.error('根据 openid 获取用户头像失败，降级使用记录内头像:', err);
+                          const contacts = contactsRes.data.map(item => ({
+                            id: item._id || item.id,
+                            name: item.userName || item.name || '未知用户',
+                            avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
+                            dept: item.userDepartment || item.dept || '未知院系',
+                            grade: item.userGrade || item.grade || '未知年级',
+                            wechat: item.wechat || 'wx_' + (item.userId || ''),
+                            skills: item.skills || [],
+                            contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
+                          }));
+                          this.setData({ contactRequests: contacts });
+                          this.updateRefreshInfo();
+                          wx.showToast({ 
+                            title: `刷新成功，共${contacts.length}位联系人`, 
+                            icon: 'success' 
+                          });
+                        }
+                      });
+                  } else {
+                    const contacts = contactsRes.data.map(item => ({
+                      id: item._id || item.id,
+                      name: item.userName || item.name || '未知用户',
+                      avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
+                      dept: item.userDepartment || item.dept || '未知院系',
+                      grade: item.userGrade || item.grade || '未知年级',
+                      wechat: item.wechat || 'wx_' + (item.userId || ''),
+                      skills: item.skills || [],
+                      contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
+                    }));
+                    this.setData({ contactRequests: contacts });
+                    this.updateRefreshInfo();
+                    wx.showToast({ 
+                      title: `刷新成功，共${contacts.length}位联系人`, 
+                      icon: 'success' 
+                    });
+                  }
                 } else {
                   console.log("联系我的人数据为空");
                   this.setData({ contactRequests: [] });

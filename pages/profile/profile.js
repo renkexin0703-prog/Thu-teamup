@@ -191,14 +191,6 @@
    },
  
  
-   // 跳转到我的合作者页
-   gotoMyPartners() {
-     wx.navigateTo({
-       url: "/pages/my-partners/my-partners"
-     });
-   },
- 
- 
    // 跳转到我的活动投稿页
    gotoMyActivities() {
      wx.navigateTo({

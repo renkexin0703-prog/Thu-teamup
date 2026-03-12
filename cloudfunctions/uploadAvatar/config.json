@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "openapi": [],
+    "scopes": [
+      {
+        "scope": "wx.cloud.base",
+        "desc": "读写云存储"
+      },
+      {
+        "scope": "wx.cloud.uploadFile",
+        "desc": "上传文件到云存储"
+      }
+    ]
+  },
+  "runtime": "Node.js 10"
+}
