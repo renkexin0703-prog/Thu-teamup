@@ -1,5 +1,6 @@
 const app = getApp();
 const db = wx.cloud.database();
+const _ = db.command; // 1. 引入查询指令
 
 Page({
   data: {
@@ -9,7 +10,7 @@ Page({
     categoryFilter: 'all',
     sortType: 'deadline',
     loading: false,
-    finished: true, // 因为目前数据量小，设为true避免显示加载中
+    finished: true, 
     activityList: [],
     activityCardShow: false,
     currentActivity: {},
@@ -24,11 +25,29 @@ Page({
     this.fetchActivities();
   },
 
+  // 获取当前日期字符串 "YYYY-MM-DD" 的辅助函数
+  getTodayStr() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  },
+
   // 从云端获取真实数据
   async fetchActivities() {
     this.setData({ loading: true });
+    const todayStr = this.getTodayStr(); // 获取今天的日期
+
     try {
-      const res = await db.collection('activities').orderBy('deadline', 'asc').get();
+      // 2. 在数据库查询层面直接过滤：只获取截止日期 >= 今天的比赛
+      const res = await db.collection('activities')
+        .where({
+          deadline: _.gte(todayStr)
+        })
+        .orderBy('deadline', 'asc')
+        .get();
+
       this.setData({
         cloudActivities: res.data,
         loading: false
@@ -44,6 +63,10 @@ Page({
   filterActivityList() {
     let list = [...this.data.cloudActivities];
     const { searchValue, deptFilter, categoryFilter, sortType } = this.data;
+    const todayStr = this.getTodayStr();
+
+    // 3. 前端二次过滤（双重保险）：确保过期的比赛绝对不显示
+    list = list.filter(i => i.deadline >= todayStr);
 
     if (searchValue) {
       list = list.filter(i => i.title.includes(searchValue));
@@ -51,9 +74,11 @@ Page({
     if (deptFilter !== 'all') {
       list = list.filter(i => i.department === deptFilter);
     }
+    
     // 排序
     if (sortType === 'deadline') {
-      list.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+      // 修正排序逻辑，确保字符串日期能正确转换为 Date 对象比较
+      list.sort((a, b) => new Date(a.deadline.replace(/-/g, '/')) - new Date(b.deadline.replace(/-/g, '/')));
     }
     
     this.setData({ activityList: list });
@@ -73,7 +98,7 @@ Page({
 
   closeActivityCard() { this.setData({ activityCardShow: false }); },
 
-  // 【核心互联】一键组队跳转
+  // 一键组队跳转
   onQuickTeamUp() {
     const title = this.data.currentActivity.title;
     this.closeActivityCard();
