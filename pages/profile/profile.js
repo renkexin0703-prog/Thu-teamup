@@ -53,6 +53,7 @@
      
      if (openid) {
        const db = wx.cloud.database();
+       // 获取用户信息
        db.collection('users').doc(openid).get({
          success: (res) => {
            if (res && res.data) {
@@ -67,6 +68,25 @@
          },
          fail: (err) => {
            console.log("云数据库查询失败，使用默认数据");  // 降级处理
+         }
+       });
+       
+       // 获取联系我的人数据（contactRecords）
+       db.collection('contactRecords').where({
+         targetUserId: openid
+       }).get({
+         success: (res) => {
+           if (res && res.data) {
+             console.log("获取联系我的人数据成功:", res.data);
+             this.setData({ contactRequests: res.data });
+           } else {
+             console.log("联系我的人数据为空");
+           }
+         },
+         fail: (err) => {
+           console.log("获取联系我的人数据失败:", err);
+           // 降级处理：使用假数据
+           this.setData({ contactRequests: fakeData.contactRequests });
          }
        });
      }
@@ -167,14 +187,6 @@
    gotoGiftExchange() {
      wx.navigateTo({
        url: "/pages/gift-exchange/gift-exchange"
-     });
-   },
- 
- 
-   // 跳转到我的合作者页
-   gotoMyPartners() {
-     wx.navigateTo({
-       url: "/pages/my-partners/my-partners"
      });
    },
  

@@ -37,7 +37,7 @@ Page({
     });
   },
 
-  // 选择头像（使用本地存储方案，避免云函数依赖）
+  // 选择头像（使用云函数上传方案）
   chooseAvatar() {
     wx.chooseImage({
       count: 1,
@@ -47,8 +47,8 @@ Page({
         const tempFilePath = res.tempFilePaths[0];
         this.setData({ avatarUrl: tempFilePath });
 
-        // 直接使用本地存储方案，避免云函数依赖
-        this.saveAvatarLocally(tempFilePath);
+        // 使用云函数上传方案
+        this.uploadAvatarByCloudFunction(tempFilePath);
       },
       fail: () => {
         console.log("选择图片失败");
@@ -82,45 +82,26 @@ Page({
     // 1. 显示加载中
     wx.showLoading({ title: '上传头像中...' });
 
-    // 2. 把临时文件转base64（云函数需要）
-    wx.getFileSystemManager().readFile({
+    // 2. 构造云存储路径（用用户ID区分，避免重名）
+    const userId = app.globalData.userInfo.id || `temp_${Date.now()}`;
+    const cloudPath = `avatars/${userId}/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
+
+    // 3. 直接使用云存储上传
+    wx.cloud.uploadFile({
+      cloudPath: cloudPath,
       filePath: filePath,
-      encoding: 'base64',
-      success: async (fileRes) => {
-        try {
-          // 3. 构造云存储路径（用用户ID区分，避免重名）
-          const userId = app.globalData.userInfo.id || `temp_${Date.now()}`;
-          const cloudPath = `avatars/${userId}/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
-
-          // 4. 调用云函数上传
-          const uploadRes = await wx.cloud.callFunction({
-            name: 'uploadAvatar', // 必须和部署的云函数名一致
-            data: {
-              fileContent: fileRes.data, // base64文件内容
-              cloudPath: cloudPath // 云存储路径
-            }
-          });
-
-          // 5. 处理云函数返回结果
-          if (uploadRes.result.success) {
-            const fileID = uploadRes.result.fileID;
-            console.log("云函数上传头像成功，fileID:", fileID);
-            this.handleAvatarUploadSuccess(fileID);
-          } else {
-            throw new Error(uploadRes.result.errMsg || '云函数上传失败');
-          }
-        } catch (err) {
-          console.error("云函数上传头像异常:", err);
-          // 降级处理：用本地路径（和原有逻辑一致）
-          this.handleAvatarUploadFail(filePath, err);
-        } finally {
-          wx.hideLoading();
-        }
+      success: (res) => {
+        console.log("云存储上传成功，fileID:", res.fileID);
+        const fileID = res.fileID;
+        this.handleAvatarUploadSuccess(fileID);
       },
       fail: (err) => {
+        console.error("云存储上传失败:", err);
+        // 即使遇到权限错误，也尝试更新数据库，使用本地路径作为临时解决方案
+        this.handleAvatarUploadFail(filePath, err);
+      },
+      complete: () => {
         wx.hideLoading();
-        console.error("读取图片文件失败:", err);
-        wx.showToast({ title: "上传失败，请重试", icon: "none" });
       }
     });
   },
@@ -179,7 +160,7 @@ Page({
   // ✅ 封装：上传失败后的统一处理（复用原有逻辑）
   handleAvatarUploadFail(filePath, err) {
     console.error("云函数上传头像失败，降级为本地路径:", err);
-    // 使用本地路径作为头像（原有临时解决方案）
+    // 使用本地路径作为头像（临时解决方案）
     const editForm = {
       ...this.data.userInfo,
       avatar: filePath
@@ -193,6 +174,27 @@ Page({
     };
     // 更新当前页面的 avatarUrl
     this.setData({ avatarUrl: filePath });
+    
+    // 尝试更新云数据库，即使使用本地路径
+    const db = wx.cloud.database();
+    const currentUser = app.globalData.userInfo;
+    const userId = currentUser.id || currentUser._id || currentUser._openid;
+    
+    if (userId) {
+      db.collection('users').doc(userId).update({
+        data: {
+          avatar: filePath,
+          updateTime: db.serverDate()
+        },
+        success: () => {
+          console.log("云数据库头像更新成功（使用本地路径）");
+        },
+        fail: (err) => {
+          console.error("云数据库头像更新失败:", err);
+        }
+      });
+    }
+    
     wx.showToast({ title: "头像上传成功（本地）", icon: "success" });
   },
 
@@ -201,6 +203,8 @@ Page({
     console.log("开始上传头像，文件路径:", filePath);
     const cloudPath = `avatars/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
     const db = wx.cloud.database();
+
+    wx.showLoading({ title: '上传头像中...' });
 
     wx.cloud.uploadFile({
       cloudPath,
@@ -239,6 +243,7 @@ Page({
         
         if (!userId) {
           console.error("用户 ID 不存在，无法更新数据库");
+          wx.hideLoading();
           wx.showToast({ title: "头像上传成功（本地）", icon: "success" });
           return;
         }
@@ -251,20 +256,41 @@ Page({
         },
         success: () => {
           console.log("云数据库更新成功");
+          wx.hideLoading();
           wx.showToast({ title: "头像上传成功", icon: "success" });
         },
         fail: (err) => {
           console.error("云数据库更新失败:", err);
+          wx.hideLoading();
           wx.showToast({ title: "头像上传成功（本地）", icon: "success" });
         }
       });
     },
     fail: (err) => {
       console.error("云存储上传失败:", err);
+      wx.hideLoading();
       // 检查是否是权限错误
       if (err.errCode === -503002 || err.errMsg.includes('permission denied') || err.errMsg.includes('access right')) {
         console.error("云存储权限错误，使用本地存储");
         // 使用本地路径作为头像（临时解决方案）
+        const editForm = {
+          ...this.data.userInfo,
+          avatar: filePath
+        };
+        // 保存到本地缓存
+        wx.setStorageSync('userInfo', editForm);
+        // 同步到全局变量
+        const app = getApp();
+        app.globalData.userInfo = {
+          ...app.globalData.userInfo,
+          ...editForm
+        };
+        // 更新当前页面的 avatarUrl
+        this.setData({ avatarUrl: filePath });
+        wx.showToast({ title: "头像上传成功（本地）", icon: "success" });
+      } else if (err.errCode === -504001 || err.errMsg.includes('500 Internal Server Error')) {
+        console.error("云存储服务器错误，使用本地存储");
+        // 使用本地路径作为头像
         const editForm = {
           ...this.data.userInfo,
           avatar: filePath
