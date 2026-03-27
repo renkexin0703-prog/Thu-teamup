@@ -55,38 +55,47 @@
     if (openid) {
       const db = wx.cloud.database();
       
-      // 获取用户积分信息（实时从user_points集合获取）
-      db.collection('user_points').doc(openid).get({
-        success: (res) => {
-          if (res && res.data) {
-            // 更新积分显示
-            const updatedUserInfo = {
-              ...this.data.userInfo,
-              points: res.data.total_points || 0
-            };
-            this.setData({ userInfo: updatedUserInfo });
-          }
-        },
-        fail: (err) => {
-          console.log("获取用户积分失败，使用默认积分");
-        }
-      });
-      
       // 获取用户信息（users集合）
       db.collection('users').doc(openid).get({
         success: (res) => {
           if (res && res.data) {
-            // 只在数据有效时才更新
             const updatedUserInfo = {
               ...this.data.userInfo,
               ...res.data
-              // 保留积分从user_points获取的值
             };
             this.setData({ userInfo: updatedUserInfo });
+            
+            // 获取用户积分信息（实时从user_points集合获取）
+            db.collection('user_points').doc(openid).get({
+              success: (pointsRes) => {
+                if (pointsRes && pointsRes.data) {
+                  // 只更新积分字段
+                  this.setData({
+                    'userInfo.points': pointsRes.data.total_points || 0
+                  });
+                }
+              },
+              fail: (err) => {
+                console.log("获取用户积分失败，使用默认积分");
+              }
+            });
           }
         },
         fail: (err) => {
-          console.log("云数据库查询失败，使用默认数据");  // 降级处理
+          console.log("云数据库查询失败，使用默认数据");
+        }
+      });
+      
+      // 获取用户的活动投稿
+      wx.cloud.callFunction({
+        name: 'getMyActivities',
+        success: (res) => {
+          if (res.result && res.result.success) {
+            this.setData({ myActivities: res.result.activities });
+          }
+        },
+        fail: (err) => {
+          console.log("获取活动投稿失败，使用假数据");
         }
       });
       

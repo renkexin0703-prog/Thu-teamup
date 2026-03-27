@@ -162,6 +162,7 @@ Page({
           data: {
             postId,
             contactedBy: currentUserId,
+            targetUserId: postAuthorId,
             contactTime: db.serverDate(),
             userName: contactUser.name || "未知用户",
             userAvatar: contactUser.avatar || "",

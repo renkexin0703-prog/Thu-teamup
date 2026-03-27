@@ -98,6 +98,86 @@ wx.cloud.callFunction({
 - `NETWORK_ERROR`：网络错误
 - `UNKNOWN_ERROR`：未知错误
 
+### 2. exchangeGift 云函数
+
+用于礼品兑换，扣减用户积分并记录兑换历史。
+
+#### 功能特性
+
+- **积分扣减**：根据礼品所需积分自动扣减用户积分
+- **积分验证**：兑换前检查用户积分是否足够
+- **历史记录**：自动记录兑换操作到积分历史
+- **数据一致性**：确保积分扣减和历史记录的原子性
+
+#### 调用方式
+
+```javascript
+wx.cloud.callFunction({
+  name: 'exchangeGift',
+  data: {
+    giftId: 'gift_001',           // 礼品ID
+    giftName: '清华文创笔记本',    // 礼品名称
+    pointsCost: 100               // 所需积分
+  },
+  success: (res) => {
+    if (res.result.success) {
+      console.log('兑换成功:', res.result.data)
+      // res.result.data 包含：
+      // - userId: 用户ID
+      // - giftId: 礼品ID
+      // - giftName: 礼品名称
+      // - pointsCost: 消耗积分
+      // - totalPoints: 兑换后的总积分
+      // - timestamp: 兑换时间
+    } else {
+      console.error('兑换失败:', res.result.message)
+    }
+  },
+  fail: (err) => {
+    console.error('调用云函数失败:', err)
+  }
+})
+```
+
+#### 返回值
+
+**成功时**：
+```javascript
+{
+  success: true,
+  message: '兑换成功',
+  data: {
+    userId: 'user_openid',
+    giftId: 'gift_001',
+    giftName: '清华文创笔记本',
+    pointsCost: 100,
+    totalPoints: 185,
+    timestamp: '2026-03-28T10:00:00.000Z'
+  }
+}
+```
+
+**失败时**：
+```javascript
+{
+  success: false,
+  errorCode: 'INSUFFICIENT_POINTS',
+  message: '积分不足',
+  currentPoints: 50,
+  requiredPoints: 100
+}
+```
+
+#### 错误码
+
+- `INVALID_PARAMS`：缺少必要参数
+- `INVALID_POINTS_COST`：积分消耗必须大于0
+- `USER_NOT_LOGGED_IN`：用户未登录
+- `INSUFFICIENT_POINTS`：积分不足
+- `DATABASE_ERROR`：数据库错误
+- `NETWORK_ERROR`：网络错误
+- `UNKNOWN_ERROR`：未知错误
+
 ### 2. getPointsHistory 云函数
 
 用于查询用户的积分历史记录。

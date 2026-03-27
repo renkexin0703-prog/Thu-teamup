@@ -13,7 +13,8 @@ const POINTS_TYPES = {
   SUBMIT_ACTIVITY: 'submit_activity',
   TEAM_UP_SUCCESS: 'team_up_success',
   DAILY_LOGIN: 'daily_login',
-  SHARE_TO_CIRCLE: 'share_to_circle'
+  SHARE_TO_CIRCLE: 'share_to_circle',
+  EXCHANGE_GIFT: 'exchange_gift'
 }
 
 // 积分规则定义
@@ -179,7 +180,8 @@ function getOperationName(pointsType) {
     [POINTS_TYPES.SUBMIT_ACTIVITY]: '投稿活动',
     [POINTS_TYPES.TEAM_UP_SUCCESS]: '组队成功',
     [POINTS_TYPES.DAILY_LOGIN]: '每日登录',
-    [POINTS_TYPES.SHARE_TO_CIRCLE]: '发圈宣传'
+    [POINTS_TYPES.SHARE_TO_CIRCLE]: '发圈宣传',
+    [POINTS_TYPES.EXCHANGE_GIFT]: '兑换礼品'
   }
   return operationNames[pointsType] || '未知操作'
 }
