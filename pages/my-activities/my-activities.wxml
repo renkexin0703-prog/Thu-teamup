@@ -5,7 +5,14 @@
     <view class="activity-count">共 {{myActivities.length}} 条记录</view>
   </view>
 
-  <view class="activity-list" wx:if="{{myActivities.length > 0}}">
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <van-loading type="spinner" size="32px" />
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 活动列表 -->
+  <view class="activity-list" wx:elif="{{myActivities.length > 0}}">
     <view class="activity-item" wx:for="{{myActivities}}" wx:key="id">
       <view class="activity-header">
         <text class="activity-title">{{item.title}}</text>
@@ -45,6 +52,7 @@
     </view>
   </view>
 
+  <!-- 空状态 -->
   <view class="empty-tips" wx:else>
     <text>暂无活动投稿记录</text>
   </view>
