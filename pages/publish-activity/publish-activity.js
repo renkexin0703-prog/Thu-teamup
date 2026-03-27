@@ -41,40 +41,126 @@ Page({
 
   // 选择技能
   onSkillSelect(e) {
-    const skillIndexes = e.detail.value;
-    const skills = skillIndexes.map(idx => fakeData.filterOptions.skills[idx]);
-    this.setData({ selectedSkills: skills });
+    const indices = e.detail.value;
+    const selectedSkills = indices.map(index => fakeData.filterOptions.skills[index]);
+    this.setData({ selectedSkills });
   },
 
-  // 输入描述
+  // 输入活动描述
   onDescInput(e) {
     this.setData({ desc: e.detail.value });
   },
 
-  // 提交活动【假数据存储】
+  // 提交活动
   submitActivity() {
     const { title, organizer, selectedDept, selectedGrade, selectedDate, selectedSkills, desc } = this.data;
     
-    // 简单校验
-    if (!title || !organizer || !selectedDept || !selectedDate) {
+    // 数据验证
+    if (!title.trim()) {
       wx.showToast({
-        title: "请填写必填项",
+        title: "请输入活动标题",
         icon: "none"
       });
       return;
     }
-
-    // 模拟提交：添加到我的待审核活动列表
-    wx.showToast({
-      title: "提交成功！待审核",
-      icon: "success"
-    });
-
-    // 返回个人中心
-    setTimeout(() => {
-      wx.navigateBack({
-        delta: 1
+    
+    if (!organizer.trim()) {
+      wx.showToast({
+        title: "请输入主办方",
+        icon: "none"
       });
-    }, 1500);
+      return;
+    }
+    
+    if (!selectedDept) {
+      wx.showToast({
+        title: "请选择所属院系",
+        icon: "none"
+      });
+      return;
+    }
+    
+    if (!selectedGrade) {
+      wx.showToast({
+        title: "请选择面向年级",
+        icon: "none"
+      });
+      return;
+    }
+    
+    if (!selectedDate) {
+      wx.showToast({
+        title: "请选择截止时间",
+        icon: "none"
+      });
+      return;
+    }
+    
+    if (!desc.trim()) {
+      wx.showToast({
+        title: "请输入活动描述",
+        icon: "none"
+      });
+      return;
+    }
+    
+    // 构建活动数据
+    const activityData = {
+      title: title.trim(),
+      organizer: organizer.trim(),
+      department: selectedDept,
+      targetGrades: [selectedGrade], // 这里简化处理，实际可能需要支持多选
+      deadline: selectedDate,
+      requiredSkills: selectedSkills,
+      description: desc.trim()
+    };
+    
+    wx.showLoading({
+      title: '提交中...',
+    });
+    
+    // 调用云函数提交活动信息
+    wx.cloud.callFunction({
+      name: 'publishActivity',
+      data: activityData,
+      success: (res) => {
+        wx.hideLoading();
+        if (res.result.success) {
+          wx.showToast({
+            title: "提交成功！待审核",
+            icon: "success"
+          });
+          
+          // 增加积分
+          const app = getApp();
+          const currentScore = wx.getStorageSync('userScore') || 0;
+          const newScore = currentScore + 50;
+          wx.setStorageSync('userScore', newScore);
+          if (app.globalData.userInfo) {
+            app.globalData.userScore = newScore;
+          }
+          
+          // 返回个人中心
+          setTimeout(() => {
+            wx.navigateBack({
+              delta: 1
+            });
+          }, 1500);
+        } else {
+          wx.showToast({
+            title: res.result.message || "提交失败",
+            icon: "none"
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('调用云函数失败:', err);
+        wx.showToast({
+          title: "提交失败，请重试",
+          icon: "none"
+        });
+      }
+    });
   }
 });

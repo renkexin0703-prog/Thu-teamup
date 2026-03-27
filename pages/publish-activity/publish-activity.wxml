@@ -21,7 +21,7 @@
   </view>
   <view class="form-item">
     <view class="form-label">截止时间</view>
-    <picker mode="date" bindchange="onDateSelect">
+    <picker mode="date" start="2026-01-01" end="2027-12-31" bindchange="onDateSelect">
       <view class="form-input placeholder">{{selectedDate || '请选择截止时间'}}</view>
     </picker>
   </view>

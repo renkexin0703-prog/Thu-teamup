@@ -302,47 +302,9 @@ loadCurrentUserInfo() {
   },
 
   openSubmitActivity() {
-    this.setData({ submitActivityShow: true });
-  },
-
-  closeSubmitActivity() {
-    this.setData({ submitActivityShow: false });
-  },
-
-  onActivityFormChange(e) {
-    const { key } = e.currentTarget.dataset;
-    const { activityForm } = this.data;
-    activityForm[key] = e.detail;
-    this.setData({ activityForm });
-  },
-
-  submitActivityInfo() {
-    const { activityForm } = this.data;
-    const required = ['title', 'organizer', 'dept', 'category', 'deadline', 'difficulty'];
-    const isComplete = required.every(key => activityForm[key]);
-    if (!isComplete) {
-      wx.showToast({ title: '请填写完整信息', icon: 'none' });
-      return;
-    }
-    wx.showToast({ title: '提交成功，等待审核', icon: 'success' });
-    this.setData({
-      submitActivityShow: false,
-      activityForm: {
-        title: '',
-        organizer: '',
-        dept: '',
-        category: '',
-        deadline: '',
-        difficulty: ''
-      }
+    wx.navigateTo({
+      url: '/pages/publish-activity/publish-activity'
     });
-    setTimeout(() => {
-      let currentScore = this.data.userScore;
-      currentScore += 50;
-      wx.setStorageSync('userScore', currentScore);
-      this.setData({ userScore: currentScore });
-      wx.showToast({ title: '活动审核通过，+50积分', icon: 'success' });
-    }, 1000);
   },
 
   openTeammates() {
