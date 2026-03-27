@@ -132,13 +132,29 @@ Page({
           });
           
           // 增加积分
-          const app = getApp();
-          const currentScore = wx.getStorageSync('userScore') || 0;
-          const newScore = currentScore + 50;
-          wx.setStorageSync('userScore', newScore);
-          if (app.globalData.userInfo) {
-            app.globalData.userScore = newScore;
-          }
+          wx.cloud.callFunction({
+            name: 'updatePoints',
+            data: {
+              pointsType: 'submit_activity'
+            },
+            success: (pointsRes) => {
+              if (pointsRes.result.success) {
+                console.log('投稿活动积分获取成功:', pointsRes.result.data);
+                // 更新本地积分显示
+                const app = getApp();
+                const newScore = pointsRes.result.data.totalPoints;
+                wx.setStorageSync('userScore', newScore);
+                if (app.globalData.userInfo) {
+                  app.globalData.userScore = newScore;
+                }
+              } else {
+                console.error('获取积分失败:', pointsRes.result.message);
+              }
+            },
+            fail: (err) => {
+              console.error('调用积分云函数失败:', err);
+            }
+          });
           
           // 返回个人中心
           setTimeout(() => {

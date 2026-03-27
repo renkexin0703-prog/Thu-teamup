@@ -1,6 +1,13 @@
-<view class="card">
+<!-- 加载状态 -->
+<view class="loading" wx:if="{{loading}}">
+  <van-loading type="spinner" size="32px" />
+  <text class="loading-text">加载中...</text>
+</view>
+
+<!-- 积分记录 -->
+<view class="card" wx:else>
   <view class="card-header">当前积分：{{userInfo.points}}</view>
-  <view class="record-list">
+  <view class="record-list" wx:if="{{userInfo.pointsRecord.length > 0}}">
     <block wx:for="{{userInfo.pointsRecord}}" wx:key="time">
       <view class="record-item">
         <view class="record-left">
@@ -13,5 +20,8 @@
         </view>
       </view>
     </block>
+  </view>
+  <view class="empty-tips" wx:else>
+    <text>暂无积分记录</text>
   </view>
 </view>

@@ -60,6 +60,7 @@
       </view>
     </view>
     <van-button class="purple-btn mt-20 w-100" bind:click="checkIn">每日登录领积分</van-button>
+    <van-button class="purple-btn mt-10 w-100" bind:click="checkIn">签到</van-button>
   </view>
 
   <!-- 功能入口 -->

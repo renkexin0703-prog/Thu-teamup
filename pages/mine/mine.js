@@ -346,18 +346,44 @@ loadCurrentUserInfo() {
   },
 
   checkIn() {
-    const lastCheckIn = wx.getStorageSync('lastCheckIn');
-    const today = new Date().toLocaleDateString();
-    if (lastCheckIn === today) {
-      wx.showToast({ title: '今日已登录', icon: 'none' });
-      return;
-    }
-    let currentScore = this.data.userScore;
-    currentScore += 5;
-    wx.setStorageSync('userScore', currentScore);
-    wx.setStorageSync('lastCheckIn', today);
-    this.setData({ userScore: currentScore });
-    wx.showToast({ title: '登录成功，+5积分', icon: 'success' });
+    // 调用云函数获取每日登录积分
+    wx.cloud.callFunction({
+      name: 'updatePoints',
+      data: {
+        pointsType: 'daily_login'
+      },
+      success: (res) => {
+        if (res.result.success) {
+          console.log('每日登录积分获取成功:', res.result.data);
+          wx.showToast({
+            title: '签到成功，+5积分',
+            icon: 'success'
+          });
+          // 更新本地积分显示
+          this.setData({ userScore: res.result.data.totalPoints });
+          wx.setStorageSync('userScore', res.result.data.totalPoints);
+          wx.setStorageSync('lastCheckIn', new Date().toLocaleDateString());
+        } else if (res.result.errorCode === 'ALREADY_LOGGED_IN_TODAY') {
+          wx.showToast({
+            title: '今日已登录',
+            icon: 'none'
+          });
+        } else {
+          console.error('获取积分失败:', res.result.message);
+          wx.showToast({
+            title: '获取积分失败，请重试',
+            icon: 'none'
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('调用云函数失败:', err);
+        wx.showToast({
+          title: '获取积分失败，请重试',
+          icon: 'none'
+        });
+      }
+    });
   },
 
   shareToCircle() {
@@ -366,11 +392,38 @@ loadCurrentUserInfo() {
       menus: ['shareAppMessage', 'shareTimeline']
     });
     setTimeout(() => {
-      let currentScore = this.data.userScore;
-      currentScore += 50;
-      wx.setStorageSync('userScore', currentScore);
-      this.setData({ userScore: currentScore });
-      wx.showToast({ title: '分享成功，+50积分', icon: 'success' });
+      // 调用云函数获取发圈宣传积分
+      wx.cloud.callFunction({
+        name: 'updatePoints',
+        data: {
+          pointsType: 'share_to_circle'
+        },
+        success: (res) => {
+          if (res.result.success) {
+            console.log('发圈宣传积分获取成功:', res.result.data);
+            wx.showToast({
+              title: '分享成功，+50积分',
+              icon: 'success'
+            });
+            // 更新本地积分显示
+            this.setData({ userScore: res.result.data.totalPoints });
+            wx.setStorageSync('userScore', res.result.data.totalPoints);
+          } else {
+            console.error('获取积分失败:', res.result.message);
+            wx.showToast({
+              title: '获取积分失败，请重试',
+              icon: 'none'
+            });
+          }
+        },
+        fail: (err) => {
+          console.error('调用云函数失败:', err);
+          wx.showToast({
+            title: '获取积分失败，请重试',
+            icon: 'none'
+          });
+        }
+      });
     }, 1000);
   },
 

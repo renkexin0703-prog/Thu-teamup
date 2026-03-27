@@ -3,13 +3,14 @@
  
  
  Page({
-   data: {
-     userInfo: {},
-     myActivities: [],
-     contactRequests: [],
-     showReviewPanel: false,
-     tapCount: 0 // 头像点击计数
-   },
+  data: {
+    userInfo: {},
+    myActivities: [],
+    contactRequests: [],
+    showReviewPanel: false,
+    tapCount: 0, // 头像点击计数
+    hasCheckedInToday: false // 今日是否已签到
+  },
  
  
    onLoad() {
@@ -30,67 +31,165 @@
  
  
    onShow() {
-     // 初始化数据（优先级：本地缓存 > 假数据）
-     const localUserInfo = wx.getStorageSync('userInfo') || {};
-     const defaultUserInfo = fakeData.userInfo;
-     
-     // 确保头像使用正确的路径
-     const safeUserInfo = {
-       ...defaultUserInfo,
-       ...localUserInfo
-       // 移除强制使用默认头像的代码
-     };
-     
-     this.setData({
-       userInfo: safeUserInfo,
-       myActivities: fakeData.myActivities,
-       contactRequests: fakeData.contactRequests
-     });
-   
-     // 修改云数据库查询部分 - 添加安全检查
-     const app = getApp();
-     const openid = app.globalData.userInfo?.id;
-     
-     if (openid) {
-       const db = wx.cloud.database();
-       // 获取用户信息
-       db.collection('users').doc(openid).get({
-         success: (res) => {
-           if (res && res.data) {
-             // 只在数据有效时才更新
-             const updatedUserInfo = {
-               ...this.data.userInfo,
-               ...res.data
-               // 移除强制使用默认头像的代码
-             };
-             this.setData({ userInfo: updatedUserInfo });
-           }
-         },
-         fail: (err) => {
-           console.log("云数据库查询失败，使用默认数据");  // 降级处理
-         }
-       });
-       
-       // 获取联系我的人数据（contactRecords）
-       db.collection('contactRecords').where({
-         targetUserId: openid
-       }).get({
-         success: (res) => {
-           if (res && res.data) {
-             console.log("获取联系我的人数据成功:", res.data);
-             this.setData({ contactRequests: res.data });
-           } else {
-             console.log("联系我的人数据为空");
-           }
-         },
-         fail: (err) => {
-           console.log("获取联系我的人数据失败:", err);
-           // 降级处理：使用假数据
-           this.setData({ contactRequests: fakeData.contactRequests });
-         }
-       });
-     }
-   },
+    // 初始化数据（优先级：本地缓存 > 假数据）
+    const localUserInfo = wx.getStorageSync('userInfo') || {};
+    const defaultUserInfo = fakeData.userInfo;
+    
+    // 确保头像使用正确的路径
+    const safeUserInfo = {
+      ...defaultUserInfo,
+      ...localUserInfo
+      // 移除强制使用默认头像的代码
+    };
+    
+    this.setData({
+      userInfo: safeUserInfo,
+      myActivities: fakeData.myActivities,
+      contactRequests: fakeData.contactRequests
+    });
+  
+    // 修改云数据库查询部分 - 添加安全检查
+    const app = getApp();
+    const openid = app.globalData.userInfo?.id;
+    
+    if (openid) {
+      const db = wx.cloud.database();
+      
+      // 获取用户积分信息（实时从user_points集合获取）
+      db.collection('user_points').doc(openid).get({
+        success: (res) => {
+          if (res && res.data) {
+            // 更新积分显示
+            const updatedUserInfo = {
+              ...this.data.userInfo,
+              points: res.data.total_points || 0
+            };
+            this.setData({ userInfo: updatedUserInfo });
+          }
+        },
+        fail: (err) => {
+          console.log("获取用户积分失败，使用默认积分");
+        }
+      });
+      
+      // 获取用户信息（users集合）
+      db.collection('users').doc(openid).get({
+        success: (res) => {
+          if (res && res.data) {
+            // 只在数据有效时才更新
+            const updatedUserInfo = {
+              ...this.data.userInfo,
+              ...res.data
+              // 保留积分从user_points获取的值
+            };
+            this.setData({ userInfo: updatedUserInfo });
+          }
+        },
+        fail: (err) => {
+          console.log("云数据库查询失败，使用默认数据");  // 降级处理
+        }
+      });
+      
+      // 获取联系我的人数据（contactRecords）
+      db.collection('contactRecords').where({
+        targetUserId: openid
+      }).get({
+        success: (res) => {
+          if (res && res.data) {
+            console.log("获取联系我的人数据成功:", res.data);
+            this.setData({ contactRequests: res.data });
+          } else {
+            console.log("联系我的人数据为空");
+          }
+        },
+        fail: (err) => {
+          console.log("获取联系我的人数据失败:", err);
+          // 降级处理：使用假数据
+          this.setData({ contactRequests: fakeData.contactRequests });
+        }
+      });
+      
+      // 检查今日是否已签到
+      this.checkTodayCheckInStatus(openid);
+    }
+  },
+  
+  // 检查今日签到状态
+  checkTodayCheckInStatus(openid) {
+    const db = wx.cloud.database();
+    const today = new Date().toLocaleDateString();
+    
+    db.collection('user_points').doc(openid).get({
+      success: (res) => {
+        if (res && res.data) {
+          const hasCheckedInToday = res.data.last_login_date === today;
+          this.setData({ hasCheckedInToday });
+        }
+      },
+      fail: (err) => {
+        console.log("获取签到状态失败:", err);
+      }
+    });
+  },
+  
+  // 签到功能
+  async onCheckIn() {
+    if (this.data.hasCheckedInToday) {
+      wx.showToast({
+        title: '今日已签到',
+        icon: 'none'
+      });
+      return;
+    }
+    
+    wx.showLoading({ title: '签到中...' });
+    
+    try {
+      // 调用云函数更新积分（不传userId，让云函数自动获取openid）
+      const res = await wx.cloud.callFunction({
+        name: 'updatePoints',
+        data: {
+          pointsType: 'daily_login'
+        }
+      });
+      
+      wx.hideLoading();
+      
+      if (res.result.success) {
+        // 更新本地积分显示
+        const userInfo = { ...this.data.userInfo };
+        userInfo.points = res.result.data.totalPoints;
+        
+        this.setData({
+          userInfo: userInfo,
+          hasCheckedInToday: true
+        });
+        
+        wx.showToast({
+          title: '签到成功！+5积分',
+          icon: 'success'
+        });
+      } else if (res.result.errorCode === 'ALREADY_LOGGED_IN_TODAY') {
+        this.setData({ hasCheckedInToday: true });
+        wx.showToast({
+          title: '今日已签到',
+          icon: 'none'
+        });
+      } else {
+        wx.showToast({
+          title: res.result.message || '签到失败',
+          icon: 'none'
+        });
+      }
+    } catch (err) {
+      wx.hideLoading();
+      console.error('签到失败:', err);
+      wx.showToast({
+        title: '签到失败，请重试',
+        icon: 'none'
+      });
+    }
+  },
  
  
    // 连续点击头像5次显示模拟审核面板

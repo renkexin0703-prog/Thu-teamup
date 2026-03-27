@@ -86,6 +86,30 @@ Page({
         }
       });
 
+      // 增加积分
+      wx.cloud.callFunction({
+        name: 'updatePoints',
+        data: {
+          pointsType: 'team_up_success'
+        },
+        success: (pointsRes) => {
+          if (pointsRes.result.success) {
+            console.log('组队成功积分获取成功:', pointsRes.result.data);
+            // 更新本地积分显示
+            const newScore = pointsRes.result.data.totalPoints;
+            wx.setStorageSync('userScore', newScore);
+            if (app.globalData.userInfo) {
+              app.globalData.userScore = newScore;
+            }
+          } else {
+            console.error('获取积分失败:', pointsRes.result.message);
+          }
+        },
+        fail: (err) => {
+          console.error('调用积分云函数失败:', err);
+        }
+      });
+      
       wx.showToast({ title: "组队成功！", icon: "success" });
       setTimeout(() => {
         wx.navigateBack({ delta: 2 });
