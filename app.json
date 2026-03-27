@@ -1,8 +1,9 @@
 {
   "pages": [
+    "pages/admin/admin",
     "pages/login/login",
     "pages/index/index",
-    "pages/webview/webview",  
+    "pages/webview/webview",
     "pages/community/community",
     "pages/select-teammates/select-teammates",
     "pages/contact-ta/contact-ta",
@@ -61,6 +62,4 @@
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
- 
-  
 }

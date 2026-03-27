@@ -1,0 +1,45 @@
+<view class="container">
+  <view class="header">
+    <text class="title">🏆 比赛信息快速录入</text>
+    <text class="subtitle">粘贴公众号链接，一键抓取信息</text>
+  </view>
+
+  <view class="input-section">
+    <textarea 
+      class="url-input" 
+      placeholder="请在此处粘贴微信公众号文章链接..." 
+      bindinput="onUrlInput" 
+      value="{{inputUrl}}"
+    />
+    <button 
+      class="parse-btn" 
+      type="primary" 
+      bindtap="onParse" 
+      loading="{{parsing}}"
+    >🚀 开始智能抓取</button>
+  </view>
+
+  <view class="result-card" wx:if="{{result}}">
+    <view class="form-item">
+      <text class="label">活动名称</text>
+      <input class="value" value="{{result.title}}" bindinput="editTitle" />
+    </view>
+    
+    <view class="form-item">
+      <text class="label">截止日期</text>
+      <input class="value" value="{{result.deadline}}" placeholder="YYYY-MM-DD" bindinput="editDeadline" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">主办单位</text>
+      <input class="value" value="{{result.department}}" placeholder="输入部门/院系" bindinput="editDept" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">内容简介</text>
+      <textarea class="value-text" value="{{result.content}}" bindinput="editContent" maxlength="200" />
+    </view>
+
+    <button class="save-btn" bindtap="onSaveToCloud">✅ 确认并同步到首页</button>
+  </view>
+</view>
