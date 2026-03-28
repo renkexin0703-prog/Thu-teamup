@@ -95,15 +95,29 @@ Page({
                             });
                           }
                           
+                          const userInfoMap = {};
+                          if (usersRes && usersRes.data) {
+                            usersRes.data.forEach(u => {
+                              if (u && u._id) {
+                                userInfoMap[u._id] = {
+                                  avatar: u.avatar || '/images/default-avatar.png',
+                                  skill: u.skill || [],
+                                  wechat: u.wechat || ''
+                                };
+                              }
+                            });
+                          }
+                          
                           const contacts = contactsRes.data.map(item => ({
                             id: item._id || item.id,
+                            _openid: item._openid,
                             name: item.userName || item.name || '未知用户',
                             // 优先使用 users 表中根据 _openid 查到的头像
-                            avatar: avatarMap[item._openid] || item.userAvatar || item.avatar || '/images/default-avatar.png',
+                            avatar: userInfoMap[item._openid]?.avatar || item.userAvatar || item.avatar || '/images/default-avatar.png',
                             dept: item.userDepartment || item.dept || '未知院系',
                             grade: item.userGrade || item.grade || '未知年级',
-                            wechat: item.wechat || 'wx_' + (item.userId || ''),
-                            skills: item.skills || [],
+                            wechat: userInfoMap[item._openid]?.wechat || item.wechat || 'wx_' + (item.userId || ''),
+                            skills: userInfoMap[item._openid]?.skill || item.skills || [],
                             contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
                           }));
                           
@@ -118,6 +132,7 @@ Page({
                           console.error('根据 openid 获取用户头像失败，降级使用记录内头像:', err);
                           const contacts = contactsRes.data.map(item => ({
                             id: item._id || item.id,
+                            _openid: item._openid,
                             name: item.userName || item.name || '未知用户',
                             avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
                             dept: item.userDepartment || item.dept || '未知院系',
@@ -138,6 +153,7 @@ Page({
                     // 没有有效的 openid，直接使用记录中的头像字段
                     const contacts = contactsRes.data.map(item => ({
                       id: item._id || item.id,
+                      _openid: item._openid,
                       name: item.userName || item.name || '未知用户',
                       avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
                       dept: item.userDepartment || item.dept || '未知院系',
@@ -169,6 +185,7 @@ Page({
                 // 降级处理：使用假数据
                 const contacts = fakeData.contactRequests.map(item => ({
                   id: item.id,
+                  _openid: item._openid || item.userId,
                   name: item.userName,
                   avatar: item.userAvatar || '/images/default-avatar.png',
                   dept: item.userDepartment,
@@ -201,6 +218,7 @@ Page({
           // 降级处理：使用假数据
           const contacts = fakeData.contactRequests.map(item => ({
             id: item.id,
+            _openid: item._openid || item.userId,
             name: item.userName,
             avatar: item.userAvatar || '/images/default-avatar.png',
             dept: item.userDepartment,
@@ -223,6 +241,7 @@ Page({
         try {
           const contacts = fakeData.contactRequests.map(item => ({
             id: item.id,
+            _openid: item._openid || item.userId,
             name: item.userName,
             avatar: item.userAvatar || '/images/default-avatar.png',
             dept: item.userDepartment,
@@ -303,23 +322,28 @@ Page({
                       })
                       .get({
                         success: (usersRes) => {
-                          const avatarMap = {};
+                          const userInfoMap = {};
                           if (usersRes && usersRes.data) {
                             usersRes.data.forEach(u => {
                               if (u && u._id) {
-                                avatarMap[u._id] = u.avatar || '/images/default-avatar.png';
+                                userInfoMap[u._id] = {
+                                  avatar: u.avatar || '/images/default-avatar.png',
+                                  skill: u.skill || [],
+                                  wechat: u.wechat || ''
+                                };
                               }
                             });
                           }
                           
                           const contacts = contactsRes.data.map(item => ({
                             id: item._id || item.id,
+                            _openid: item._openid,
                             name: item.userName || item.name || '未知用户',
-                            avatar: avatarMap[item._openid] || item.userAvatar || item.avatar || '/images/default-avatar.png',
+                            avatar: userInfoMap[item._openid]?.avatar || item.userAvatar || item.avatar || '/images/default-avatar.png',
                             dept: item.userDepartment || item.dept || '未知院系',
                             grade: item.userGrade || item.grade || '未知年级',
-                            wechat: item.wechat || 'wx_' + (item.userId || ''),
-                            skills: item.skills || [],
+                            wechat: userInfoMap[item._openid]?.wechat || item.wechat || 'wx_' + (item.userId || ''),
+                            skills: userInfoMap[item._openid]?.skill || item.skills || [],
                             contactTime: item.applyTime || item.createTime || new Date().toLocaleString('zh-CN')
                           }));
                           
@@ -334,6 +358,7 @@ Page({
                           console.error('根据 openid 获取用户头像失败，降级使用记录内头像:', err);
                           const contacts = contactsRes.data.map(item => ({
                             id: item._id || item.id,
+                            _openid: item._openid,
                             name: item.userName || item.name || '未知用户',
                             avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
                             dept: item.userDepartment || item.dept || '未知院系',
@@ -353,6 +378,7 @@ Page({
                   } else {
                     const contacts = contactsRes.data.map(item => ({
                       id: item._id || item.id,
+                      _openid: item._openid,
                       name: item.userName || item.name || '未知用户',
                       avatar: item.userAvatar || item.avatar || '/images/default-avatar.png',
                       dept: item.userDepartment || item.dept || '未知院系',
@@ -384,6 +410,7 @@ Page({
                 // 降级处理：使用假数据
                 const contacts = fakeData.contactRequests.map(item => ({
                   id: item.id,
+                  _openid: item._openid || item.userId,
                   name: item.userName,
                   avatar: item.userAvatar || '/images/default-avatar.png',
                   dept: item.userDepartment,
@@ -417,6 +444,7 @@ Page({
           // 降级处理：使用假数据
           const contacts = fakeData.contactRequests.map(item => ({
             id: item.id,
+            _openid: item._openid || item.userId,
             name: item.userName,
             avatar: item.userAvatar || '/images/default-avatar.png',
             dept: item.userDepartment,
@@ -439,6 +467,7 @@ Page({
         try {
           const contacts = fakeData.contactRequests.map(item => ({
             id: item.id,
+            _openid: item._openid || item.userId,
             name: item.userName,
             avatar: item.userAvatar || '/images/default-avatar.png',
             dept: item.userDepartment,
@@ -472,17 +501,74 @@ Page({
     const contact = e.currentTarget.dataset.contact;
     console.log('查看联系人详情:', contact);
     
-    // 显示联系人详细信息
+    // 显示加载中
+    wx.showLoading({ title: '加载中...' });
+    
+    // 如果有 _openid，从 users 集合获取最新信息
+    if (contact._openid) {
+      const db = wx.cloud.database();
+      db.collection('users').doc(contact._openid).get({
+        success: (res) => {
+          wx.hideLoading();
+          if (res && res.data) {
+            const userData = res.data;
+            const skills = userData.skill || contact.skills || [];
+            const wechat = userData.wechat || contact.wechat || '未设置';
+            
+            // 显示联系人详细信息
+            wx.showModal({
+              title: contact.name,
+              content: `院系：${contact.dept}\n年级：${contact.grade}\n微信号：${wechat}\n技能：${skills.join('、') || '暂无'}\n联系时间：${contact.contactTime}`,
+              showCancel: true,
+              cancelText: '取消',
+              confirmText: '复制微信号',
+              success: (res) => {
+                if (res.confirm) {
+                  wx.setClipboardData({
+                    data: wechat,
+                    success: () => {
+                      wx.showToast({ title: '微信号已复制', icon: 'success' });
+                    }
+                  });
+                }
+              }
+            });
+          } else {
+            // 未获取到数据，使用本地数据
+            this.showContactModal(contact);
+          }
+        },
+        fail: (err) => {
+          wx.hideLoading();
+          console.error('获取用户详情失败:', err);
+          // 使用本地数据
+          this.showContactModal(contact);
+        }
+      });
+    } else {
+      wx.hideLoading();
+      // 没有 _openid，使用本地数据
+      this.showContactModal(contact);
+    }
+  },
+
+  /**
+   * 显示联系人信息弹窗
+   */
+  showContactModal(contact) {
+    const skills = contact.skills || [];
+    const wechat = contact.wechat || '未设置';
+    
     wx.showModal({
       title: contact.name,
-      content: `院系：${contact.dept}\n年级：${contact.grade}\n微信号：${contact.wechat}\n技能：${contact.skills.join('、')}\n联系时间：${contact.contactTime}`,
+      content: `院系：${contact.dept}\n年级：${contact.grade}\n微信号：${wechat}\n技能：${skills.join('、') || '暂无'}\n联系时间：${contact.contactTime}`,
       showCancel: true,
       cancelText: '取消',
       confirmText: '复制微信号',
       success: (res) => {
         if (res.confirm) {
           wx.setClipboardData({
-            data: contact.wechat,
+            data: wechat,
             success: () => {
               wx.showToast({ title: '微信号已复制', icon: 'success' });
             }

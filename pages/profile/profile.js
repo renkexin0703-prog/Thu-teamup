@@ -9,7 +9,8 @@
     contactRequests: [],
     showReviewPanel: false,
     tapCount: 0, // 头像点击计数
-    hasCheckedInToday: false // 今日是否已签到
+    hasCheckedInToday: false, // 今日是否已签到
+    isLoading: true // 数据加载状态
   },
  
  
@@ -59,11 +60,14 @@
       db.collection('users').doc(openid).get({
         success: (res) => {
           if (res && res.data) {
+            console.log('从users集合获取到的用户数据:', res.data);
+            console.log('用户技能字段:', res.data.skill);
             const updatedUserInfo = {
               ...this.data.userInfo,
               ...res.data
             };
             this.setData({ userInfo: updatedUserInfo });
+            console.log('更新后的userInfo:', updatedUserInfo);
             
             // 获取用户积分信息（实时从user_points集合获取）
             db.collection('user_points').doc(openid).get({
@@ -83,6 +87,9 @@
         },
         fail: (err) => {
           console.log("云数据库查询失败，使用默认数据");
+        },
+        complete: () => {
+          this.setData({ isLoading: false });
         }
       });
       

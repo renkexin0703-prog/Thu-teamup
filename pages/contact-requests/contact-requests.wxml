@@ -54,7 +54,6 @@
         right-width="80"
       >
         <van-cell 
-          is-link
           bind:click="viewUserProfile"
           data-contact="{{item}}"
           custom-class="contact-cell"
@@ -96,13 +95,9 @@
                 {{item}}
               </van-tag>
             </view>
-            <text class="contact-time">联系时间: {{item.contactTime}}</text>
-          </view>
-          
-          <!-- 微信号 -->
-          <view slot="label" class="wechat-info">
-            <van-icon name="wechat" size="14" color="#07c160" />
-            <text class="wechat-text">{{item.wechat}}</text>
+            <text class="wechat-small">
+              <van-icon name="wechat" size="12" color="#999" /> {{item.wechat}}
+            </text>
           </view>
         </van-cell>
         

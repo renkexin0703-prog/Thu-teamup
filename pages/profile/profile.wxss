@@ -66,6 +66,21 @@
   font-size: 13px;
   color: #666;
   margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-text {
+  color: #999;
+  font-style: italic;
+}
+
+.skill-content {
+  color: #333;
+  font-weight: 500;
+  line-height: 1.4;
+  word-break: break-all;
 }
 
 .user-wechat {

@@ -15,7 +15,12 @@
       {{userInfo.gender}} | {{userInfo.grade}} | {{userInfo.department}}
     </view>
     <view class="user-skills">
-      技能：{{userInfo.skill ? userInfo.skill.join('、') : '未设置'}}
+      <block wx:if="{{isLoading}}">
+        <text class="loading-text">加载中...</text>
+      </block>
+      <block wx:else>
+        <text class="skill-content">{{userInfo.skills ? userInfo.skills.join('、') : (userInfo.skill ? userInfo.skill.join('、') : '未设置')}}</text>
+      </block>
     </view>
     <view class="user-wechat">
       微信号：{{userInfo.wechat}}
@@ -24,16 +29,15 @@
     <view class="user-bio" wx:if="{{userInfo.bio}}">
       简介：{{userInfo.bio}}
     </view>
-  </view>
-  <view class="credit-points">
-    <view class="credit-score">{{userInfo.creditScore}}分</view>
-    <view class="credit-desc">信誉分</view>
-    <view class="points-score">{{userInfo.points}}积分</view>
-    <view class="points-desc">可兑换礼品</view>
-    <view class="check-in-btn {{hasCheckedInToday ? 'checked' : ''}}" bindtap="onCheckIn">
+    <!-- 签到按钮移到个人信息正下方 -->
+    <view class="check-in-btn {{hasCheckedInToday ? 'checked' : ''}}" catchtap="onCheckIn">
       <text class="check-in-text">{{hasCheckedInToday ? '已签到' : '签到'}}</text>
       <text class="check-in-points">+5积分</text>
     </view>
+  </view>
+  <view class="credit-points">
+    <view class="points-score">{{userInfo.points}}积分</view>
+    <view class="points-desc">可兑换礼品</view>
   </view>
 </view>
 
@@ -41,7 +45,7 @@
 <view class="card func-card">
   <view class="func-item" bindtap="gotoPublishActivity">
     <text>📝 我要提供活动！</text>
-    <text class="func-tip">审核通过+50积分</text>
+    <text class="func-tip">完成投稿+50积分</text>
     <icon type="arrowright" size="16" color="#999" />
   </view>
   <view class="func-item" bindtap="gotoPointsRecord">

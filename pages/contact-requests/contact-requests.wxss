@@ -136,21 +136,16 @@
   border-radius: 12rpx;
 }
 
-.contact-time {
+.wechat-small {
   font-size: 24rpx;
   color: #999;
-}
-
-.wechat-info {
+  margin-top: 8rpx;
   display: flex;
   align-items: center;
-  margin-top: 8rpx;
 }
 
-.wechat-text {
-  margin-left: 8rpx;
-  font-size: 24rpx;
-  color: #07c160;
+.wechat-small .van-icon {
+  margin-right: 8rpx;
 }
 
 .swipe-right-actions {
