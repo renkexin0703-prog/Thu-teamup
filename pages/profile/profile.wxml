@@ -56,12 +56,10 @@
   </view>
   <view class="func-item" bindtap="gotoMyActivities">
     <text>📋 我的活动投稿</text>
-    <text class="func-tip">{{myActivities.length}}条记录</text>
     <icon type="arrowright" size="16" color="#999" />
   </view>
   <view class="func-item" bindtap="gotoContactRequests">
     <text>📩 联系我的人</text>
-    <text class="func-tip">{{contactRequests.length}}条申请</text>
     <icon type="arrowright" size="16" color="#999" />
   </view>
 </view>

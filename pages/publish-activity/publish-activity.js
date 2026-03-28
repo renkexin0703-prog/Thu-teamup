@@ -1,14 +1,12 @@
-const fakeData = require("../../utils/fake-data.js");
 
 Page({
   data: {
-    filterOptions: fakeData.filterOptions,
     title: "",
     organizer: "",
-    selectedDept: "",
-    selectedGrade: "",
+    dept: "",
+    grade: "",
     selectedDate: "",
-    selectedSkills: [],
+    skills: "",
     desc: ""
   },
 
@@ -22,16 +20,14 @@ Page({
     this.setData({ organizer: e.detail.value });
   },
 
-  // 选择院系
-  onDeptSelect(e) {
-    const dept = fakeData.filterOptions.departments[e.detail.value];
-    this.setData({ selectedDept: dept });
+  // 输入院系
+  onDeptInput(e) {
+    this.setData({ dept: e.detail.value });
   },
 
-  // 选择年级
-  onGradeSelect(e) {
-    const grade = fakeData.filterOptions.grades[e.detail.value];
-    this.setData({ selectedGrade: grade });
+  // 输入年级
+  onGradeInput(e) {
+    this.setData({ grade: e.detail.value });
   },
 
   // 选择日期
@@ -39,11 +35,9 @@ Page({
     this.setData({ selectedDate: e.detail.value });
   },
 
-  // 选择技能
-  onSkillSelect(e) {
-    const indices = e.detail.value;
-    const selectedSkills = indices.map(index => fakeData.filterOptions.skills[index]);
-    this.setData({ selectedSkills });
+  // 输入技能
+  onSkillInput(e) {
+    this.setData({ skills: e.detail.value });
   },
 
   // 输入活动描述
@@ -53,7 +47,7 @@ Page({
 
   // 提交活动
   submitActivity() {
-    const { title, organizer, selectedDept, selectedGrade, selectedDate, selectedSkills, desc } = this.data;
+    const { title, organizer, dept, grade, selectedDate, skills, desc } = this.data;
     
     // 数据验证
     if (!title.trim()) {
@@ -72,17 +66,17 @@ Page({
       return;
     }
     
-    if (!selectedDept) {
+    if (!dept.trim()) {
       wx.showToast({
-        title: "请选择所属院系",
+        title: "请输入所属院系",
         icon: "none"
       });
       return;
     }
     
-    if (!selectedGrade) {
+    if (!grade.trim()) {
       wx.showToast({
-        title: "请选择面向年级",
+        title: "请输入面向年级",
         icon: "none"
       });
       return;
@@ -104,14 +98,17 @@ Page({
       return;
     }
     
+    // 处理技能输入（用逗号分隔）
+    const requiredSkills = skills ? skills.split(/[,，]/).map(s => s.trim()).filter(s => s) : [];
+    
     // 构建活动数据
     const activityData = {
       title: title.trim(),
       organizer: organizer.trim(),
-      department: selectedDept,
-      targetGrades: [selectedGrade], // 这里简化处理，实际可能需要支持多选
+      department: dept.trim(),
+      targetGrades: [grade.trim()],
       deadline: selectedDate,
-      requiredSkills: selectedSkills,
+      requiredSkills: requiredSkills,
       description: desc.trim()
     };
     

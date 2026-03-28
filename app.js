@@ -46,7 +46,7 @@ App({
       bio: '',
       points: 0,
       pointsRecord: [],
-      creditScore: 80,
+      creditScore: 100,
       creditTags: [],
       creditDesc: '',
       gifts: [
@@ -113,7 +113,7 @@ App({
           bio: result.data.bio || '',
           points: result.data.points || 0,
           pointsRecord: Array.isArray(result.data.pointsRecord) ? result.data.pointsRecord : [],
-          creditScore: result.data.creditScore || 80,
+          creditScore: result.data.creditScore || 100,
           creditTags: Array.isArray(result.data.creditTags) ? result.data.creditTags : [],
           creditDesc: result.data.creditDesc || '',
           gifts: Array.isArray(result.data.gifts) ? result.data.gifts : [
@@ -146,7 +146,7 @@ App({
           bio: '',
           points: 0,
           pointsRecord: [],
-          creditScore: 80,
+          creditScore: 100,
           creditTags: [],
           creditDesc: '',
           gifts: [
@@ -232,7 +232,7 @@ App({
           wechat: userDoc.data.wechat || '',
           points: userDoc.data.points || 0,
           pointsRecord: Array.isArray(userDoc.data.pointsRecord) ? userDoc.data.pointsRecord : [],
-          creditScore: userDoc.data.creditScore || 80,
+          creditScore: userDoc.data.creditScore || 100,
           creditTags: Array.isArray(userDoc.data.creditTags) ? userDoc.data.creditTags : [],
           creditDesc: userDoc.data.creditDesc || '',
           gifts: Array.isArray(userDoc.data.gifts) ? userDoc.data.gifts : [
@@ -257,7 +257,7 @@ App({
           bio: '',
           points: 0,
           pointsRecord: [],
-          creditScore: 80,
+          creditScore: 100,
           creditTags: [],
           creditDesc: '',
           gifts: [

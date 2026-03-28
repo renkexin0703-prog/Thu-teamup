@@ -9,15 +9,11 @@
   </view>
   <view class="form-item">
     <view class="form-label">所属院系</view>
-    <picker mode="selector" range="{{filterOptions.departments}}" bindchange="onDeptSelect">
-      <view class="form-input placeholder">{{selectedDept || '请选择院系'}}</view>
-    </picker>
+    <input class="form-input" placeholder="请输入所属院系" bindinput="onDeptInput" />
   </view>
   <view class="form-item">
     <view class="form-label">面向年级</view>
-    <picker mode="selector" range="{{filterOptions.grades}}" bindchange="onGradeSelect">
-      <view class="form-input placeholder">{{selectedGrade || '请选择年级'}}</view>
-    </picker>
+    <input class="form-input" placeholder="请输入面向年级" bindinput="onGradeInput" />
   </view>
   <view class="form-item">
     <view class="form-label">截止时间</view>
@@ -27,9 +23,7 @@
   </view>
   <view class="form-item">
     <view class="form-label">所需技能</view>
-    <picker mode="multiSelector" range="{{[filterOptions.skills]}}" bindchange="onSkillSelect">
-      <view class="form-input placeholder">{{selectedSkills.length > 0 ? selectedSkills.join(',') : '请选择所需技能'}}</view>
-    </picker>
+    <input class="form-input" placeholder="请输入所需技能（多个技能用逗号分隔）" bindinput="onSkillInput" />
   </view>
   <view class="form-item">
     <view class="form-label">活动描述</view>
