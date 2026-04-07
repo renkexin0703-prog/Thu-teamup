@@ -11,7 +11,7 @@
 </view>
 
 <view class="activity-list">
-  <block wx:for="{{allActivities}}" wx:key="id">
+  <block wx:for="{{allActivities}}" wx:key="_id">
     <view class="activity-card">
       <view class="card-body">
         <view class="main-title">{{item.title}}</view>
@@ -29,8 +29,18 @@
       </view>
       
       <view class="card-actions">
-        <view class="mini-btn btn-plain" bindtap="onPopupDetail" data-id="{{item.id || item._id}}">查看详情</view>
-        <view class="mini-btn btn-filled" bindtap="onQuickTeamUp" data-id="{{item.id || item._id}}">一键组队</view>
+        <view class="mini-btn btn-plain" 
+              bindtap="onPopupDetail" 
+              data-id="{{item._id}}" 
+              data-activity="{{item}}">
+          查看详情
+        </view>
+
+        <view class="mini-btn btn-filled" 
+              bindtap="onQuickTeamUp" 
+              data-id="{{item._id}}">
+          一键组队
+        </view>
       </view>
     </view>
   </block>

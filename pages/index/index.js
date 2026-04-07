@@ -94,7 +94,9 @@ Page({
     const actId = e.currentTarget.dataset.id;
     
     // 优先尝试使用数据库里的 sourceUrl，如果没有则回退到本地映射
-    const link = act.sourceUrl || this.data.activityDetailLinks[actId];
+    const link = act.url || act.sourceUrl || this.data.activityDetailLinks[actId];
+  
+      console.log('正在跳转链接：', link);
     
     if (link) {
       wx.navigateTo({
