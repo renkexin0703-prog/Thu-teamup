@@ -31,9 +31,18 @@ Page({
     { name: '社会实践', value: '社会实践', checked: false },
     { name: '其他', value: '其他', checked: false },
   ],
+skillOptions: [
+  { name: '前端', value: '前端', checked: false },
+  { name: '后端', value: '后端', checked: false },
+  { name: '设计', value: '设计', checked: false },
+  { name: '算法', value: '算法', checked: false },
+  { name: '文案', value: '文案', checked: false },
+  { name: '不限', value: '不限', checked: false }
+],
 
     selectedGrades: [], // 最终存储选中的值
     selectedCategories: [], // 存储选中的分类值
+    selectedSkills: [],
   },
 
   onLoad(options) {
@@ -100,6 +109,18 @@ Page({
   
   onWechatInput(e) { this.setData({ wechat: e.detail.value }); },
 
+onSkillChange(e) {
+  const values = e.detail.value;
+  const items = this.data.skillOptions.map(opt => ({
+    ...opt,
+    checked: values.includes(opt.value)
+  }));
+  this.setData({ 
+    skillOptions: items, 
+    selectedSkills: values 
+  });
+},
+
   // --- 多选处理（年级/技能） ---
   onGradeChange(e) {
     const values = e.detail.value;
@@ -125,7 +146,7 @@ Page({
 
   async submitTeamUp() {
     // 1. 结构增加 selectedCategories
-    const { title, selectedGender, desc, wechat, selectedGrades, selectedCategories, activityId } = this.data;
+    const { title, selectedGender, desc, wechat, selectedGrades, selectedCategories, selectedSkills,activityId } = this.data;
     const localUser = wx.getStorageSync('userInfo') || app.globalData.userInfo;
 
     // 2. 必填校验（增加对分类的校验）

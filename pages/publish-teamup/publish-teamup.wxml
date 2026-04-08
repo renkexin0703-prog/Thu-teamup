@@ -37,6 +37,16 @@
   </checkbox-group>
 </view>
 
+<view class="form-item">
+  <view class="form-label">所需技能 (可多选)</view>
+  <checkbox-group class="multi-select-group" bindchange="onSkillChange">
+    <label class="checkbox-item" wx:for="{{skillOptions}}" wx:key="value">
+      <checkbox value="{{item.value}}" checked="{{item.checked}}" color="#6777ef" />
+      <text class="checkbox-text">{{item.name}}</text>
+    </label>
+  </checkbox-group>
+</view>
+
   <view class="form-item">
     <view class="form-label">组队描述</view>
     <textarea class="form-textarea" placeholder="请详细描述你的需求，例如：希望队友有建模经验、时间充裕等" bindinput="onDescInput"></textarea>
